@@ -6,20 +6,16 @@
   </ion-navbar>
 </ion-header>
  
-
-
-
-
 <ion-content>
   <div class="info">
   <div class="record">
     <div class="header">
-      <ion-icon name="pin" class="pinIcon"></ion-icon>      
+      <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
       <h1>Mandag 16. juli: 08:00 - 16:00</h1>
     </div>
     <div class="infoField">
     </div>
-    <button ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+    <button [disabled]="!locationTracker.paJobb" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
 
   <div class="futureRecords">
