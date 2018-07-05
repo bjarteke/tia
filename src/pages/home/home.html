@@ -1,17 +1,20 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Location Tracker
+      Min arbeidsplan
     </ion-title>
   </ion-navbar>
 </ion-header>
  
 <ion-content>
   <div class="info">
+          <h5 style="margin-bottom:-10px">Neste vakt:</h5>
+
   <div class="record">
     <div class="header">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
-      <h1>Mandag 16. juli: 08:00 - 16:00</h1>
+      <h1>Mandag 21. juli</h1>
+      <h3>08:00 - 16.00</h3>
     </div>
     <div class="infoField">
     </div>
@@ -19,11 +22,11 @@
   </div>
 
   <div class="futureRecords">
-    <h5>Dine vakter:</h5>
+    <h5>Kommende vakter:</h5>
     <div class="rec">
       <div class="futureDate">
         <span style="font-size: 25px; font-weight: 900">16</span><br>
-        <span style="font-size: 15px; font-weight: 100">juli</span> 
+        <span style="font-size: 18px; font-weight: 100">juli</span> 
       </div>
       <div class="futureInfo">
         <h3>08:00 - 16:00</h3>
@@ -32,17 +35,17 @@
     <div class="rec">
       <div class="futureDate">
         <span style="font-size: 25px; font-weight: 900">18</span><br>
-        <span style="font-size: 15px; font-weight: 100">juli</span> 
+        <span style="font-size: 18px; font-weight: 100">juli</span> 
       </div>
       <div class="futureInfo">
         <h3>08:00 - 16:00</h3>
       </div> 
     </div>
     <div class="rec">
-        <div class="ribbon"><span>Popular</span></div>
+        <div class="ribbon"><span>Ny vakt</span></div>
       <div class="futureDate">
         <span style="font-size: 25px; font-weight: 900">21</span><br>
-        <span style="font-size: 15px; font-weight: 100">juli</span> 
+        <span style="font-size: 18px; font-weight: 100">juli</span> 
       </div>
       <div class="futureInfo">
         <h3>08:00 - 16:00</h3>
