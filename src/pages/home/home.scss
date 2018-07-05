@@ -1,3 +1,142 @@
 page-home {
+}
+
+.fixed-content {
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
 }
+
+//*Text*//
+
+h1 {
+    font-size: 20px;
+    color: #ffffff;
+    padding-left: 15px;
+    padding-top:35px;
+}
+
+h3 {
+    font-size: 15px;
+    padding-left:15px;
+    color:black;
+    font-weight: 100;
+    padding-bottom: 2px;
+    margin-top:-10px !important;
+}
+
+p {
+    padding-left: 15px;
+    padding-top:5px;
+    padding-bottom: 5px;
+}
+
+//*Records*//
+
+.info {
+    width:90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.record {
+    background-color: #f8f8f8;   
+    margin-bottom: 20px;
+    -webkit-box-shadow: 0px 0px 22px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 22px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 22px 0px rgba(0,0,0,0.75);
+    border-radius: 5px;
+}
+
+.header {
+    background-color: #3d3d3d;
+}
+
+//*Future records*//
+
+.futureRecords {
+    border-radius: 5px;
+    padding:2.5px;
+}
+
+.rec {
+    display:table;
+    width:100%;
+    padding-left:5px;
+    padding-top:2.5px;
+    padding-bottom:2.5px;
+    position:relative;
+
+}
+
+.futureDate {
+    text-align: center;
+    background-color: gray;
+    border-radius: 5px 0px 0px 5px;
+    padding:10px;
+    display:table-cell;
+    width:15%;
+}
+
+.futureInfo {
+    color:black !important;
+    display:table-cell;
+    background-color:rgb(221, 221, 221);
+    border-radius: 0px 5px 5px 0px;
+}
+
+
+
+
+
+//*Buttons*//
+
+.checkInOut {
+    background-color: map-get($colors,primary) !important;
+    color: #000000;
+}
+
+.checkInOut2 {
+    background-color: map-get($colors,dark) !important;
+    color: #ffffff;
+}
+
+
+//*Icons*//
+.pinIcon {
+    float: right;
+    padding: 4px;
+    color :map-get($colors,primary);
+}
+
+
+
+.box {
+    width:200px;
+    border:1px solid #BBB;
+    background:#eee;
+ }
+ .ribbon {
+    position: absolute;
+    right: 0px; 
+    top: 2px;
+    z-index: 1;
+    overflow: hidden;
+    width: 75px; height: 75px; 
+    text-align: right;
+ }
+ .ribbon span {
+    font-size: 10px;
+    color: #fff; 
+    text-transform: uppercase; 
+    text-align: center;
+    font-weight: bold; line-height: 2016x;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg); /* Needed for Safari */
+    width: 100px; display: block;
+    background: #79A70A;
+    background: linear-gradient(#9BC90D 0%, #79A70A 100%);
+    box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+    position: absolute;
+    top: 19px; right: -21px;
+ }

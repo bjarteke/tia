@@ -1,17 +1,66 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>Home</ion-title>
+    <ion-title>
+      Location Tracker
+    </ion-title>
   </ion-navbar>
 </ion-header>
+ 
 
-<ion-content padding>
-  <h2>Welcome to Ionic!</h2>
-  <p>
-    This starter project comes with simple tabs-based layout for apps
-    that are going to primarily use a Tabbed UI.
-  </p>
-  <p>
-    Take a look at the <code>src/pages/</code> directory to add or change tabs,
-    update any existing page or create new pages.
-  </p>
+
+
+
+<ion-content>
+  <div class="info">
+  <div class="record">
+    <div class="header">
+      <ion-icon name="pin" class="pinIcon"></ion-icon>      
+      <h1>Mandag 16. juli: 08:00 - 16:00</h1>
+    </div>
+    <div class="infoField">
+    </div>
+    <button ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+  </div>
+
+  <div class="futureRecords">
+    <h5>Dine vakter:</h5>
+    <div class="rec">
+      <div class="futureDate">
+        <span style="font-size: 25px; font-weight: 900">16</span><br>
+        <span style="font-size: 15px; font-weight: 100">juli</span> 
+      </div>
+      <div class="futureInfo">
+        <h3>08:00 - 16:00</h3>
+      </div> 
+    </div>
+    <div class="rec">
+      <div class="futureDate">
+        <span style="font-size: 25px; font-weight: 900">18</span><br>
+        <span style="font-size: 15px; font-weight: 100">juli</span> 
+      </div>
+      <div class="futureInfo">
+        <h3>08:00 - 16:00</h3>
+      </div> 
+    </div>
+    <div class="rec">
+        <div class="ribbon"><span>Popular</span></div>
+      <div class="futureDate">
+        <span style="font-size: 25px; font-weight: 900">21</span><br>
+        <span style="font-size: 15px; font-weight: 100">juli</span> 
+      </div>
+      <div class="futureInfo">
+        <h3>08:00 - 16:00</h3>
+      </div> 
+    </div>
+  </div>
+</div>
+
+<br><br><br>
+
+  <h3>Current Latitude: {{locationTracker.lat}}</h3>
+  <h3>Current Longitude: {{locationTracker.lng}}</h3>
+  <h3>På jobb? {{locationTracker.paJobb}}</h3>
+
+  <button ion-button full primary (click)="start()">Start Tracking</button>
+  <button ion-button full primary (click)="stop()">Stop Tracking</button>
 </ion-content>
