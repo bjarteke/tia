@@ -9,16 +9,13 @@
 <ion-content>
 
 
-
-<h1>{{test2}}</h1>
-
 <div class="info">
   <h5 style="margin-bottom:-10px">Neste vakt:</h5>
 
 <div class="record" *ngFor="let x of keys | slice:0:1, let i=index">
     <div class="header">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
-      <h1>{{test[x]["Startdato"]}}</h1>
+      <h1>{{ fromTimestampToTextIdagImorgen(test[x]['Startdato'],test[x]['Start']) }} </h1>
       <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
     </div>
     <div class="infoField">
@@ -34,8 +31,8 @@
         <span>Ny vakt</span>
       </div>
       <div class="futureDate">
-        <span style="font-size: 25px; font-weight: 900">16</span><br>
-        <span style="font-size: 18px; font-weight: 100">juli</span> 
+        <span style="font-size: 25px; font-weight: 900">{{test[x]["Startdato"] | slice:0:2}}</span><br>
+        <span style="font-size: 21px; font-weight: 100; margin-top:0.5px;">{{test[x]["Startdato"] | slice:3:7}}</span> 
       </div>
       <div class="futureInfo">
         <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>

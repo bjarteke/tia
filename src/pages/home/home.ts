@@ -10,9 +10,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 
-
- 
-
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -20,7 +17,7 @@ import 'rxjs/add/operator/map';
 export class HomePage {
  
   public checkInOutTimes : any[] = []; //The first value is always the initial checkInTime, and the last is the final checkOutTime.
-  public checkInOutTimesMinutes : string[] = [];
+  public checkInOutTimesMinutes : string[] = []; //Used to calculate the loadingBar.
 
 
   public checkedIn : boolean = true;
@@ -45,20 +42,22 @@ export class HomePage {
 
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72;
+  //private linkToArbeidsplan = 'https://api.myjson.com/bins/bfc1i'; 
+  private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
 
+  //CONSTRCUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient) {
     this.checkInOutTimesMinutes.push("0%"); //To make sure that the loadingBar has an initial length of 0% 
-    this.http.get('../assets/data/arbeidsplan.json').subscribe(data => {
+    this.http.get(this.linkToArbeidsplan).subscribe(data => {
     this.plan.push(data);
     this.test = this.plan[0];
-    this.keys = Object.keys(this.plan[0]);   
+    this.keys = Object.keys(this.plan[0]); 
 
           });
   }
  
   start(){
-    this.locationTracker.startTracking();   
-    
+    this.locationTracker.startTracking();    
   }
 
 // START: READING JSON
@@ -68,7 +67,6 @@ export class HomePage {
     var today : Date;
     today = new Date();
 
-
     console.log((today.getTime() - addedDating.getTime())/(3600*1000));
     
     if ((today.getTime() - addedDating.getTime())/(3600*1000) > this.numberOfHoursRegardedAsNew){
@@ -77,10 +75,9 @@ export class HomePage {
     return true;
   }
 
-
-
 // END: READING JSON
 
+//Changing the text of the "Stemple inn/ut" box, and changing the color of the pin.
   checkInOut() {
     this.checkInOutTimes.push(new Date());
     if (this.checkInOutTimes.length > 1){
@@ -139,13 +136,19 @@ export class HomePage {
     }
   }
 
-  getColorOfLoadingBar() {
-    if (this.checkInOutTimesMinutes.length % 2 == 0){
-      return '#7CFC00';
+  fromTimestampToTextIdagImorgen(dato : any, timestamp : any) {
+    var today = new Date(); 
+    var tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    if(new Date(timestamp).setHours(0,0,0,0) == today.setHours(0,0,0,0)){
+      return "I dag";
+    }
+    else if (new Date(timestamp).setHours(0,0,0,0) == tomorrow.setHours(0,0,0,0)){
+     return "I morgen";
     }
     else {
-      return '#a00b0b';
+      return dato;
     }
   }
- 
+
 }
+
