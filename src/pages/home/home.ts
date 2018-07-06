@@ -39,11 +39,14 @@ export class HomePage {
   public test : any;
   public keys;
 
+  public planner : string = "kommende";
+
+
 
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72;
-  //private linkToArbeidsplan = 'https://api.myjson.com/bins/bfc1i'; 
-  private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
+  private linkToArbeidsplan = 'https://api.myjson.com/bins/bfc1i'; 
+  //private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
 
   //CONSTRCUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient) {

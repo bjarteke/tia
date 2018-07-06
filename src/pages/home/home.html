@@ -23,9 +23,21 @@
     <button [disabled]="!locationTracker.paJobb" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
 
-<div class="futureRecords">
-  <h5>Kommende vakter:</h5>
+<div style="background-color:lightblue">
+  <div padding>
+  <ion-segment [(ngModel)]="planner">
+    <ion-segment-button value="kommende">
+      Kommende
+    </ion-segment-button>
+    <ion-segment-button value="fullfort">
+      Fullført
+    </ion-segment-button>
+  </ion-segment>
+</div>
+
+<div class="futureRecords" [ngSwitch]="planner">
   <div class="rec" *ngFor="let x of keys | slice:1, let i=index">
+    <div *ngSwitchCase="'kommende'">
     <div *ngIf="checkIfNew([test[x]['Added']])" class="ribbon">
         <span>Ny vakt</span>
       </div>
@@ -37,8 +49,12 @@
         <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
       </div> 
     </div>
+    </div>
+  </div>
   </div>
 </div>
+
+
 
 <br><br><br>
 
