@@ -6,6 +6,10 @@ import { JsonProvider } from '../../providers/json/json';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import turf from 'turf';
 
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import 'rxjs/add/operator/map';
+
 
  
 
@@ -32,22 +36,28 @@ export class HomePage {
   //Testing intervalCountering box
   public seconds : number = 100;
 
+
+  //Variables used for retrieving data from JSON file
+  public plan:Array<any>=[];
   public test : any;
-  public test2 : any;
-
   public keys;
-  public keysList;
 
+
+  //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72;
 
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public jsonProvider : JsonProvider) {
-     this.checkInOutTimesMinutes.push("0%"); //To make sure that the loadingBar has an initial length of 0% 
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient) {
+    this.checkInOutTimesMinutes.push("0%"); //To make sure that the loadingBar has an initial length of 0% 
+    this.http.get('../assets/data/arbeidsplan.json').subscribe(data => {
+    this.plan.push(data);
+    this.test = this.plan[0];
+    this.keys = Object.keys(this.plan[0]);   
+
+          });
   }
  
   start(){
-    this.locationTracker.startTracking(); 
-    this.test = this.jsonProvider.plan[0]; 
-    this.keys = Object.keys(this.test);   
+    this.locationTracker.startTracking();   
     
   }
 
