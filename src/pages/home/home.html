@@ -17,6 +17,7 @@
       <h3>08:00 - 16.00</h3>
     </div>
     <div class="infoField">
+      <div *ngFor="let x of checkInOutTimesMinutes" class="loadingBar" [ngStyle]="{'width' : x, 'background-color': (checkedIn ? '#7CFC00' : '#a00b0b')}"></div>
     </div>
     <button [disabled]="!locationTracker.paJobb" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
@@ -61,5 +62,4 @@
   <h3>På jobb? {{locationTracker.paJobb}}</h3>
 
   <button ion-button full primary (click)="start()">Start Tracking</button>
-  <button ion-button full primary (click)="stop()">Stop Tracking</button>
 </ion-content>

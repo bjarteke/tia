@@ -12,6 +12,8 @@ import turf from 'turf';
 export class HomePage {
  
   public checkInOutTimes : any[] = []; //The first value is always the initial checkInTime, and the last is the final checkOutTime.
+  public checkInOutTimesMinutes : string[] = [];
+
 
   public checkedIn : boolean = true;
   public withinRange : boolean = false;
@@ -20,12 +22,20 @@ export class HomePage {
   public stempleButton : string = "Stemple inn";
   public checkInOutVar : string = "checkInOut";
 
+
+  //Testing intervalCountering box
+  public seconds : number = 100;
+
+
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker) {
- 
+     this.checkInOutTimesMinutes.push("0%");
+
   }
  
   start(){
     this.locationTracker.startTracking();
+    console.log(new Date("July 21, 2018 08:00:00"));
+
   }
  
   stop(){
@@ -34,16 +44,18 @@ export class HomePage {
 
   checkInOut() {
     this.checkInOutTimes.push(new Date());
-    if (this.checkInOutTimes.length > 5){
+    if (this.checkInOutTimes.length > 1){
       this.calculateLengthOfAllIntervals();
     }
     if (this.stempleButton == "Stemple inn"){
       this.stempleButton = "Stemple ut";
       this.checkInOutVar = "checkInOut2";
+      this.checkedIn = false;
     }
     else{
       this.stempleButton = "Stemple inn";
       this.checkInOutVar = "checkInOut";
+      this.checkedIn = true;
     }
     
   }
@@ -62,16 +74,40 @@ export class HomePage {
 
       return (outH + ":" + outM);
     }
-   
+  }
+
+  calculateTimePeriodMinutes(time1 : any, time2 : any) {
+    if (this.checkInOutTimes.length > 1) {
+      var m = Math.abs((new Date (time2).getMinutes()-new Date (time1).getMinutes()));
+      var h = Math.abs((new Date (time2).getHours()-new Date (time1).getHours()));
+
+      var outM = h*60*60 + m*60;
+
+      return outM;
+    }
   }
 
   calculateLengthOfAllIntervals(){
     var intervalList : any[] = []
+    var intervalListMinutes : any[] = []
+
     console.log(this.checkInOutTimes);
+    this.checkInOutTimesMinutes = [];
     for (var x = 0; x < this.checkInOutTimes.length -1 ; x++ ) {
       intervalList.push(this.calculateTimePeriod(this.checkInOutTimes[x],this.checkInOutTimes[x+1]));
+      console.log(100*(Math.abs((this.checkInOutTimes[x+1] - this.checkInOutTimes[x])/1000)/this.seconds) +"%");
+      this.checkInOutTimesMinutes.push(100*(Math.abs((this.checkInOutTimes[x+1] - this.checkInOutTimes[x])/1000)/this.seconds) +"%");
+
     }
-    console.log(intervalList);
+  }
+
+  getColorOfLoadingBar() {
+    if (this.checkInOutTimesMinutes.length % 2 == 0){
+      return '#7CFC00';
+    }
+    else {
+      return '#a00b0b';
+    }
   }
  
 }

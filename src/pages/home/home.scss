@@ -31,6 +31,23 @@ p {
     padding-bottom: 5px;
 }
 
+//*Info field*//
+.infoField {
+    height: 7px;
+    margin-top: -13px;
+}
+
+.loadingBar {
+    height:10px; 
+    background-color:green;
+    margin-top: -10px;
+    display: inline-table;
+}
+
+.loadingBar > div:nth-of-type(2n+1){
+    background-color: blue !important;
+}
+
 //*Records*//
 
 .info {
