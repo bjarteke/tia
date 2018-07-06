@@ -15,6 +15,11 @@ import { LocationTracker } from '../providers/location-tracker/location-tracker'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
 
+import { JsonProvider } from '../providers/json/json';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
+
+
 @NgModule({
   declarations: [
     MyApp,
@@ -25,7 +30,10 @@ import { Geolocation } from '@ionic-native/geolocation';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
+
     IonicModule.forRoot(MyApp)
+
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -37,11 +45,13 @@ import { Geolocation } from '@ionic-native/geolocation';
   ],
   providers: [
     StatusBar,
+    HttpClient,
     LocationTracker,
     BackgroundGeolocation,
     Geolocation,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    JsonProvider
   ]
 })
 export class AppModule {}

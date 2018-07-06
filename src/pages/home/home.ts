@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { LocationTracker } from '../../providers/location-tracker/location-tracker';
+import { JsonProvider } from '../../providers/json/json';
+
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import turf from 'turf';
+
+
  
 
 @Component({
@@ -22,25 +26,50 @@ export class HomePage {
   public stempleButton : string = "Stemple inn";
   public checkInOutVar : string = "checkInOut";
 
+  public sluttid;
+
 
   //Testing intervalCountering box
   public seconds : number = 100;
 
+  public test : any;
+  public test2 : any;
 
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker) {
-     this.checkInOutTimesMinutes.push("0%");
+  public keys;
+  public keysList;
 
+  private numberOfHoursRegardedAsNew = 72;
+
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public jsonProvider : JsonProvider) {
+     this.checkInOutTimesMinutes.push("0%"); //To make sure that the loadingBar has an initial length of 0% 
   }
  
   start(){
-    this.locationTracker.startTracking();
-    console.log(new Date("July 21, 2018 08:00:00"));
+    this.locationTracker.startTracking(); 
+    this.test = this.jsonProvider.plan[0]; 
+    this.keys = Object.keys(this.test);   
+    
+  }
 
+// START: READING JSON
+  checkIfNew(addedDate : any) {
+    var addedDating : Date;
+    addedDating = new Date(addedDate);
+    var today : Date;
+    today = new Date();
+
+
+    console.log((today.getTime() - addedDating.getTime())/(3600*1000));
+    
+    if ((today.getTime() - addedDating.getTime())/(3600*1000) > this.numberOfHoursRegardedAsNew){
+      return false;
+    }
+    return true;
   }
- 
-  stop(){
-    this.locationTracker.stopTracking();
-  }
+
+
+
+// END: READING JSON
 
   checkInOut() {
     this.checkInOutTimes.push(new Date());
@@ -89,13 +118,12 @@ export class HomePage {
 
   calculateLengthOfAllIntervals(){
     var intervalList : any[] = []
-    var intervalListMinutes : any[] = []
+    var intervalListMinutes : number[] = []
 
-    console.log(this.checkInOutTimes);
     this.checkInOutTimesMinutes = [];
     for (var x = 0; x < this.checkInOutTimes.length -1 ; x++ ) {
       intervalList.push(this.calculateTimePeriod(this.checkInOutTimes[x],this.checkInOutTimes[x+1]));
-      console.log(100*(Math.abs((this.checkInOutTimes[x+1] - this.checkInOutTimes[x])/1000)/this.seconds) +"%");
+      intervalListMinutes.push(this.calculateTimePeriodMinutes(this.checkInOutTimes[x],this.checkInOutTimes[x+1]));
       this.checkInOutTimesMinutes.push(100*(Math.abs((this.checkInOutTimes[x+1] - this.checkInOutTimes[x])/1000)/this.seconds) +"%");
 
     }
