@@ -10,7 +10,6 @@
 
 
 <div class="info">
-  <h5 style="margin-bottom:-10px">Neste vakt:</h5>
 
 <div class="record" *ngFor="let x of keys | slice:0:1, let i=index">
     <div class="header">
@@ -32,7 +31,7 @@
       </div>
       <div class="futureDate">
         <span style="font-size: 25px; font-weight: 900">{{test[x]["Startdato"] | slice:0:2}}</span><br>
-        <span style="font-size: 21px; font-weight: 100; margin-top:0.5px;">{{test[x]["Startdato"] | slice:3:7}}</span> 
+        <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;">{{test[x]["Startdato"] | slice:3:7}}</span> 
       </div>
       <div class="futureInfo">
         <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
@@ -41,12 +40,13 @@
   </div>
 </div>
 
-
 <br><br><br>
+
+<!--
 
   <h3>Current Latitude: {{locationTracker.lat}}</h3>
   <h3>Current Longitude: {{locationTracker.lng}}</h3>
-  <h3>På jobb? {{locationTracker.paJobb}}</h3>
+  <h3>På jobb? {{locationTracker.paJobb}}</h3> -->
 
   <button ion-button full primary (click)="start()">Start Tracking</button>
 </ion-content>

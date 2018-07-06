@@ -22,7 +22,7 @@ h3 {
     font-size: 20px;
     padding-left:15px;
     color:black;
-    font-weight: 400;
+    font-weight: 300;
     padding-bottom: 2px;
     margin-top:-10px !important;
 }
@@ -61,7 +61,7 @@ p {
 .record {
     background-color: #f8f8f8;   
     margin-bottom: 20px;
-    
+    margin-top:70px;
     border-radius: 5px;
 }
 
@@ -119,10 +119,6 @@ p {
     border-radius: 0px 5px 5px 0px;
 }
 
-
-
-
-
 //*Buttons*//
 
 .checkInOut {
@@ -143,8 +139,6 @@ p {
     color :map-get($colors,primary);
 }
 
-
-
 .box {
     width:200px;
     border:1px solid #BBB;
@@ -153,7 +147,6 @@ p {
  .ribbon {
     position: absolute;
     right: 0px; 
-    top: 2px;
     z-index: 1;
     overflow: hidden;
     width: 75px; height: 75px; 
