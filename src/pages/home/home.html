@@ -23,8 +23,9 @@
     <button [disabled]="!locationTracker.paJobb" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
 
-<div style="background-color:lightblue">
-  <div padding>
+
+<!-- Segment buttons-->
+  <div style="background-color: #f2f2f2">
   <ion-segment [(ngModel)]="planner">
     <ion-segment-button value="kommende">
       Kommende
@@ -34,6 +35,7 @@
     </ion-segment-button>
   </ion-segment>
 </div>
+
 
 <div class="futureRecords" [ngSwitch]="planner">
   <div class="rec" *ngFor="let x of keys | slice:1, let i=index">
@@ -50,7 +52,6 @@
       </div> 
     </div>
     </div>
-  </div>
   </div>
 </div>
 
