@@ -17,7 +17,9 @@
 <div class="info">
 
 <!-- Next record, stamping -->
-<div class="record" *ngFor="let x of keys | slice:0:1, let i=index">
+<ion-slides>
+  <ion-slide>
+  <div class="record" *ngFor="let x of keys | slice:0:1, let i=index">
     <div class="header">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
       <h1>{{ fromTimestampToTextIdagImorgen(test[x]['Startdato'],test[x]['Start']) }} </h1>
@@ -30,6 +32,19 @@
     </div>
     <button [disabled]="(!locationTracker.paJobb || !correctTime(test[x]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
+  </ion-slide>
+  <ion-slide>
+  <div class="record">
+    <div class="header">
+      <h1>Ekstraregistrering</h1>
+      <h3>Uten dato/GPS</h3>
+    </div>
+    <div class="infoField">
+    </div>
+    <button ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+  </div>
+  </ion-slide>
+</ion-slides>
 
 
 <!-- Segment buttons-->
@@ -49,9 +64,9 @@
 
 <!-- Future records -->
 <ion-list style="background-color: #f2f2f2">
-  <div>
+  <div [ngSwitch]="planner" >
     <ion-item-sliding *ngFor="let x of keys | slice:1, let i=index">
-      <ion-item>
+      <ion-item *ngSwitchCase="'kommende'">
           <div *ngIf="checkIfNew([test[x]['Added']])" class="ribbon">
               <span>Ny vakt</span>
           </div>
@@ -113,11 +128,14 @@
     </ion-item-sliding>
   </ion-list>
 
-  -->
+-->  
 
   <!-- ACTIVATE IF YOU MANUALLY WANT TO START THE TRACKING. REMEBER TO CHANGE FROM NGONINIT() TO START() IN HOME.ts -->
   
     <button ion-button full primary (click)="start()">Start Tracking</button>
+
+
+
 
 
 </ion-content>
