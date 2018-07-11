@@ -40,14 +40,18 @@ p {
 }
 
 .loadingBar {
-    height:10px; 
-    background-color:#a00b0b;
-    margin-top: -10px;
+    height: 7px;
+    background-color: #a00b0b;
     display: inline-table;
+    margin-bottom: 4px;
 }
 
 .loadingBar:nth-child(odd){
     background-color: #7CFC00 !important;
+}
+
+.loadingBar:nth-last-child(2){
+    margin-right:-3px;
 }
 
 //*Records*//
@@ -101,7 +105,57 @@ p {
     padding-bottom:2.5px;
     position:relative;
     color:white;
+}
 
+.label-md {
+    margin: 0px;
+}
+
+.list-md {
+    padding: 5%;
+    background-color: #f2f2f2
+}
+
+.list-md ion-item-sliding {
+    background-color: rgba(0, 0, 0, 0) !important
+}
+
+ion-item-sliding .item {
+    padding-left: 0px;
+    padding-bottom:5px;
+    background-color: rgba(0, 0, 0, 0) !important;
+
+}
+
+ion-item-sliding.active-slide.active-options-left ion-item-options[side=left], ion-item-sliding.active-slide.active-options-right ion-item-options:not([side=left]) {
+    padding-bottom: 4px;
+}
+
+ion-item-options .button:last-child {
+    border-radius: 0px 5px 5px 0px !important;
+}
+
+.item-md.item-block .item-inner {
+    padding-right: 0px;
+}
+
+.item-md.item-block .item-inner {
+    padding-right: 0px;
+}
+.list-ios {
+    padding:4%;
+}
+
+.item-ios.item-block .item-inner {
+    padding-right: 0px; 
+}
+
+.label-ios {
+    margin: 0px;
+}
+
+.list-ios ion-item-sliding {
+    background-color:#f2f2f2;
 }
 
 .futureDate {
@@ -110,15 +164,15 @@ p {
     border-radius: 5px 0px 0px 5px;
     padding:10px;
     display:table-cell;
-    width: 90px;
+    min-width: 65px;
 }
 
 .futureInfo {
     color:black !important;
     display:table-cell;
     background-color:rgb(221, 221, 221);
-    border-radius: 0px 5px 5px 0px;
     width: 100%;
+    border-radius: 0px 5px 5px 0;
 }
 
 //*Buttons*//
@@ -177,17 +231,10 @@ p {
     border-bottom: 0.5px solid !important;
 }
 
-.segment-ios .segment-button:first-of-type {
-    border-radius: 0px;
+.segment-ios .segment-button {
+    border-radius: 0px !important;
     border: 0px;
     border-bottom: 0.5px solid #dddddd;
     color:#dddddd;
 }
 
-.segment-ios .segment-button:last-of-type {
-    border-radius: 0px;
-    border: 0px;
-    border-bottom: 0.5px solid #dddddd;
-    color: #dddddd;
-
-}

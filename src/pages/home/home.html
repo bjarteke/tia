@@ -1,9 +1,14 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      Min arbeidsplan
-    </ion-title>
-  </ion-navbar>
+  <ion-toolbar color="primary">
+    <ion-title>Min arbeidsplan</ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only>
+        <ion-icon name="settings"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-toolbar>
 </ion-header>
  
 <ion-content>
@@ -11,6 +16,7 @@
 
 <div class="info">
 
+<!-- Next record, stamping -->
 <div class="record" *ngFor="let x of keys | slice:0:1, let i=index">
     <div class="header">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
@@ -18,9 +24,11 @@
       <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
     </div>
     <div class="infoField">
+      <div ng-if="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px"></div>
       <div *ngFor="let x of checkInOutTimesMinutes" class="loadingBar" [ngStyle]="{'width' : x}"></div>
+      <div class="loadingBar" [ngStyle] = "{'width' : currentWidth}"></div>
     </div>
-    <button [disabled]="!locationTracker.paJobb" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+    <button [disabled]="(!locationTracker.paJobb || !correctTime(test[x]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
 
 
@@ -30,77 +38,86 @@
     <ion-segment-button value="kommende">
       Kommende
     </ion-segment-button>
+    <ion-segment-button value="ledig">
+      Ledig
+    </ion-segment-button>
     <ion-segment-button value="fullfort">
       Fullført
     </ion-segment-button>
   </ion-segment>
 </div>
 
+<!-- Future records -->
+<ion-list style="background-color: #f2f2f2">
+  <div>
+    <ion-item-sliding *ngFor="let x of keys | slice:1, let i=index">
+      <ion-item>
+          <div *ngIf="checkIfNew([test[x]['Added']])" class="ribbon">
+              <span>Ny vakt</span>
+          </div>
+          <div class="futureDate">
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{test[x]["Startdato"] | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{test[x]["Startdato"] | slice:3:7}}</span> 
+          </div>
+          <div class="futureInfo">
+            <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
+          </div> 
 
-<div class="futureRecords" [ngSwitch]="planner">
-  <div class="rec" *ngFor="let x of keys | slice:1, let i=index">
-    <div *ngSwitchCase="'kommende'">
-    <div *ngIf="checkIfNew([test[x]['Added']])" class="ribbon">
-        <span>Ny vakt</span>
-      </div>
-      <div class="futureDate">
-        <span style="font-size: 25px; font-weight: 900">{{test[x]["Startdato"] | slice:0:2}}</span><br>
-        <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;">{{test[x]["Startdato"] | slice:3:7}}</span> 
-      </div>
-      <div class="futureInfo">
-        <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
-      </div> 
+      </ion-item>
+
+      <ion-item-options>
+        <button ion-button color="secondary">
+          <ion-icon name="git-compare"></ion-icon>
+          Bytt
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
     </div>
-    </div>
-  </div>
+  </ion-list>
+
+
 </div>
 
 
 
 <br><br><br>
 
+
+
 <!--
 
   <h3>Current Latitude: {{locationTracker.lat}}</h3>
   <h3>Current Longitude: {{locationTracker.lng}}</h3>
-  <h3>På jobb? {{locationTracker.paJobb}}</h3> -->
+  <h3>På jobb? {{locationTracker.paJobb}}</h3> 
+  
+  <ion-list>
+    <ion-item-sliding class="futureRecords" [ngSwitch]="planner">
+      <ion-item class="rec" *ngFor="let x of keys | slice:1, let i=index">
+        <div *ngSwitchCase="'kommende'">
+          <div *ngIf="checkIfNew([test[x]['Added']])" class="ribbon">
+              <span>Ny vakt</span>
+          </div>
+          <div class="futureDate">
+            <span style="font-size: 25px; font-weight: 900">{{test[x]["Startdato"] | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;">{{test[x]["Startdato"] | slice:3:7}}</span> 
+          </div>
+          <div class="futureInfo">
+            <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
+          </div> 
+        </div>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button >Favorite</button>
+        <button ion-button color="danger">Share</button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
 
-  <button ion-button full primary (click)="start()">Start Tracking</button>
+  -->
+
+  <!-- ACTIVATE IF YOU MANUALLY WANT TO START THE TRACKING. REMEBER TO CHANGE FROM NGONINIT() TO START() IN HOME.ts -->
+  
+    <button ion-button full primary (click)="start()">Start Tracking</button>
+
+
 </ion-content>
-
-
-
-
-
-<!--
-  <div class="futureRecords">
-    <h5>Kommende vakter:</h5>
-    <div class="rec">
-      <div class="futureDate">
-        <span style="font-size: 25px; font-weight: 900">16</span><br>
-        <span style="font-size: 18px; font-weight: 100">juli</span> 
-      </div>
-      <div class="futureInfo">
-        <h3>08:00 - 16:00</h3>
-      </div> 
-    </div>
-    <div class="rec">
-      <div class="futureDate">
-        <span style="font-size: 25px; font-weight: 900">18</span><br>
-        <span style="font-size: 18px; font-weight: 100">juli</span> 
-      </div>
-      <div class="futureInfo">
-        <h3>08:00 - 16:00</h3>
-      </div> 
-    </div>
-    <div class="rec">
-        <div class="ribbon"><span>Ny vakt</span></div>
-      <div class="futureDate">
-        <span style="font-size: 25px; font-weight: 900">21</span><br>
-        <span style="font-size: 18px; font-weight: 100">juli</span> 
-      </div>
-      <div class="futureInfo">
-        <h3>08:00 - 16:00</h3>
-      </div> 
-    </div>
-  </div> -->

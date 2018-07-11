@@ -82,11 +82,12 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
   insidePolygonCheck(lat : number, lng : number) {
     var pt = turf.point([lat, lng]);
     var poly = turf.polygon([[
-       [59.92145,10.676517],
-       [59.921697,10.679259],
-        [59.92074,10.679605],
-        [59.920557,10.676777],
-      [59.92145,10.676517]
+       [58.76682,5.854009],
+       [58.771804,5.857099],
+        [58.771448,5.86963
+],
+        [58.76188,5.869459],
+      [58.76682,5.854009]
       ]]);
       console.log("ER VI PÅ JOBB?????")
       console.log(booleanPointInPolygon(pt,poly));
