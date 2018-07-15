@@ -37,13 +37,14 @@ p {
 .infoField {
     height: 5px;
     margin-top: -13px;
+    width:100%;
 }
 
 .loadingBar {
     height: 7px;
     background-color: #a00b0b;
-    display: inline-table;
-    margin-bottom: 4px;
+    margin-top: 3px;
+    float:left;
 }
 
 .loadingBar:nth-child(odd){
@@ -52,6 +53,11 @@ p {
 
 .loadingBar:nth-last-child(2){
     margin-right:-3px;
+}
+
+// *Stemple inn/ut button* //
+.button-inner {
+    color:white;
 }
 
 //*Records*//
@@ -160,7 +166,7 @@ ion-item-options .button:last-child {
 
 .futureDate {
     text-align: center;
-    background-color: #3a3a3a;
+    background-color: map-get($colors,dark);
     border-radius: 5px 0px 0px 5px;
     padding:10px;
     display:table-cell;

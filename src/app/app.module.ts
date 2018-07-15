@@ -51,7 +51,7 @@ import { HttpClientModule } from '@angular/common/http';
     Geolocation,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    JsonProvider
+    JsonProvider,
   ]
 })
 export class AppModule {}

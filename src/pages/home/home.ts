@@ -9,11 +9,11 @@ import turf from 'turf';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs/Rx';
 
 
 //testing -->
 import { ChangeDetectorRef } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
 
 
 @Component({
@@ -31,11 +31,6 @@ export class HomePage {
 
   public sluttid;
 
-
-  //Testing intervalCountering box
-  public seconds : number = 28500;
-
-
   //Variables used for retrieving data from JSON file
   public plan:Array<any>=[];
   public test : any;
@@ -44,27 +39,29 @@ export class HomePage {
   //Defining the default value of segment
   public planner : string = "kommende";
 
-  public checkInOutTimes : any[] = []; //The first value is always the initial checkInTime, and the last is the final checkOutTime.
+  //The first value is always the initial checkInTime, and the last is the final checkOutTime.
+  public checkInOutTimes : any[] = []; 
 
   public intervalTimes;
   public intervalTimesMinutes;
 
   //Used to calculate the loadingBar.
-  public checkInOutTimesMinutes : string[] = []; 
-  public currentWidth : string = "0%";
-  public totalWidthSoFar : number = 0;
-  public initialCheckIn : boolean = false;
-  public latePercentage;
+  public segmentWidth : string[] = []; //Width of all segments, except the last
+  private currentWidth : string = "0%"; //Width of the last segment
+  private totalWidthSoFar : number = 0; //The sum of all entries in the segmentWidth array
+  private initialCheckIn : boolean = false; //Indicate whether the employee has made an initial check in
+  public latePercentage : string ="0%"; //How many percent of the total work day was the employee late. 
+  private lateCheckIn : boolean = false; //Whether or not the employee checked in late
+  private seconds; //How many seconds the work day lasts. 
+  private stop : boolean = false;
+
 
   public finishedBreak : boolean = false;
-  public lateCheckIn : boolean = false;
 
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new" 
-  //private linkToArbeidsplan = 'https://api.myjson.com/bins/bfc1i'; 
   //private linkToArbeidsplan = '../www/assets/data/arbeidsplan.json';
   private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
-
   private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
 
   //CONSTRCUCTOR
@@ -78,8 +75,9 @@ export class HomePage {
  
   start() {
     this.locationTracker.startTracking();      //Start tracking location
-    Observable.interval(2000).subscribe(
+    Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
+    this.seconds = ((new Date (this.test["ID1"]["Slutt"])).getTime()/1000 - (new Date (this.test["ID1"]["Start"])).getTime()/1000) //Number of seconds
   }
 
   continueslyChecked() {
@@ -88,28 +86,29 @@ export class HomePage {
 
     //Updating the loadingBar
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
+      //If too late, and not checked in.
       this.lateCheckIn = true;
       this.updateLoadingBarLate();
     }
-    else if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == true){
+    else if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == true && this.stop == false){
+      //If already checked in.
       this.updateLoadingBar();
     }
     else {
-
+      //If not not too late, and not checked in
     }
+
 
     this.checkIfBreak(this.test["ID1"]["Starttid"], this.test["ID1"]["Sluttid"]);
 
+
   }
 
-  
-
-  //Changing the text of the "Stemple inn/ut" box, and changing the color of the pin.
   checkInOut() {
-
-    //Updating the LoadingBar
-    if(this.lateCheckIn == true && this.checkInOutTimesMinutes.length == 0){
-      this.checkInOutTimesMinutes.push(this.currentWidth);
+    //Updating the LoadingBar with a red color corresponding to late check in time.
+    if(this.lateCheckIn == true && this.segmentWidth.length == 0 && this.stop == false){
+      this.segmentWidth.push(this.currentWidth);
+      this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
       this.latePercentage = this.currentWidth;
       this.currentWidth="0%";
     }
@@ -117,12 +116,13 @@ export class HomePage {
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
     this.checkInOutTimes.push(new Date());   //register the checkInTime
 
-    if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100){
-      this.createPercentForLoadingBar();
-      this.currentWidth = "0%"; //Making sure that the new loadingBar starts at 0%
-      this.totalWidthSoFar += parseFloat(this.checkInOutTimesMinutes[this.checkInOutTimesMinutes.length -1].slice(0,-1));
+    if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
+        this.segmentWidth.push(this.currentWidth);
+        this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
+        this.currentWidth = "0%"; //Making sure that the new loadingBar starts at 0%
     }
 
+    //Changing the text of the "Stemple inn/ut" box, changing the color of the pin.
     if (this.stempleButton == "Stemple inn"){
       this.stempleButton = "Stemple ut";
       this.checkInOutVar = "checkInOut2";
@@ -170,19 +170,24 @@ export class HomePage {
     }
   }
 
- 
-
-
 
   //LOADING BAR
   updateLoadingBar() {
-    if(this.lateCheckIn == true && this.checkInOutTimesMinutes.length == 0) {
-      this.checkInOutTimesMinutes.push(this.currentWidth);
+    //Adding the first segment if employee has checked in late
+    if(this.lateCheckIn == true && this.segmentWidth.length == 0) {
+      this.segmentWidth.push(this.currentWidth);
     }
     var currentDate = new Date();
-    var width = 100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds);
-    if (width < 100) {
-      this.currentWidth = Math.min(100 - this.totalWidthSoFar, width)  +"%";
+    var startDate = new Date(this.test["ID1"]["Start"]);
+
+    //Setting the width of the current segment
+    this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";
+    
+    //Stopping loading bar when it has been filled.
+    if (this.currentWidth == 100-this.totalWidthSoFar + "%" && this.stop == false){
+      this.segmentWidth.push(this.currentWidth);
+      this.stop = true; //Making sure that no additional segments are added to the loading bar.
+      this.currentWidth = "0%";
     }
   }
 
@@ -198,20 +203,6 @@ export class HomePage {
     else {
       this.currentWidth = "100%";
     }
-  }
-
-  createPercentForLoadingBar() {
-    this.checkInOutTimesMinutes = [];
-    var startIndex = 0;
-
-    if(this.lateCheckIn){
-      this.checkInOutTimesMinutes.push(this.latePercentage);
-    }
-
-    for (var x = 0; x < this.checkInOutTimes.length -1 ; x++ ) {
-      this.checkInOutTimesMinutes.push(100*(Math.abs((this.checkInOutTimes[x+1] - this.checkInOutTimes[x])/1000)/this.seconds) +"%");
-    }
-
   }
 
   checkIfBreak(startTime : any, endTime : any) {

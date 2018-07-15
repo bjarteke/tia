@@ -16,7 +16,7 @@
 
 <div class="info">
 
-<!-- Next record, stamping -->
+<!-- Next record, checking in/out -->
 <ion-slides>
   <ion-slide>
   <div class="record" *ngFor="let x of keys | slice:0:1, let i=index">
@@ -27,7 +27,7 @@
     </div>
     <div class="infoField">
       <div ng-if="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px"></div>
-      <div *ngFor="let x of checkInOutTimesMinutes" class="loadingBar" [ngStyle]="{'width' : x}"></div>
+      <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{'width' : x}"></div>
       <div class="loadingBar" [ngStyle] = "{'width' : currentWidth}"></div>
     </div>
     <button [disabled]="(!locationTracker.paJobb || !correctTime(test[x]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
@@ -89,8 +89,6 @@
     </ion-item-sliding>
     </div>
   </ion-list>
-
-
 </div>
 
 
@@ -134,7 +132,7 @@
   
     <button ion-button full primary (click)="start()">Start Tracking</button>
 
-
+    <h3>Current Time: {{locationTracker.lastTimestamp}}</h3>
 
 
 

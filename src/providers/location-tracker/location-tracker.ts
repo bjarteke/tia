@@ -13,6 +13,7 @@ export class LocationTracker {
   public lat: number = 0;
   public lng: number = 0;
   public paJobb : boolean = false;
+  public lastTimestamp : any;
  
   constructor(public zone: NgZone, public backgroundGeolocation: BackgroundGeolocation, private geolocation : Geolocation) {
  
@@ -20,7 +21,6 @@ export class LocationTracker {
  
   startTracking() {
     // Background Tracking
- 
   let config = {
     desiredAccuracy: 0,
     stationaryRadius: 20,
@@ -48,10 +48,8 @@ export class LocationTracker {
  
   // Turn ON the background-geolocation system.
   this.backgroundGeolocation.start();
- 
- 
+  
   // Foreground Tracking
- 
 let options = {
   frequency: 3000,
   enableHighAccuracy: true
@@ -66,6 +64,7 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
     this.lat = position.coords.latitude;
     this.lng = position.coords.longitude;
     this.insidePolygonCheck(this.lat, this.lng);
+    this.lastTimestamp = position.timestamp;
   });
  
 });
