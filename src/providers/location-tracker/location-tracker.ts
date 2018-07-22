@@ -37,6 +37,7 @@ export class LocationTracker {
     this.zone.run(() => {
       this.lat = location.latitude;
       this.lng = location.longitude;
+      this.lastTimestamp = location.time;
       this.insidePolygonCheck(this.lat, this.lng);
     });
  

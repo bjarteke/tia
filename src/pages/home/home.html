@@ -1,14 +1,17 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Min arbeidsplan</ion-title>
+
+  <ion-navbar>
+    <ion-title>
+      Min arbeidsplan
+    </ion-title>
 
     <ion-buttons end>
       <button ion-button icon-only>
         <ion-icon name="settings"></ion-icon>
       </button>
     </ion-buttons>
+  </ion-navbar>
 
-  </ion-toolbar>
 </ion-header>
  
 <ion-content>
@@ -20,7 +23,7 @@
 <ion-slides>
   <ion-slide>
   <div class="record" *ngFor="let x of keys | slice:0:1, let i=index">
-    <div class="header">
+    <div class="topBox">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
       <h1>{{ fromTimestampToTextIdagImorgen(test[x]['Startdato'],test[x]['Start']) }} </h1>
       <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
@@ -35,7 +38,7 @@
   </ion-slide>
   <ion-slide>
   <div class="record">
-    <div class="header">
+    <div class="topBox">
       <h1>Ekstraregistrering</h1>
       <h3>Uten dato/GPS</h3>
     </div>
@@ -66,7 +69,7 @@
 <ion-list style="background-color: #f2f2f2">
   <div [ngSwitch]="planner" >
     <ion-item-sliding *ngFor="let x of keys | slice:1, let i=index">
-      <ion-item *ngSwitchCase="'kommende'">
+      <ion-item *ngSwitchCase="'kommende'" (click)="itemSelected(x)">
           <div *ngIf="checkIfNew([test[x]['Added']])" class="ribbon">
               <span>Ny vakt</span>
           </div>

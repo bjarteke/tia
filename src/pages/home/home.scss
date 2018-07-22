@@ -75,7 +75,7 @@ p {
     border-radius: 5px;
 }
 
-.header {
+.topBox {
     background: url("../assets/imgs/starbucks.JPG") ;
     background-color: rgba(0, 0, 0, 0.5);
     background-position: center;
@@ -84,13 +84,13 @@ p {
     border-radius: 5px 5px 0px 0px;
 }
 
-.header h3 {
+.topBox h3 {
     color: #ffffff;
     text-align: center;
     text-shadow: 2px 2px 4px #000000;
 }
 
-.header h1 {
+.topBox h1 {
     color: #ffffff;
     text-align: center;
     text-shadow: 2px 2px 4px #000000;
@@ -181,6 +181,10 @@ ion-item-options .button:last-child {
     border-radius: 0px 5px 5px 0;
 }
 
+.futureInfo h3 {
+    display: inline;
+}
+
 //*Buttons*//
 
 .checkInOut {
@@ -199,6 +203,15 @@ ion-item-options .button:last-child {
     float: right;
     padding: 4px;
     color :map-get($colors,primary);
+}
+
+.informationIcon {
+    float: right;
+    padding: 4px;
+    color: #214f99;
+    display:inline-table;
+    font-size:2.5em;
+    padding-right: 10px;
 }
 
 .box {
