@@ -22,18 +22,18 @@
 <!-- Next record, checking in/out -->
 <ion-slides>
   <ion-slide>
-  <div class="record" *ngFor="let x of jsonProv.keys | slice:0:1, let i=index">
+  <div class="record" *ngFor="let x of jsonProv.planDataUpcoming | slice:0:1, let i=index">
     <div class="topBox">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
-      <h1>{{ fromTimestampToTextIdagImorgen(jsonProv.test[x]['Startdato'],jsonProv.test[x]['Start']) }} </h1>
-      <h3>{{jsonProv.test[x]["Starttid"]}} - {{jsonProv.test[x]["Sluttid"]}}</h3>
+      <h1>{{ fromTimestampToTextIdagImorgen(jsonProv.planDataUpcoming[i]['Startdato'],jsonProv.planDataUpcoming[i]['Start']) }} </h1>
+      <h3>{{jsonProv.planDataUpcoming[i]["Starttid"]}} - {{jsonProv.planDataUpcoming[i]["Sluttid"]}}</h3>
     </div>
     <div class="infoField">
       <div ng-if="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px"></div>
       <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{'width' : x}"></div>
       <div class="loadingBar" [ngStyle] = "{'width' : currentWidth}"></div>
     </div>
-    <button [disabled]="(!locationTracker.paJobb || !correctTime(test[x]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+    <button [disabled]="(!locationTracker.paJobb || !correctTime(jsonProv.planDataUpcoming[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
   </ion-slide>
   <ion-slide>
@@ -70,18 +70,22 @@
   <div [ngSwitch]="planner" >
 
     <!-- Upcoming -->
-    <ion-item-sliding *ngFor="let x of jsonProv.keys | slice:1, let i=index">
+    <ion-item-sliding *ngFor="let x of jsonProv.planDataUpcoming | slice:1:4, let i=index">
       <ion-item *ngSwitchCase="'kommende'" (click)="itemSelected(x)">
-          <div *ngIf="checkIfNew([jsonProv.test[x]['Added']])" class="ribbon">
+            <!-- Ribbon 
+          <div *ngIf="checkIfNew([jsonProv.planDataUpcoming[i]['Added']])" class="ribbon">
               <span>Ny vakt</span>
           </div>
+          -->
+
+
           <div class="futureDate">
-            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{jsonProv.test[x]["Startdato"] | slice:0:2}}</span><br>
-            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{jsonProv.test[x]["Startdato"] | slice:3:7}}</span> 
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{jsonProv.planDataUpcoming[i]["Startdato"] | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{jsonProv.planDataUpcoming[i]["Startdato"] | slice:3:7}}</span> 
           </div>
           <div class="futureInfo">
-            <h3>{{jsonProv.test[x]["Starttid"]}} - {{jsonProv.test[x]["Sluttid"]}}</h3>
-          </div>
+            <h3>{{jsonProv.planDataUpcoming[i]["Starttid"]}} - {{jsonProv.planDataUpcoming[i]["Sluttid"]}}</h3>
+          </div> 
       </ion-item>
       <ion-item-options>
         <button ion-button color="secondary">
@@ -90,16 +94,16 @@
         </button>
       </ion-item-options>
     </ion-item-sliding>
-    
+
     <!-- Previous -->
-    <ion-item-sliding *ngFor="let x of jsonProv.keysPrevious | slice:1, let i=index">
+    <ion-item-sliding *ngFor="let x of jsonProv.planDataPrevious | slice:0:3, let i=index">
       <ion-item *ngSwitchCase="'fullfort'" (click)="itemSelected(x)">
           <div class="futureDate">
-            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{jsonProv.planDataPrevious[x]["Startdato"] | slice:0:2}}</span><br>
-            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{jsonProv.planDataPrevious[x]["Startdato"] | slice:3:7}}</span> 
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{jsonProv.planDataPrevious[i]["Startdato"] | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{jsonProv.planDataPrevious[i]["Startdato"] | slice:3:7}}</span> 
           </div>
           <div class="futureInfo">
-            <h3>{{jsonProv.planDataPrevious[x]["Starttid"]}} - {{jsonProv.planDataPrevious[x]["Sluttid"]}}</h3>
+            <h3>{{jsonProv.planDataPrevious[i]["Starttid"]}} - {{jsonProv.planDataPrevious[i]["Sluttid"]}}</h3>
           </div> 
       </ion-item>
       <ion-item-options>

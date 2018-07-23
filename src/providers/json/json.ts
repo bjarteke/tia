@@ -19,12 +19,10 @@ export class JsonProvider {
   /* Upcoming */
   public planUpcoming: Array<any>=[];
   public planDataUpcoming = [];
-  public keysUpcoming = [];
 
   /* Previous */
   public planPrevious: Array<any>=[];
   public planDataPrevious = [];
-  public keysPrevious = [];
 
   constructor(public http: HttpClient) {
     this.http.get('../assets/data/arbeidsplan.json').subscribe(data => {
@@ -40,11 +38,9 @@ export class JsonProvider {
     for (var x in this.test) {
       var date = new Date(this.test[x]["Start"]);
       if (date.getTime() - currentDate.getTime() > 0) {
-        this.keysUpcoming.push(x);
-        this.planDataUpcoming.push(this.test[x])
+        this.planDataUpcoming.push(this.plan[0][x])
       }
       else {
-        this.keysPrevious.push(x);
         this.planDataPrevious.push(this.test[x]);
       }
     }
