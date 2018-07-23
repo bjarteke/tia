@@ -1,39 +1,35 @@
 <ion-header>
-
   <ion-navbar>
     <ion-title>
       Min arbeidsplan
     </ion-title>
-
     <ion-buttons end>
       <button ion-button icon-only>
         <ion-icon name="settings"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
-
 </ion-header>
  
+
 <ion-content>
-
-
 <div class="info">
 
 <!-- Next record, checking in/out -->
 <ion-slides>
   <ion-slide>
-  <div class="record" *ngFor="let x of jsonProv.planDataUpcoming | slice:0:1, let i=index">
-    <div class="topBox">
+  <div class="record" *ngFor="let x of jsonProv.planNext, let i=index" >
+    <div class="topBox" (click)="itemSelected(jsonProv.planNext[0])">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
-      <h1>{{ fromTimestampToTextIdagImorgen(jsonProv.planDataUpcoming[i]['Startdato'],jsonProv.planDataUpcoming[i]['Start']) }} </h1>
-      <h3>{{jsonProv.planDataUpcoming[i]["Starttid"]}} - {{jsonProv.planDataUpcoming[i]["Sluttid"]}}</h3>
+      <h1>{{ fromTimestampToTextIdagImorgen(jsonProv.planNext[i]['Startdato'],jsonProv.planNext[i]['Start']) }} </h1>
+      <h3>{{jsonProv.planNext[i]["Starttid"]}} - {{jsonProv.planNext[i]["Sluttid"]}}</h3>
     </div>
     <div class="infoField">
       <div ng-if="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px"></div>
       <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{'width' : x}"></div>
       <div class="loadingBar" [ngStyle] = "{'width' : currentWidth}"></div>
     </div>
-    <button [disabled]="(!locationTracker.paJobb || !correctTime(jsonProv.planDataUpcoming[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+    <button [disabled]="(!locationTracker.paJobb || !correctTime(jsonProv.planNext[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
   </ion-slide>
   <ion-slide>
@@ -123,45 +119,16 @@
 
 <br><br><br>
 
-
-
 <!--
 
   <h3>Current Latitude: {{locationTracker.lat}}</h3>
   <h3>Current Longitude: {{locationTracker.lng}}</h3>
   <h3>På jobb? {{locationTracker.paJobb}}</h3> 
-  
-  <ion-list>
-    <ion-item-sliding class="futureRecords" [ngSwitch]="planner">
-      <ion-item class="rec" *ngFor="let x of keys | slice:1, let i=index">
-        <div *ngSwitchCase="'kommende'">
-          <div *ngIf="checkIfNew([test[x]['Added']])" class="ribbon">
-              <span>Ny vakt</span>
-          </div>
-          <div class="futureDate">
-            <span style="font-size: 25px; font-weight: 900">{{test[x]["Startdato"] | slice:0:2}}</span><br>
-            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;">{{test[x]["Startdato"] | slice:3:7}}</span> 
-          </div>
-          <div class="futureInfo">
-            <h3>{{test[x]["Starttid"]}} - {{test[x]["Sluttid"]}}</h3>
-          </div> 
-        </div>
-      </ion-item>
-      <ion-item-options side="right">
-        <button ion-button >Favorite</button>
-        <button ion-button color="danger">Share</button>
-      </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
 
 -->  
 
   <!-- ACTIVATE IF YOU MANUALLY WANT TO START THE TRACKING. REMEBER TO CHANGE FROM NGONINIT() TO START() IN HOME.ts -->
   
     <button ion-button full primary (click)="start()">Start Tracking</button>
-
-    <h3>Current Time: {{locationTracker.lastTimestamp}}</h3>
-
-
 
 </ion-content>

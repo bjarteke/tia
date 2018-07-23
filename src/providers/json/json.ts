@@ -24,8 +24,10 @@ export class JsonProvider {
   public planPrevious: Array<any>=[];
   public planDataPrevious = [];
 
+  public planNext = [];
+
   constructor(public http: HttpClient) {
-    this.http.get('../www/assets/data/arbeidsplan.json').subscribe(data => {
+    this.http.get('../assets/data/arbeidsplan.json').subscribe(data => {
     this.plan.push(data);
     this.test = this.plan[0];
     this.keys = Object.keys(this.plan[0]); 
@@ -36,15 +38,22 @@ export class JsonProvider {
   updateArrays(){
     var currentDate = new Date();
     for (var x in this.test) {
-      var date = new Date(this.test[x]["Start"]);
-      if (date.getTime() - currentDate.getTime() > 0) {
-        this.planDataUpcoming.push(this.plan[0][x])
+      var dateStart = new Date(this.test[x]["Start"]);
+      var dateEnd = new Date(this.test[x]["Slutt"]);
+      if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
+        if (this.planNext.length == 0) {
+          this.planNext.push(this.plan[0][x]);
+        }
+        else {
+          this.planDataUpcoming.push(this.plan[0][x])
+        }
       }
       else {
         this.planDataPrevious.push(this.test[x]);
       }
     }
     this.planDataPrevious.reverse();
+    console.log(this.planNext);
   }
   
 

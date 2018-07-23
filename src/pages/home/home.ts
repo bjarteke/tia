@@ -56,8 +56,8 @@ export class HomePage {
 
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new" 
-  //private linkToArbeidsplan = '../www/assets/data/arbeidsplan.json';
-  private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
+  private linkToArbeidsplan = '../www/assets/data/arbeidsplan.json';
+  //private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
   private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
 
   public jsonProv = null;
