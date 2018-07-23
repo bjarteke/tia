@@ -14,12 +14,16 @@ export class ContactPage {
   
   constructor(public navCtrl: NavController, public navParams: NavParams) {
     this.item = navParams.get('item');
-    console.log(this.item);
     this.startTid = this.item.Starttid;
     this.sluttTid = this.item.Sluttid;
     this.startDato = this.item.Startdato;
     this.sluttDato = this.item.Sluttdato;
-    console.log(this.startTid);
+  }
+
+  showEditButton(item){
+    var currentDate = new Date();
+    var endDate = new Date(item.Slutt);
+    return endDate.getTime() < currentDate.getTime();
   }
 
 }
