@@ -72,11 +72,9 @@
     <!-- Upcoming -->
     <ion-item-sliding *ngFor="let x of jsonProv.planDataUpcoming | slice:1:4, let i=index">
       <ion-item *ngSwitchCase="'kommende'" (click)="itemSelected(x)">
-            <!-- Ribbon 
           <div *ngIf="checkIfNew([jsonProv.planDataUpcoming[i]['Added']])" class="ribbon">
               <span>Ny vakt</span>
           </div>
-          -->
 
 
           <div class="futureDate">
