@@ -12,6 +12,7 @@ import 'rxjs/add/operator/map';
 export class JsonProvider {
 
   public weeknumbers = [];
+  public uniqueWeeknumbers = [];
 
   /* All data from JSON file */
   public plan:Array<any>=[];
@@ -21,6 +22,8 @@ export class JsonProvider {
   /* Upcoming */
   public planUpcoming: Array<any>=[];
   public planDataUpcoming = [];
+  public planDataUpcoming2 = [];
+
 
   /* Previous */
   public planPrevious: Array<any>=[];
@@ -29,7 +32,7 @@ export class JsonProvider {
   public planNext = [];
 
   constructor(public http: HttpClient) {
-    this.http.get('../assets/data/arbeidsplan.json').subscribe(data => {
+    this.http.get('../www/assets/data/arbeidsplan.json').subscribe(data => {
     this.plan.push(data);
     this.test = this.plan[0];
     this.keys = Object.keys(this.plan[0]); 
@@ -64,7 +67,32 @@ export class JsonProvider {
       }
     }
     this.planDataPrevious.reverse();
-    console.log(this.weeknumbers);
+            this.uniqueWeeknumbers.push(this.weeknumbers[0]);
+
+    var temp = [];
+    for (var i = 0; i<this.weeknumbers.length; i++){
+      if (this.weeknumbers[i] == this.weeknumbers[i+1]) {
+        temp.push(this.planDataUpcoming[i])
+      }
+      else {
+        temp.push(this.planDataUpcoming[i])
+        this.planDataUpcoming2.push(temp);
+        temp = [];
+      }
+      console.log(this.planDataUpcoming2);
+
+    }
+
+
+    for (var y = 1; y < this.weeknumbers.length; y++) {
+
+
+      if (this.weeknumbers[y]!=this.weeknumbers[y-1]){
+        this.uniqueWeeknumbers.push(this.weeknumbers[y]);
+      }
+    }
+
+
   }
 
   getWeekNumber(date) {
@@ -80,7 +108,6 @@ export class JsonProvider {
   }
 
   showWeekNumber(i) {
-    console.log(i);
     if (i==0) {
       return true;
     }

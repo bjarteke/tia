@@ -67,18 +67,21 @@
   <div [ngSwitch]="planner" >
 
     <!-- Upcoming -->
-    <ion-item-sliding *ngFor="let x of jsonProv.planDataUpcoming, let i=index">
+    <div *ngFor="let x of jsonProv.uniqueWeeknumbers, let j=index">
+    
+    <h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" >{{jsonProv.uniqueWeeknumbers[j]}}</h1>
+
+    <ion-item-sliding *ngFor="let x of jsonProv.planDataUpcoming2[j], let i=index">
       <ion-item *ngSwitchCase="'kommende'" (click)="itemSelected(x)" >
-        <h1 *ngIf="jsonProv.showWeekNumber(i) == true" style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" >{{jsonProv.weeknumbers[i]}}</h1>
           <div *ngIf="checkIfNew([jsonProv.planDataUpcoming[i]['Added']])" class="ribbon">
               <span>Ny vakt</span>
           </div>
           <div class="futureDate">
-            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{jsonProv.planDataUpcoming[i]["Startdato"] | slice:0:2}}</span><br>
-            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{jsonProv.planDataUpcoming[i]["Startdato"] | slice:3:7}}</span> 
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{jsonProv.planDataUpcoming2[j][i]["Startdato"] | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{jsonProv.planDataUpcoming2[j][i]["Startdato"] | slice:3:7}}</span> 
           </div>
           <div class="futureInfo">
-            <h3>{{jsonProv.planDataUpcoming[i]["Starttid"]}} - {{jsonProv.planDataUpcoming[i]["Sluttid"]}}</h3>
+            <h3>{{jsonProv.planDataUpcoming2[j][i]["Starttid"]}} - {{jsonProv.planDataUpcoming2[j][i]["Sluttid"]}}</h3>
           </div> 
       </ion-item>
       <ion-item-options>
@@ -88,6 +91,7 @@
         </button>
       </ion-item-options>
     </ion-item-sliding>
+    </div>
 
     <!-- Previous -->
     <ion-item-sliding *ngFor="let x of jsonProv.planDataPrevious | slice:0:3, let i=index">
