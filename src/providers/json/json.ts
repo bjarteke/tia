@@ -44,6 +44,7 @@ export class JsonProvider {
         this.planDataPrevious.push(this.test[x]);
       }
     }
+    this.planDataPrevious.reverse();
   }
   
 
