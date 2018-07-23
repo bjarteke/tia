@@ -65,22 +65,8 @@ export class HomePage {
   public jsonProv = null;
 
   //CONSTRUCTOR
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider, private localNotifications: LocalNotifications, private plt: Platform, public alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider) {
     this.jsonProv = jsonProvider;
-    this.plt.ready().then((rdy) => {
-      this.localNotifications.on('click').subscribe(notification => {
-        let json = JSON.parse(notification.data);
-        console.log(json)
-
-        let alert = this.alertCtrl.create({
-          title: notification.title,
-          subTitle: json.mydata
-        });
-        console.log(alert);
-
-
-      });
-    });
   }
  
   start() {
@@ -271,17 +257,7 @@ export class HomePage {
      });
   }
 
-  scheduleNotification() {
-
-    this.localNotifications.schedule({
-      id: 1,
-      title: "Hei du!",
-      text: "du va fin",
-      trigger: {at: new Date(new Date().getTime() + 5 * 1000)}
-
-    });
-
-  }
+  
 
   
 

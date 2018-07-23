@@ -21,6 +21,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { NotificationsProvider } from '../providers/notifications/notifications';
 
 
 @NgModule({
@@ -58,6 +59,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     LocalNotifications,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     JsonProvider,
+    NotificationsProvider,
   ]
 })
 export class AppModule {}
