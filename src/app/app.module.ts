@@ -20,6 +20,8 @@ import { JsonProvider } from '../providers/json/json';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 
+import { LocalNotifications } from '@ionic-native/local-notifications';
+
 
 @NgModule({
   declarations: [
@@ -53,6 +55,7 @@ import { HttpClientModule } from '@angular/common/http';
     BackgroundGeolocation,
     Geolocation,
     SplashScreen,
+    LocalNotifications,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     JsonProvider,
   ]

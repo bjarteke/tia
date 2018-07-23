@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, AlertController, Platform } from 'ionic-angular';
 import { LocationTracker } from '../../providers/location-tracker/location-tracker';
 import { JsonProvider } from '../../providers/json/json';
 
@@ -15,6 +15,8 @@ import { Observable } from 'rxjs/Rx';
 //testing -->
 import { ChangeDetectorRef } from '@angular/core';
 import { ContactPage } from '../contact/contact';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+import { getLocaleTimeFormat } from '@angular/common';
 
 
 @Component({
@@ -62,9 +64,23 @@ export class HomePage {
 
   public jsonProv = null;
 
-  //CONSTRCUCTOR
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider) {
+  //CONSTRUCTOR
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider, private localNotifications: LocalNotifications, private plt: Platform, public alertCtrl: AlertController) {
     this.jsonProv = jsonProvider;
+    this.plt.ready().then((rdy) => {
+      this.localNotifications.on('click').subscribe(notification => {
+        let json = JSON.parse(notification.data);
+        console.log(json)
+
+        let alert = this.alertCtrl.create({
+          title: notification.title,
+          subTitle: json.mydata
+        });
+        console.log(alert);
+
+
+      });
+    });
   }
  
   start() {
@@ -253,6 +269,18 @@ export class HomePage {
      this.navCtrl.push(ContactPage, {
        item: item
      });
+  }
+
+  scheduleNotification() {
+
+    this.localNotifications.schedule({
+      id: 1,
+      title: "Hei du!",
+      text: "du va fin",
+      trigger: {at: new Date(new Date().getTime() + 5 * 1000)}
+
+    });
+
   }
 
   
