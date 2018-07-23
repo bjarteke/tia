@@ -32,11 +32,6 @@ export class HomePage {
 
   public sluttid;
 
-  //Variables used for retrieving data from JSON file
-  public plan:Array<any>=[];
-  public test : any;
-  public keys;
-
   //Defining the default value of segment
   public planner : string = "kommende";
 
@@ -61,29 +56,27 @@ export class HomePage {
 
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new" 
-  private linkToArbeidsplan = '../www/assets/data/arbeidsplan.json';
-  //private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
+  //private linkToArbeidsplan = '../www/assets/data/arbeidsplan.json';
+  private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
   private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
 
+  public jsonProv = null;
+
   //CONSTRCUCTOR
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, private cdRef:ChangeDetectorRef) {
-    this.http.get(this.linkToArbeidsplan).subscribe(data => {
-    this.plan.push(data);
-    this.test = this.plan[0];
-    this.keys = Object.keys(this.plan[0]); 
-          });
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider) {
+    this.jsonProv = jsonProvider;
   }
  
   start() {
     this.locationTracker.startTracking();      //Start tracking location
     Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
-    this.seconds = ((new Date (this.test["ID1"]["Slutt"])).getTime()/1000 - (new Date (this.test["ID1"]["Start"])).getTime()/1000) //Number of seconds
+    this.seconds = ((new Date (this.jsonProv.test["ID1"]["Slutt"])).getTime()/1000 - (new Date (this.jsonProv.test["ID1"]["Start"])).getTime()/1000) //Number of seconds
   }
 
   continueslyChecked() {
     var currentDate = new Date();
-    var startDate = new Date(this.test["ID1"]["Start"]);
+    var startDate = new Date(this.jsonProv.test["ID1"]["Start"]);
 
     //Updating the loadingBar
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
@@ -100,7 +93,7 @@ export class HomePage {
     }
 
 
-    this.checkIfBreak(this.test["ID1"]["Starttid"], this.test["ID1"]["Sluttid"]);
+    this.checkIfBreak(this.jsonProv.test["ID1"]["Starttid"], this.jsonProv.test["ID1"]["Sluttid"]);
 
 
   }
@@ -171,7 +164,6 @@ export class HomePage {
     }
   }
 
-
   //LOADING BAR
   updateLoadingBar() {
     //Adding the first segment if employee has checked in late
@@ -179,7 +171,7 @@ export class HomePage {
       this.segmentWidth.push(this.currentWidth);
     }
     var currentDate = new Date();
-    var startDate = new Date(this.test["ID1"]["Start"]);
+    var startDate = new Date(this.jsonProv.test["ID1"]["Start"]);
 
     //Setting the width of the current segment
     this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";
@@ -194,7 +186,7 @@ export class HomePage {
 
   updateLoadingBarLate() {
     var currentDate = new Date();
-    var startDate = new Date(this.test["ID1"]["Start"]);
+    var startDate = new Date(this.jsonProv.test["ID1"]["Start"]);
     var width = 100*(Math.abs((+currentDate - +startDate)/1000)/this.seconds);
     if (width < 100) {
       this.currentWidth = Math.min(100 - this.totalWidthSoFar, width)  +"%";
