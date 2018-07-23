@@ -4,6 +4,7 @@ import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import 'rxjs/add/operator/filter';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import turf from 'turf'; 
+import { NotificationsProvider } from '../notifications/notifications';
 
 
 @Injectable()
@@ -13,9 +14,11 @@ export class LocationTracker {
   public lat: number = 0;
   public lng: number = 0;
   public paJobb : boolean = false;
+  public changed: boolean = false; 
+  public sentNotification: boolean = false;
   public lastTimestamp : any;
  
-  constructor(public zone: NgZone, public backgroundGeolocation: BackgroundGeolocation, private geolocation : Geolocation) {
+  constructor(public zone: NgZone, public backgroundGeolocation: BackgroundGeolocation, private geolocation : Geolocation, public notifications: NotificationsProvider) {
  
   }
  
@@ -39,6 +42,13 @@ export class LocationTracker {
       this.lng = location.longitude;
       this.lastTimestamp = location.time;
       this.insidePolygonCheck(this.lat, this.lng);
+      console.log('Her kommer logg! \n');
+      console.log(this.paJobb)
+      console.log(this.sentNotification)
+      if(this.paJobb && this.sentNotification == false){
+        this.notifications.scheduleNotification();
+        this.sentNotification = true;
+      }
     });
  
   }, (err) => {

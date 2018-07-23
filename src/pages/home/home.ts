@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, AlertController, Platform } from 'ionic-angular';
 import { LocationTracker } from '../../providers/location-tracker/location-tracker';
 import { JsonProvider } from '../../providers/json/json';
 
@@ -15,6 +15,8 @@ import { Observable } from 'rxjs/Rx';
 //testing -->
 import { ChangeDetectorRef } from '@angular/core';
 import { ContactPage } from '../contact/contact';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+import { getLocaleTimeFormat } from '@angular/common';
 
 
 @Component({
@@ -62,7 +64,7 @@ export class HomePage {
 
   public jsonProv = null;
 
-  //CONSTRCUCTOR
+  //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider) {
     this.jsonProv = jsonProvider;
   }
@@ -254,6 +256,10 @@ export class HomePage {
        item: item
      });
   }
+
+  
+
+  
 
 }
 
