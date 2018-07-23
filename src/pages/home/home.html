@@ -51,7 +51,8 @@
 
 
 <!-- Segment buttons-->
-  <div style="background-color: #f2f2f2">
+<div class="records">
+  <div style="background-color: rgb(242, 242, 242); border-radius: 5px 5px 0px 0px">
   <ion-segment [(ngModel)]="planner">
     <ion-segment-button value="kommende">
       Kommende
@@ -66,11 +67,11 @@
 </div>
 
 <!-- Future records -->
-<ion-list style="background-color: #f2f2f2">
+<ion-list style="background-color: rgb(242, 242, 242); border-radius: 0px 0px 5px 5px">
   <div [ngSwitch]="planner" >
 
     <!-- Upcoming -->
-    <ion-item-sliding *ngFor="let x of jsonProv.planDataUpcoming | slice:1:4, let i=index">
+    <ion-item-sliding *ngFor="let x of jsonProv.planDataUpcoming | slice:0:4, let i=index">
       <ion-item *ngSwitchCase="'kommende'" (click)="itemSelected(x)">
           <div *ngIf="checkIfNew([jsonProv.planDataUpcoming[i]['Added']])" class="ribbon">
               <span>Ny vakt</span>
@@ -112,9 +113,10 @@
       </ion-item-options>
     </ion-item-sliding>
 
-
     </div>
   </ion-list>
+      </div>
+
 </div>
 
 
