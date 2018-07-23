@@ -255,7 +255,5 @@ export class HomePage {
      });
   }
 
-  
-
 }
 

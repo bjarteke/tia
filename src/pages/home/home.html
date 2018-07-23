@@ -69,6 +69,7 @@
     <!-- Upcoming -->
     <ion-item-sliding *ngFor="let x of jsonProv.planDataUpcoming, let i=index">
       <ion-item *ngSwitchCase="'kommende'" (click)="itemSelected(x)" >
+        <h1 *ngIf="jsonProv.showWeekNumber(i) == true" style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" >{{jsonProv.weeknumbers[i]}}</h1>
           <div *ngIf="checkIfNew([jsonProv.planDataUpcoming[i]['Added']])" class="ribbon">
               <span>Ny vakt</span>
           </div>

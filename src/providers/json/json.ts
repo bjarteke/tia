@@ -11,6 +11,8 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class JsonProvider {
 
+  public weeknumbers = [];
+
   /* All data from JSON file */
   public plan:Array<any>=[];
   public test = [];
@@ -46,6 +48,15 @@ export class JsonProvider {
         }
         else {
           this.planDataUpcoming.push(this.plan[0][x])
+          if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)){
+            this.weeknumbers.push("Denne uken")
+          }
+          else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1){
+            this.weeknumbers.push("Neste uke")
+          }
+          else {
+            this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
+          }
         }
       }
       else {
@@ -53,7 +64,32 @@ export class JsonProvider {
       }
     }
     this.planDataPrevious.reverse();
-    console.log(this.planNext);
+    console.log(this.weeknumbers);
+  }
+
+  getWeekNumber(date) {
+   date.setHours(0, 0, 0, 0);
+  // Thursday in current week decides the year.
+  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+  // January 4 is always in week 1.
+  var week1 = new Date(date.getFullYear(), 0, 4);
+  // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+  return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+                        - 3 + (week1.getDay() + 6) % 7) / 7);
+  
+  }
+
+  showWeekNumber(i) {
+    console.log(i);
+    if (i==0) {
+      return true;
+    }
+    else if (this.weeknumbers[i] == this.weeknumbers[i-1]){
+      return false;
+    }
+    else {
+      return true;
+    }
   }
   
 
