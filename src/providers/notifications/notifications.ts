@@ -35,6 +35,9 @@ export class NotificationsProvider {
       { id: 'yes', title: 'Yes', needsAuth: false },
       { id: 'no',  title: 'No', needsAuth: false }
     ]);
+    console.log('Her kommer svaret:     ');
+    console.log(this.localNotifications.getIds());
+    console.log(this.localNotifications.hasActions('yes'));
     this.localNotifications.schedule({
       id: 1,
       title: "Velkommen på jobb kjære deg!",
