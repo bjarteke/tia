@@ -95,6 +95,9 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
       console.log(booleanPointInPolygon(pt,poly));
       this.paJobb = booleanPointInPolygon(pt,poly);
       this.evaluateSendNotification()
+      if(this.paJobb == false){
+        this.sentNotification == false;
+      }
   }
 
   evaluateSendNotification(){

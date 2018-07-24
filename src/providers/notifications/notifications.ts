@@ -31,12 +31,22 @@ export class NotificationsProvider {
 
 
   scheduleNotification() {
+    this.localNotifications.addActions('yes-no', [
+      { id: 'yes', title: 'Yes', needsAuth: false },
+      { id: 'no',  title: 'No', needsAuth: false }
+    ]);
     this.localNotifications.schedule({
       id: 1,
-      title: "Velkommen på jobb!",
+      title: "Velkommen på jobb kjære deg!",
       text: "Vil du sjekke inn?",
-      trigger: {at: new Date(new Date().getTime() + 5 * 1000)}
-
+      trigger: {at: new Date(new Date().getTime() + 1000)},
+      actions: 'yes-no'
+    });
+    this.localNotifications.on('yes').subscribe(notification => {
+      console.log('DET FUNKA!!!');
+    });
+    this.localNotifications.on('no').subscribe(notification => {
+      console.log('DET FUNKA HER OG!!!');
     });
   }
 
