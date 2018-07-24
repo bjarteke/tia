@@ -53,4 +53,28 @@ export class NotificationsProvider {
     });
   }
 
+  sendArrivalNotification() {
+    this.localNotifications.schedule({
+      id: 1,
+      title: "Velkommen på jobb!",
+      text: "Du stemples inn om 10 minutter. Ha en fin dag!"
+    });
+  }
+
+  sendLunchNotification() {
+    this.localNotifications.schedule({
+      id: 2,
+      title: "Tid for lunsj!",
+      text: "Nyt pausen, det fortjener du!"
+    });
+  }
+
+  sendLeavingNotification() {
+    this.localNotifications.schedule({
+      id: 3,
+      title: "Drar du?",
+      text: "Arbeidsdagen din ser ikke ut til å være helt over enda, sjekk appen."
+    });
+  }
+
 }

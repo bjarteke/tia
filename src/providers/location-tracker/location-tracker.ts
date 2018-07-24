@@ -105,7 +105,7 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
     console.log(this.paJobb)
     console.log(this.sentNotification)
     if(this.paJobb && this.sentNotification == false){
-      this.notifications.scheduleNotification();
+      this.notifications.sendArrivalNotification();
       this.sentNotification = true;
     }
 
