@@ -79,7 +79,6 @@ export class JsonProvider {
         this.planDataUpcoming2.push(temp);
         temp = [];
       }
-      console.log(this.planDataUpcoming2);
 
     }
 

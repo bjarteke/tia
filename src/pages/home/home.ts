@@ -18,6 +18,9 @@ import { ContactPage } from '../contact/contact';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { getLocaleTimeFormat } from '@angular/common';
 
+import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
+
+
 
 @Component({
   selector: 'page-home',
@@ -65,7 +68,7 @@ export class HomePage {
   public jsonProv = null;
 
   //CONSTRUCTOR
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider) {
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider, public firebaseService : FirebaseServiceProvider) {
     this.jsonProv = jsonProvider;
   }
  
@@ -111,6 +114,7 @@ export class HomePage {
 
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
     this.checkInOutTimes.push(new Date());   //register the checkInTime
+    this.firebaseService.addCheckInOutTime(new Date());
 
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
         this.segmentWidth.push(this.currentWidth);

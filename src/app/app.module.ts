@@ -23,6 +23,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { NotificationsProvider } from '../providers/notifications/notifications';
 
+import { FirebaseServiceProvider } from '../providers/firebase-service/firebase-service';
+import { HttpModule } from '@angular/http';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { AngularFireModule } from 'angularfire2';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyA9Us2wtMRKTnBpFD5qPqsxUpEFU0mDIMg",
+    authDomain: "tia-visma.firebaseapp.com",
+    databaseURL: "https://tia-visma.firebaseio.com",
+    projectId: "tia-visma",
+    storageBucket: "tia-visma.appspot.com",
+    messagingSenderId: "240840231790"
+  };
 
 @NgModule({
   declarations: [
@@ -35,7 +49,10 @@ import { NotificationsProvider } from '../providers/notifications/notifications'
   imports: [
     BrowserModule,
     HttpClientModule,
-
+    HttpModule,
+    AngularFirestoreModule.enablePersistence(),
+    AngularFireDatabaseModule, 
+    AngularFireModule.initializeApp(firebaseConfig),
     IonicModule.forRoot(MyApp, {
       backButtonText: 'Tilbake'
      })
@@ -60,6 +77,7 @@ import { NotificationsProvider } from '../providers/notifications/notifications'
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     JsonProvider,
     NotificationsProvider,
+    FirebaseServiceProvider,
   ]
 })
 export class AppModule {}

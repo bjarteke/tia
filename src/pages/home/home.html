@@ -18,18 +18,18 @@
 <!-- Next record, checking in/out -->
 <ion-slides>
   <ion-slide>
-  <div class="record" *ngFor="let x of jsonProv.planNext, let i=index" >
-    <div class="topBox" (click)="itemSelected(jsonProv.planNext[0])">
+  <div class="record" *ngFor="let x of firebaseService.planNext, let i=index" >
+    <div class="topBox" (click)="itemSelected(firebaseService.planNext[0])">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
-      <h1>{{ fromTimestampToTextIdagImorgen(jsonProv.planNext[i]['Startdato'],jsonProv.planNext[i]['Start']) }} </h1>
-      <h3>{{jsonProv.planNext[i]["Starttid"]}} - {{jsonProv.planNext[i]["Sluttid"]}}</h3>
+      <h1>{{ fromTimestampToTextIdagImorgen(firebaseService.planNext[i]['Startdato'],firebaseService.planNext[i]['Start']) }} </h1>
+      <h3>{{firebaseService.planNext[i]["Starttid"]}} - {{firebaseService.planNext[i]["Sluttid"]}}</h3>
     </div>
     <div class="infoField">
       <div ng-if="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px"></div>
       <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{'width' : x}"></div>
       <div class="loadingBar" [ngStyle] = "{'width' : currentWidth}"></div>
     </div>
-    <button [disabled]="(!locationTracker.paJobb || !correctTime(jsonProv.planNext[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+    <button [disabled]="(!locationTracker.paJobb || !correctTime(firebaseService.planNext[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
   </div>
   </ion-slide>
   <ion-slide>
@@ -67,21 +67,21 @@
   <div [ngSwitch]="planner" >
 
     <!-- Upcoming -->
-    <div *ngFor="let x of jsonProv.uniqueWeeknumbers, let j=index">
+    <div *ngFor="let x of firebaseService.uniqueWeeknumbers, let j=index">
     
-    <h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" >{{jsonProv.uniqueWeeknumbers[j]}}</h1>
+    <h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="'kommende'" >{{firebaseService.uniqueWeeknumbers[j]}}</h1>
 
-    <ion-item-sliding *ngFor="let x of jsonProv.planDataUpcoming2[j], let i=index">
+    <ion-item-sliding *ngFor="let x of firebaseService.upcoming2[j], let i=index">
       <ion-item *ngSwitchCase="'kommende'" (click)="itemSelected(x)" >
-          <div *ngIf="checkIfNew([jsonProv.planDataUpcoming[i]['Added']])" class="ribbon">
+          <div *ngIf="checkIfNew([firebaseService.upcoming[i]['Added']])" class="ribbon">
               <span>Ny vakt</span>
           </div>
           <div class="futureDate">
-            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{jsonProv.planDataUpcoming2[j][i]["Startdato"] | slice:0:2}}</span><br>
-            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{jsonProv.planDataUpcoming2[j][i]["Startdato"] | slice:3:7}}</span> 
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{firebaseService.upcoming2[j][i]["Startdato"] | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{firebaseService.upcoming2[j][i]["Startdato"] | slice:3:7}}</span> 
           </div>
           <div class="futureInfo">
-            <h3>{{jsonProv.planDataUpcoming2[j][i]["Starttid"]}} - {{jsonProv.planDataUpcoming2[j][i]["Sluttid"]}}</h3>
+            <h3>{{firebaseService.upcoming2[j][i]["Starttid"]}} - {{firebaseService.upcoming2[j][i]["Sluttid"]}}</h3>
           </div> 
       </ion-item>
       <ion-item-options>
@@ -94,14 +94,14 @@
     </div>
 
     <!-- Previous -->
-    <ion-item-sliding *ngFor="let x of jsonProv.planDataPrevious | slice:0:3, let i=index">
+    <ion-item-sliding *ngFor="let x of firebaseService.previous | slice:0:3, let i=index">
       <ion-item *ngSwitchCase="'fullfort'" (click)="itemSelected(x)">
           <div class="futureDate">
-            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{jsonProv.planDataPrevious[i]["Startdato"] | slice:0:2}}</span><br>
-            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{jsonProv.planDataPrevious[i]["Startdato"] | slice:3:7}}</span> 
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{firebaseService.previous[i]["Startdato"] | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{firebaseService.previous[i]["Startdato"] | slice:3:7}}</span> 
           </div>
           <div class="futureInfo">
-            <h3>{{jsonProv.planDataPrevious[i]["Starttid"]}} - {{jsonProv.planDataPrevious[i]["Sluttid"]}}</h3>
+            <h3>{{firebaseService.previous[i]["Starttid"]}} - {{firebaseService.previous[i]["Sluttid"]}}</h3>
           </div> 
       </ion-item>
       <ion-item-options>
@@ -135,6 +135,9 @@
   <!-- ACTIVATE IF YOU MANUALLY WANT TO START THE TRACKING. REMEBER TO CHANGE FROM NGONINIT() TO START() IN HOME.ts -->
   
     <button ion-button full primary (click)="start()">Start Tracking</button>
-    <!-- <button ion-button full primary (click)="scheduleNotification()">Send Notification</button> -->
+    <!-- <button ion-button full primary (click)="scheduleNotification()">Send Notification</button> 
+
+-->
+
 
 </ion-content>
