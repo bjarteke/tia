@@ -32,7 +32,7 @@ export class JsonProvider {
   public planNext = [];
 
   constructor(public http: HttpClient) {
-    this.http.get('../assets/data/arbeidsplan.json').subscribe(data => {
+    this.http.get('../www/assets/data/arbeidsplan.json').subscribe(data => {
     this.plan.push(data);
     this.test = this.plan[0];
     this.keys = Object.keys(this.plan[0]); 

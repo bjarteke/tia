@@ -42,13 +42,6 @@ export class LocationTracker {
       this.lng = location.longitude;
       this.lastTimestamp = location.time;
       this.insidePolygonCheck(this.lat, this.lng);
-      console.log('Her kommer logg! \n');
-      console.log(this.paJobb)
-      console.log(this.sentNotification)
-      if(this.paJobb && this.sentNotification == false){
-        this.notifications.scheduleNotification();
-        this.sentNotification = true;
-      }
     });
  
   }, (err) => {
@@ -101,6 +94,21 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
       console.log("ER VI PÅ JOBB?????")
       console.log(booleanPointInPolygon(pt,poly));
       this.paJobb = booleanPointInPolygon(pt,poly);
+      this.evaluateSendNotification()
+      if(this.paJobb == false){
+        this.sentNotification == false;
+      }
+  }
+
+  evaluateSendNotification(){
+    console.log('Her kommer logg! \n');
+    console.log(this.paJobb)
+    console.log(this.sentNotification)
+    if(this.paJobb && this.sentNotification == false){
+      this.notifications.sendArrivalNotification();
+      this.sentNotification = true;
+    }
+
   }
 
 

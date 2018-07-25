@@ -31,12 +31,49 @@ export class NotificationsProvider {
 
 
   scheduleNotification() {
+    this.localNotifications.addActions('yes-no', [
+      { id: 'yes', title: 'Yes', needsAuth: false },
+      { id: 'no',  title: 'No', needsAuth: false }
+    ]);
+    console.log('Her kommer svaret:     ');
+    console.log(this.localNotifications.getIds());
+    console.log(this.localNotifications.hasActions('yes'));
+    this.localNotifications.schedule({
+      id: 1,
+      title: "Velkommen på jobb kjære deg!",
+      text: "Vil du sjekke inn?",
+      trigger: {at: new Date(new Date().getTime() + 1000)},
+      actions: 'yes-no'
+    });
+    this.localNotifications.on('yes').subscribe(notification => {
+      console.log('DET FUNKA!!!');
+    });
+    this.localNotifications.on('no').subscribe(notification => {
+      console.log('DET FUNKA HER OG!!!');
+    });
+  }
+
+  sendArrivalNotification() {
     this.localNotifications.schedule({
       id: 1,
       title: "Velkommen på jobb!",
-      text: "Vil du sjekke inn?",
-      trigger: {at: new Date(new Date().getTime() + 5 * 1000)}
+      text: "Du stemples inn om 10 minutter. Ha en fin dag!"
+    });
+  }
 
+  sendLunchNotification() {
+    this.localNotifications.schedule({
+      id: 2,
+      title: "Tid for lunsj!",
+      text: "Nyt pausen, det fortjener du!"
+    });
+  }
+
+  sendLeavingNotification() {
+    this.localNotifications.schedule({
+      id: 3,
+      title: "Drar du?",
+      text: "Arbeidsdagen din ser ikke ut til å være helt over enda, sjekk appen."
     });
   }
 
