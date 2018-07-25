@@ -81,6 +81,7 @@
             <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{firebaseService.upcoming2[j][i]["Startdato"] | slice:3:7}}</span> 
           </div>
           <div class="futureInfo">
+            <h3 style="font-weight: 800">{{getWeekdayName(firebaseService.upcoming2[j][i]["Start"])}}</h3>
             <h3>{{firebaseService.upcoming2[j][i]["Starttid"]}} - {{firebaseService.upcoming2[j][i]["Sluttid"]}}</h3>
           </div> 
       </ion-item>
@@ -102,6 +103,7 @@
             <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{firebaseService.previous[i]["Startdato"] | slice:3:7}}</span> 
           </div>
           <div class="futureInfo">
+            <h3 style="font-weight: 800">{{getWeekdayName(firebaseService.previous[i]["Start"])}}</h3>
             <h3>{{firebaseService.previous[i]["Starttid"]}} - {{firebaseService.previous[i]["Sluttid"]}}</h3>
           </div> 
       </ion-item>

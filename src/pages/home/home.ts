@@ -244,6 +244,19 @@ export class HomePage {
     return false;
   }
 
+  getWeekdayName(timestamp) {
+    var d = new Date(timestamp);
+    var weekday = new Array(7);
+    weekday[0] = "Søndag";
+    weekday[1] = "Mandag";
+    weekday[2] = "Tirsdag";
+    weekday[3] = "Onsdag";
+    weekday[4] = "Torsdag";
+    weekday[5] = "Fredag";
+    weekday[6] = "Lørdag";
+
+    return weekday[d.getDay()];
+  }
 
 
   itemSelected(item) {
