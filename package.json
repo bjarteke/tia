@@ -32,12 +32,10 @@
     "@turf/boolean-point-in-polygon": "^6.0.1",
     "angularfire2": "5.0.0-rc.3",
     "cordova-ios": "4.5.4",
-    "cordova-plugin-badge": "^0.8.7",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-geolocation": "^4.0.1",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
     "cordova-plugin-ionic-webview": "^1.1.19",
-    "cordova-plugin-local-notification": "^0.9.0-beta.2",
     "cordova-plugin-mauron85-background-geolocation": "^2.3.5",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-whitelist": "^1.3.3",
@@ -64,8 +62,7 @@
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-local-notification": {}
+      "cordova-plugin-ionic-keyboard": {}
     },
     "platforms": [
       "ios"
