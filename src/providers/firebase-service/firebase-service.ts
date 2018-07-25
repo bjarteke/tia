@@ -123,10 +123,10 @@ export class FirebaseServiceProvider {
   }
 
   /* Sending a check in or check out time to the Firestore */
-  addCheckInOutTime(timestamp){
-    var hei = "stempletid"
-    this.afd.collection("stempletider").doc("stempling").collection("this.currentID").doc(this.counter.toString()).set({
-      stempletid : timestamp
+  addCheckInOutTime(timestampArray){
+    console.log(this.planNext[0]);
+    this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
+      "Stempletider" : timestampArray
     })
     .then(function() {
       console.log("CheckInOut successfully written")

@@ -64,12 +64,8 @@
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
-<<<<<<< HEAD
-      "cordova-plugin-ionic-keyboard": {}
-=======
       "cordova-plugin-ionic-keyboard": {},
       "de.appplant.cordova.plugin.local-notification": {}
->>>>>>> 173935e836b99bd9d56e0aa8402122baf4b1a357
     },
     "platforms": [
       "ios"

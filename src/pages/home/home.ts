@@ -106,7 +106,7 @@ export class HomePage {
 
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
     this.checkInOutTimes.push(new Date());   //register the checkInTime
-    this.firebaseService.addCheckInOutTime(new Date());
+    this.firebaseService.addCheckInOutTime(this.checkInOutTimes);
 
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
         this.segmentWidth.push(this.currentWidth);
