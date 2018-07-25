@@ -18,4 +18,6 @@
   <h1 style="color:black; text-align:center">{{item.Startdato}}</h1>
   <h3 style="color:black; text-align:center">{{item.Starttid}} - {{item.Sluttid}}</h3>
   <button ion-button full *ngIf="showEditButton(item)"> Endre</button>
+
+  <h1 *ngFor="let x of item.Stempletider">{{x}}</h1>
 </ion-content>

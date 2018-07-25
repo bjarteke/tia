@@ -124,7 +124,18 @@ export class FirebaseServiceProvider {
 
   /* Sending a check in or check out time to the Firestore */
   addCheckInOutTime(timestampArray){
-    console.log(this.planNext[0]);
+    var oldTimestamps = [];
+
+    /*
+    this.afd.collection<Items>('arbeidsokter').doc(this.planNext[0]["ID"]))
+      .valueChanges()
+      .subscribe ((data) => oldTimestamps = data);
+
+    for (var x in timestampArray) {
+      if(oldTimestamps.)
+    }
+    */
+
     this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
       "Stempletider" : timestampArray
     })
