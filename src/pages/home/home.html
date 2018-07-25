@@ -73,7 +73,7 @@
 
     <ion-item-sliding *ngFor="let x of firebaseService.upcoming2[j], let i=index">
       <ion-item *ngSwitchCase="'kommende'" (click)="itemSelected(x)" >
-          <div *ngIf="checkIfNew([firebaseService.upcoming[i]['Added']])" class="ribbon">
+          <div *ngIf="checkIfNew([firebaseService.upcoming2[j][i]['Added']])" class="ribbon">
               <span>Ny vakt</span>
           </div>
           <div class="futureDate">

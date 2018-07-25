@@ -210,10 +210,11 @@ export class HomePage {
 
   }
 
-    // Used to determine whether a rec is makered with a ribbon
+    // Used to determine whether a rec is markered with a ribbon
   checkIfNew(addedDate : any) {
-    var addedDating = new Date().getTime();
-    var today = new Date().getTime();    
+    var addedDating = new Date(addedDate).getTime();
+    var today = new Date().getTime();
+
     if ((today - addedDating)/(3600*1000) > this.numberOfHoursRegardedAsNew){
       return false;
     }
