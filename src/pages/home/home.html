@@ -94,7 +94,8 @@
     </div>
 
     <!-- Previous -->
-    <ion-item-sliding *ngFor="let x of firebaseService.previous | slice:0:3, let i=index">
+    <div style="margin-top:30px">
+    <ion-item-sliding *ngFor="let x of firebaseService.previous | slice:0:3, let i=index" >
       <ion-item *ngSwitchCase="'fullfort'" (click)="itemSelected(x)">
           <div class="futureDate">
             <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{firebaseService.previous[i]["Startdato"] | slice:0:2}}</span><br>
@@ -111,6 +112,7 @@
         </button>
       </ion-item-options>
     </ion-item-sliding>
+    </div>
 
     </div>
   </ion-list>

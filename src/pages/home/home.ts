@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController, Platform } from 'ionic-angular';
 import { LocationTracker } from '../../providers/location-tracker/location-tracker';
-import { JsonProvider } from '../../providers/json/json';
 
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import turf from 'turf';
@@ -13,7 +12,6 @@ import { Observable } from 'rxjs/Rx';
 
 
 //testing -->
-import { ChangeDetectorRef } from '@angular/core';
 import { ContactPage } from '../contact/contact';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { getLocaleTimeFormat } from '@angular/common';
@@ -54,34 +52,28 @@ export class HomePage {
   public latePercentage : string ="0%"; //How many percent of the total work day was the employee late. 
   private lateCheckIn : boolean = false; //Whether or not the employee checked in late
   private seconds; //How many seconds the work day lasts. 
-  private stop : boolean = false;
-
+  private stop : boolean = false; //Indicates whether the loading bar is running.
 
   public finishedBreak : boolean = false;
 
   //Variables meant to be changed by the admin user
-  private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new" 
-  private linkToArbeidsplan = '../www/assets/data/arbeidsplan.json';
-  //private linkToArbeidsplan = '../assets/data/arbeidsplan.json';
+  private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
   private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
 
-  public jsonProv = null;
-
   //CONSTRUCTOR
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public jsonProvider : JsonProvider, public firebaseService : FirebaseServiceProvider) {
-    this.jsonProv = jsonProvider;
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
   }
  
   start() {
     this.locationTracker.startTracking();      //Start tracking location
     Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
-    this.seconds = ((new Date (this.jsonProv.test["ID1"]["Slutt"])).getTime()/1000 - (new Date (this.jsonProv.test["ID1"]["Start"])).getTime()/1000) //Number of seconds
-  }
+    this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+ }
 
   continueslyChecked() {
     var currentDate = new Date();
-    var startDate = new Date(this.jsonProv.test["ID1"]["Start"]);
+    var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
 
     //Updating the loadingBar
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
@@ -98,7 +90,7 @@ export class HomePage {
     }
 
 
-    this.checkIfBreak(this.jsonProv.test["ID1"]["Starttid"], this.jsonProv.test["ID1"]["Sluttid"]);
+    this.checkIfBreak(this.firebaseService.planNext[0]["Starttid"], this.firebaseService.planNext[0]["Sluttid"]);
 
 
   }
@@ -177,7 +169,7 @@ export class HomePage {
       this.segmentWidth.push(this.currentWidth);
     }
     var currentDate = new Date();
-    var startDate = new Date(this.jsonProv.test["ID1"]["Start"]);
+    var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
 
     //Setting the width of the current segment
     this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";
@@ -192,7 +184,7 @@ export class HomePage {
 
   updateLoadingBarLate() {
     var currentDate = new Date();
-    var startDate = new Date(this.jsonProv.test["ID1"]["Start"]);
+    var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
     var width = 100*(Math.abs((+currentDate - +startDate)/1000)/this.seconds);
     if (width < 100) {
       this.currentWidth = Math.min(100 - this.totalWidthSoFar, width)  +"%";
@@ -218,13 +210,11 @@ export class HomePage {
 
   }
 
-    // Used to determing whether a rec is makered with a ribbon
+    // Used to determine whether a rec is makered with a ribbon
   checkIfNew(addedDate : any) {
-    var addedDating : Date;
-    addedDating = new Date(addedDate);
-    var today : Date;
-    today = new Date();    
-    if ((today.getTime() - addedDating.getTime())/(3600*1000) > this.numberOfHoursRegardedAsNew){
+    var addedDating = new Date().getTime();
+    var today = new Date().getTime();    
+    if ((today - addedDating)/(3600*1000) > this.numberOfHoursRegardedAsNew){
       return false;
     }
     return true;

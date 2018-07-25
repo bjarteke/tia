@@ -41,24 +41,31 @@ export class FirebaseServiceProvider {
   public uniqueWeeknumbers = [];
 
   constructor(public afd: AngularFirestore) {
+    /* Retrieving data from Firestore */
     this.afd.collection<Items>('arbeidsokter', ref => ref.orderBy('Start'))
       .valueChanges()
       .subscribe ((data) => this.inTheFuture(data));
   }
 
   inTheFuture(data){
+    this.resetArrays();
     var currentDate = new Date();
     this.allRecords = data;
-    console.log(this.allRecords);
+    /* Iterating through all records within the plan, in order to separate them between previous and upcoming*/
     for (var x = 0; x< this.allRecords.length; x++) {
       var dateStart = new Date(this.allRecords[x]["Start"]);
       var dateEnd = new Date(this.allRecords[x]["Slutt"]);
+      /* A record has a start date in the future, or it is still not finished*/
       if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
+        /* The first future record is added to the planNext in order to be shown in the top panel on the home page*/
         if (this.planNext.length == 0) {
           this.planNext.push(this.allRecords[x]);
         }
+        /* All future records except the first one */
         else {
+          /* Adding the future records to the array of upcoming plans */
           this.upcoming.push(this.allRecords[x]);
+          /* Adding information about the week number to the week number array. */
           if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)){
             this.weeknumbers.push("Denne uken")
           }
@@ -70,13 +77,18 @@ export class FirebaseServiceProvider {
           }
         }
       }
+      /* If not a future record, place it in the previous array */
       else {
         this.previous.push(this.allRecords[x]);
       }
     }
+    /* Reverst the array of previous records, such that the newest comes first */
     this.previous.reverse();
+
+    /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
     this.uniqueWeeknumbers.push(this.weeknumbers[0]);
 
+    /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */ 
     var temp = [];
     for (var i = 0; i<this.weeknumbers.length; i++){
       if (this.weeknumbers[i] == this.weeknumbers[i+1]) {
@@ -88,17 +100,17 @@ export class FirebaseServiceProvider {
         temp = [];
       }
     }
+
+    /* Adding all unique week numbers to the array */
     for (var y = 1; y < this.weeknumbers.length; y++) {
-
-
       if (this.weeknumbers[y]!=this.weeknumbers[y-1]){
         this.uniqueWeeknumbers.push(this.weeknumbers[y]);
       }
     }
-    console.log(this.uniqueWeeknumbers);
-    console.log(this.getCurrentID());
+    console.log(this.planNext);
   }
 
+  /* Calculating the week number of a date object given as a parameter */
   getWeekNumber(date) {
    date.setHours(0, 0, 0, 0);
   // Thursday in current week decides the year.
@@ -108,9 +120,9 @@ export class FirebaseServiceProvider {
   // Adjust to Thursday in week 1 and count number of weeks from date to week1.
   return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
                         - 3 + (week1.getDay() + 6) % 7) / 7);
-  
   }
 
+  /* Sending a check in or check out time to the Firestore */
   addCheckInOutTime(timestamp){
     var hei = "stempletid"
     this.afd.collection("stempletider").doc("stempling").collection("this.currentID").doc(this.counter.toString()).set({
@@ -124,6 +136,15 @@ export class FirebaseServiceProvider {
     });
     this.counter = this.counter + 1;
 
+  }
+
+  /* Reseting all arrays */
+  resetArrays(){
+    this.upcoming = [];
+    this.upcoming2 = []; 
+    this.previous = []; 
+    this.weeknumbers = [];
+    this.uniqueWeeknumbers = [];
   }
 
   getCurrentID() {
