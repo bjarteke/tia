@@ -59,25 +59,28 @@ export class HomePage {
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
   private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
-  private numberOfSecondsFromOnLocationToCheckIn = 3;
+  private numberOfSecondsFromOnLocationToCheckIn = 10;
+  private activateAutomaticCheckInOut = true;
 
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
   }
  
-  start() {
+  ionViewDidLoad() {
     this.locationTracker.startTracking();      //Start tracking location
     Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
-    this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+
  }
 
   continueslyChecked() {
+    this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+
     var currentDate = new Date();
     var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
 
     //Automatic check in
-    if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn && !this.initialCheckIn) {
+    if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 && !this.initialCheckIn && this.activateAutomaticCheckInOut) {
       this.checkInOut();
     }
 

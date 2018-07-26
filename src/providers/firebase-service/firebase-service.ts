@@ -45,6 +45,7 @@ export class FirebaseServiceProvider {
   public weeknumbers = [];
   public uniqueWeeknumbers = [];
 
+
   constructor(public afd: AngularFirestore) {
     /* Retrieving data from Firestore */
     this.afd.collection<Items>('arbeidsokter', ref => ref.orderBy('Start'))
