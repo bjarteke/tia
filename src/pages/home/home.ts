@@ -74,7 +74,9 @@ export class HomePage {
  }
 
   continueslyChecked() {
-    this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+    if (this.firebaseService.planNext[0] != undefined){
+      this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+    }
 
     var currentDate = new Date();
     var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
