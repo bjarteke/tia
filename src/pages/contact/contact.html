@@ -17,11 +17,18 @@
 <ion-content>
   <h1 style="color:black; text-align:center;padding:0">{{item.Startdato}}</h1>
   <h3 style="color:black; text-align:center;padding:0">{{item.Starttid}} - {{item.Sluttid}}</h3>
-  <div style="height:350px" *ngIf="!inTheFuture()">
-    <h6 style="padding:10px">Registrerte stemplinger</h6>
-    <div class="loadingBarDown" [ngStyle]="{'height' : lateWidth}"></div>
-    <div *ngFor="let x of segmentWidth, let j = index" class="loadingBarDown" (click)="editTimestamp(fromTimestampToHHMM(item.Stempletider[j]))" [ngStyle]="{'height' : x}">
-      <h6>{{fromTimestampToHHMM(item.Stempletider[j])}}</h6>
+  <h6 style="padding:10px">Registrerte stemplinger</h6>
+  <div class="loadingBox" style="height:350px" *ngIf="!inTheFuture()">
+    <!--
+    <div style="height:350px">
+      <div  class="loadingBarDown" *ngFor="let x of segmentWidthPlan, let j = index" style="position:absolute" [ngStyle]="{'height' : x}"> </div>
+    </div>
+    -->
+    <div style="height:350px">
+      <div class="loadingBarDown" [ngStyle]="{'height' : lateWidth}"></div>
+      <div *ngFor="let x of segmentWidth, let j = index" class="loadingBarDown" (click)="editTimestamp(fromTimestampToHHMM(item.Stempletider[j]))" [ngStyle]="{'height' : x}">
+        <h6>{{fromTimestampToHHMM(item.Stempletider[j])}}</h6>
+      </div>
     </div>
       <h6>{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1])}}</h6>
   </div>

@@ -22,7 +22,7 @@ h6 {
     );    text-align:center;
 }
 
-.loadingBarDown:nth-child(even){
+.loadingBarDown:nth-child(odd){
     color:#ffffff;
     background: repeating-linear-gradient(
   -45deg,
@@ -31,4 +31,10 @@ h6 {
   #c00b0b 10px,
     #c00b0b 20px
     );    text-align:center;
+}
+
+.loadingBox {
+    height: 350px;
+    width:75%;
+    margin: auto;
 }

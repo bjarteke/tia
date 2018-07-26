@@ -59,6 +59,7 @@ export class HomePage {
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
   private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
+  private numberOfSecondsFromOnLocationToCheckIn = 3;
 
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
@@ -74,6 +75,11 @@ export class HomePage {
   continueslyChecked() {
     var currentDate = new Date();
     var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
+
+    //Automatic check in
+    if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn && !this.initialCheckIn) {
+      this.checkInOut();
+    }
 
     //Updating the loadingBar
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
