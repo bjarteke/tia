@@ -24,7 +24,8 @@ export class LocationTracker {
   }
  
   startTracking() {
-  this.onLocationTime = new Date("Jul 29 2018 15:28:14");
+
+  console.log("SEHER");
 
     // Background Tracking
   let config = {

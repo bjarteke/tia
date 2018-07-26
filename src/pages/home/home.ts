@@ -64,45 +64,55 @@ export class HomePage {
 
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
-  }
+    console.log("ER I KONSTRUKTØR FØR TRACKER");
+    console.log("ER I KONSTRUKTØR FØR START");
+    this.start();
+}
  
-  ionViewDidLoad() {
-    this.locationTracker.startTracking();      //Start tracking location
+  start() {
+          //Start tracking location
     Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
+      console.log("Start");
 
  }
 
   continueslyChecked() {
-    if (this.firebaseService.planNext[0] != undefined){
-      this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+      this.locationTracker.startTracking();
+    if (this.firebaseService.planNext[0] != undefined && this.locationTracker.onLocationTime != undefined ){
+        this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+      
+
+      var currentDate = new Date();
+      var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
+
+      console.log("SJEKKHER");
+      console.log(currentDate.getTime());
+      console.log(this.locationTracker.onLocationTime.getTime());
+      console.log(currentDate.getTime() - this.locationTracker.onLocationTime.getTime());
+
+      //Automatic check in
+      if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 && !this.initialCheckIn && this.activateAutomaticCheckInOut) {
+        this.checkInOut();
+      }
+
+      //Updating the loadingBar
+      if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
+        //If too late, and not checked in.
+        this.lateCheckIn = true;
+        this.updateLoadingBarLate();
+      }
+      else if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == true && this.stop == false){
+        //If already checked in.
+        this.updateLoadingBar();
+      }
+      else {
+        //If not not too late, and not checked in
+      }
+
+
+      this.checkIfBreak(this.firebaseService.planNext[0]["Starttid"], this.firebaseService.planNext[0]["Sluttid"]);
     }
-
-    var currentDate = new Date();
-    var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
-
-    //Automatic check in
-    if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 && !this.initialCheckIn && this.activateAutomaticCheckInOut) {
-      this.checkInOut();
-    }
-
-    //Updating the loadingBar
-    if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
-      //If too late, and not checked in.
-      this.lateCheckIn = true;
-      this.updateLoadingBarLate();
-    }
-    else if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == true && this.stop == false){
-      //If already checked in.
-      this.updateLoadingBar();
-    }
-    else {
-      //If not not too late, and not checked in
-    }
-
-
-    this.checkIfBreak(this.firebaseService.planNext[0]["Starttid"], this.firebaseService.planNext[0]["Sluttid"]);
-
 
   }
 
