@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AlertController, Platform } from 'ionic-angular';
 import { FirebaseServiceProvider } from '../firebase-service/firebase-service';
-import { timestamp } from 'rxjs-compat/operator/timestamp';
 
 /*
   Generated class for the NotificationsProvider provider.
