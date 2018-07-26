@@ -65,7 +65,7 @@ export class HomePage {
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
   }
  
-  start() {
+  ionViewDidLoad() {
     this.locationTracker.startTracking();      //Start tracking location
     Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
