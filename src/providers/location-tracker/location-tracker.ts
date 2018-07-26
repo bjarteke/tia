@@ -28,7 +28,7 @@ export class LocationTracker {
     desiredAccuracy: 0,
     stationaryRadius: 20,
     distanceFilter: 10,
-    debug: true,
+    debug: false,
     interval: 2000
   };
  
@@ -107,6 +107,9 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
     if(this.paJobb && this.sentNotification == false){
       this.notifications.sendArrivalNotification();
       this.sentNotification = true;
+
+      /* Knows that you have arrived at work, so will also schedule notification for lunch */
+      this.notifications.scheduleLunchNotification();
     }
 
   }

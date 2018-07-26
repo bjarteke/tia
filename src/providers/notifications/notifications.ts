@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AlertController, Platform } from 'ionic-angular';
+import { FirebaseServiceProvider } from '../firebase-service/firebase-service';
+import { timestamp } from 'rxjs-compat/operator/timestamp';
 
 /*
   Generated class for the NotificationsProvider provider.
@@ -12,8 +14,8 @@ import { AlertController, Platform } from 'ionic-angular';
 @Injectable()
 export class NotificationsProvider {
 
-  constructor(public http: HttpClient, private localNotifications: LocalNotifications, private plt: Platform, public alertCtrl: AlertController) {
-    this.plt.ready().then((rdy) => {
+  constructor(public http: HttpClient, private localNotifications: LocalNotifications, private plt: Platform, public alertCtrl: AlertController, public fsp: FirebaseServiceProvider) {
+    /*this.plt.ready().then((rdy) => {
       this.localNotifications.on('click').subscribe(notification => {
         let json = JSON.parse(notification.data);
         console.log(json)
@@ -26,7 +28,7 @@ export class NotificationsProvider {
 
 
       });
-    });
+    });*/
   }
 
 
@@ -55,23 +57,37 @@ export class NotificationsProvider {
 
   sendArrivalNotification() {
     this.localNotifications.schedule({
-      id: 1,
       title: "Velkommen på jobb!",
       text: "Du stemples inn om 10 minutter. Ha en fin dag!"
     });
   }
 
+  scheduleLunchNotification(){
+    var now = new Date();
+    var lunsj = new Date(this.fsp.planNext[0]['Lunsj']);
+    var tidTilLunsj = lunsj.getTime() - now.getTime();
+    console.log('skriver masse');
+    console.log(now);
+    console.log(lunsj);
+    console.log(lunsj.getTime());
+    console.log(tidTilLunsj);
+    if(tidTilLunsj > 0){
+      console.log('kom seg hit!')
+      setTimeout(this.sendLunchNotification, tidTilLunsj);
+    }
+  }
+
   sendLunchNotification() {
+    console.log('Skal sende lunsjnotifikasjon nå');
     this.localNotifications.schedule({
-      id: 2,
       title: "Tid for lunsj!",
       text: "Nyt pausen, det fortjener du!"
     });
   }
 
   sendLeavingNotification() {
+    console.log('skal si fra at du drar')
     this.localNotifications.schedule({
-      id: 3,
       title: "Drar du?",
       text: "Arbeidsdagen din ser ikke ut til å være helt over enda, sjekk appen."
     });
