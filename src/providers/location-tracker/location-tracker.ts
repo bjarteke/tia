@@ -17,12 +17,15 @@ export class LocationTracker {
   public changed: boolean = false; 
   public sentNotification: boolean = false;
   public lastTimestamp : any;
+  public onLocationTime;
  
   constructor(public zone: NgZone, public backgroundGeolocation: BackgroundGeolocation, private geolocation : Geolocation, public notifications: NotificationsProvider) {
  
   }
  
   startTracking() {
+  this.onLocationTime = new Date("Jul 29 2018 15:28:14");
+
     // Background Tracking
   let config = {
     desiredAccuracy: 0,
@@ -110,6 +113,7 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
 
       /* Knows that you have arrived at work, so will also schedule notification for lunch */
       this.notifications.scheduleLunchNotification();
+      this.onLocationTime = new Date();
     }
 
   }

@@ -38,13 +38,24 @@ p {
 
 .loadingBar {
     height: 7px;
-    background-color: #a00b0b;
+    background: repeating-linear-gradient(
+  -45deg,
+  #a00b0b,
+  #a00b0b 10px,
+  #c00b0b 10px,
+    #c00b0b 20px );
     margin-top: 3px;
     float:left;
 }
 
 .loadingBar:nth-child(odd){
-    background-color: #7CFC00 !important;
+    background: repeating-linear-gradient(
+  -45deg,
+  #7CFC00,
+  #7CFC00 10px,
+  #4EFC00 10px,
+    #4EFC00 20px
+    );
 }
 
 .loadingBar:nth-last-child(2){

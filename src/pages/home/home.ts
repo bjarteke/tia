@@ -59,6 +59,7 @@ export class HomePage {
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
   private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
+  private numberOfSecondsFromOnLocationToCheckIn = 3;
 
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
@@ -74,6 +75,11 @@ export class HomePage {
   continueslyChecked() {
     var currentDate = new Date();
     var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
+
+    //Automatic check in
+    if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn && !this.initialCheckIn) {
+      this.checkInOut();
+    }
 
     //Updating the loadingBar
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
@@ -97,6 +103,7 @@ export class HomePage {
 
   checkInOut() {
     //Updating the LoadingBar with a red color corresponding to late check in time.
+
     if(this.lateCheckIn == true && this.segmentWidth.length == 0 && this.stop == false){
       this.segmentWidth.push(this.currentWidth);
       this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
@@ -107,7 +114,6 @@ export class HomePage {
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
     this.checkInOutTimes.push(new Date());   //register the checkInTime
     this.firebaseService.addCheckInOutTime(this.checkInOutTimes);
-
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
         this.segmentWidth.push(this.currentWidth);
         this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
@@ -165,6 +171,7 @@ export class HomePage {
   //LOADING BAR
   updateLoadingBar() {
     //Adding the first segment if employee has checked in late
+
     if(this.lateCheckIn == true && this.segmentWidth.length == 0) {
       this.segmentWidth.push(this.currentWidth);
     }
@@ -180,6 +187,7 @@ export class HomePage {
       this.stop = true; //Making sure that no additional segments are added to the loading bar.
       this.currentWidth = "0%";
     }
+
   }
 
   updateLoadingBarLate() {
@@ -259,9 +267,10 @@ export class HomePage {
   }
 
 
-  itemSelected(item) {
+  itemSelected(item,segmentWidth) {
      this.navCtrl.push(ContactPage, {
-       item: item
+       item: item,
+       segmentwidth : segmentWidth
      });
   }
 

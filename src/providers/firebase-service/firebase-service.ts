@@ -14,7 +14,9 @@ import { Observable } from 'rxjs/Observable';
 */
 
 interface Items {
+ ID: string;
  Startdato: string;
+ Stempletider;
  Starttid: string;
  Start;
  Sluttdato: string;
@@ -25,6 +27,9 @@ interface Items {
 
 @Injectable()
 export class FirebaseServiceProvider {
+  public testList = [];
+
+
   public itemsCollection: AngularFirestoreCollection<Items>;
 
   public allRecords = [];
@@ -63,17 +68,19 @@ export class FirebaseServiceProvider {
         }
         /* All future records except the first one */
         else {
-          /* Adding the future records to the array of upcoming plans */
-          this.upcoming.push(this.allRecords[x]);
-          /* Adding information about the week number to the week number array. */
-          if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)){
-            this.weeknumbers.push("Denne uken")
-          }
-          else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1){
-            this.weeknumbers.push("Neste uke")
-          }
-          else {
-            this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
+          /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
+          if(this.planNext[0]["ID"] != this.allRecords[x]["ID"]) {
+              this.upcoming.push(this.allRecords[x]);
+            /* Adding information about the week number to the week number array. */
+              if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)){
+                this.weeknumbers.push("Denne uken")
+              }
+              else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1){
+                this.weeknumbers.push("Neste uke")
+              }
+              else {
+                this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
+              }
           }
         }
       }
@@ -90,6 +97,7 @@ export class FirebaseServiceProvider {
 
     /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */ 
     var temp = [];
+    console.log(this.upcoming);
     for (var i = 0; i<this.weeknumbers.length; i++){
       if (this.weeknumbers[i] == this.weeknumbers[i+1]) {
         temp.push(this.upcoming[i])
@@ -107,7 +115,6 @@ export class FirebaseServiceProvider {
         this.uniqueWeeknumbers.push(this.weeknumbers[y]);
       }
     }
-    console.log(this.planNext);
   }
 
   /* Calculating the week number of a date object given as a parameter */
@@ -125,16 +132,21 @@ export class FirebaseServiceProvider {
   /* Sending a check in or check out time to the Firestore */
   addCheckInOutTime(timestampArray){
     var oldTimestamps = [];
+    var newTimestamps = [];
+    
+  
 
-    /*
-    this.afd.collection<Items>('arbeidsokter').doc(this.planNext[0]["ID"]))
+    this.afd.collection<Items>('arbeidsokter').doc(this.planNext[0]["ID"])
       .valueChanges()
-      .subscribe ((data) => oldTimestamps = data);
+      .forEach((data) => oldTimestamps.push(data));
+      
+    //oldTimestamps.values("Stempletider").map((item) => console.log(item))
+    
+    console.log("HER");
+    Object.keys(oldTimestamps).map(key => console.log(oldTimestamps[key]));
 
-    for (var x in timestampArray) {
-      if(oldTimestamps.)
-    }
-    */
+
+
 
     this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
       "Stempletider" : timestampArray
