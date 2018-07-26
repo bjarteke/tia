@@ -1,3 +1,34 @@
 page-contact {
 
 }
+
+h6 {
+   text-align:center;
+   font-weight:300;
+   font-size:16px;
+   margin:0;
+}
+
+.loadingBarDown{
+    width:50%;
+    margin-left:auto;
+    margin-right:auto;
+   background: repeating-linear-gradient(
+  -45deg,
+  #7CFC00,
+  #7CFC00 10px,
+  #4EFC00 10px,
+    #4EFC00 20px
+    );    text-align:center;
+}
+
+.loadingBarDown:nth-child(even){
+    color:#ffffff;
+    background: repeating-linear-gradient(
+  -45deg,
+  #a00b0b,
+  #a00b0b 10px,
+  #c00b0b 10px,
+    #c00b0b 20px
+    );    text-align:center;
+}

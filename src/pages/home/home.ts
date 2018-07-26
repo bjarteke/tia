@@ -97,6 +97,7 @@ export class HomePage {
 
   checkInOut() {
     //Updating the LoadingBar with a red color corresponding to late check in time.
+
     if(this.lateCheckIn == true && this.segmentWidth.length == 0 && this.stop == false){
       this.segmentWidth.push(this.currentWidth);
       this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
@@ -107,7 +108,6 @@ export class HomePage {
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
     this.checkInOutTimes.push(new Date());   //register the checkInTime
     this.firebaseService.addCheckInOutTime(this.checkInOutTimes);
-
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
         this.segmentWidth.push(this.currentWidth);
         this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
@@ -165,6 +165,7 @@ export class HomePage {
   //LOADING BAR
   updateLoadingBar() {
     //Adding the first segment if employee has checked in late
+
     if(this.lateCheckIn == true && this.segmentWidth.length == 0) {
       this.segmentWidth.push(this.currentWidth);
     }
@@ -180,6 +181,7 @@ export class HomePage {
       this.stop = true; //Making sure that no additional segments are added to the loading bar.
       this.currentWidth = "0%";
     }
+
   }
 
   updateLoadingBarLate() {
@@ -259,9 +261,10 @@ export class HomePage {
   }
 
 
-  itemSelected(item) {
+  itemSelected(item,segmentWidth) {
      this.navCtrl.push(ContactPage, {
-       item: item
+       item: item,
+       segmentwidth : segmentWidth
      });
   }
 

@@ -19,7 +19,7 @@
 <ion-slides>
   <ion-slide>
   <div class="record" *ngFor="let x of firebaseService.planNext, let i=index" >
-    <div class="topBox" (click)="itemSelected(firebaseService.planNext[0])">
+    <div class="topBox" (click)="itemSelected(firebaseService.planNext[0],segmentWidth)">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
       <h1>{{ fromTimestampToTextIdagImorgen(firebaseService.planNext[i]['Startdato'],firebaseService.planNext[i]['Start']) }} </h1>
       <h3>{{firebaseService.planNext[i]["Starttid"]}} - {{firebaseService.planNext[i]["Sluttid"]}}</h3>
