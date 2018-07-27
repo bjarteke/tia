@@ -62,7 +62,7 @@ export class HomePage {
 
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
-  private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
+  private earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
   private numberOfSecondsFromOnLocationToCheckIn = 10;
   private activateAutomaticCheckInOut = true;
 
@@ -77,23 +77,30 @@ export class HomePage {
       ref => this.continueslyChecked());
     }
     
-    continueslyChecked() {
+  continueslyChecked() {
+
+  
       
     this.locationTracker.startTracking();      //Start tracking location
     /* Starter på nytt om man ikke klarer å lese fra databasen*/
-    if (this.firebaseService.planNext[0] == undefined){
+    if (this.firebaseService.planNext[0] == undefined || this.locationTracker.onLocationTime == undefined){
       return;
     }
+
+    console.log('sjekker databaseuthenting');
+    console.log(this.firebaseService.planNext[0]);
+    console.log(this.locationTracker.onLocationTime);
     
-    if (this.firebaseService.planNext[0] != undefined){
-      this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
-    }
+    console.log(this.firebaseService.planNext[0]["Slutt"]);
+    this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+    
 
     var currentDate = new Date();
     var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
 
     //Automatic check in
-    if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 && !this.initialCheckIn && this.activateAutomaticCheckInOut) {
+    if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 
+      && !this.initialCheckIn && this.activateAutomaticCheckInOut && currentDate.getTime() > startDate.getTime() - this.earlyCheckInHours*60*60*1000) {
       this.checkInOut();
     }
 
@@ -111,9 +118,6 @@ export class HomePage {
       //If not not too late, and not checked in
     }
 
-
-    this.checkIfBreak(this.firebaseService.planNext[0]["Starttid"], this.firebaseService.planNext[0]["Sluttid"]);
-
     if (this.firebaseService.planNext[0] != undefined && this.doneOnce == false){
       var milliSecondsToEnd = new Date (this.firebaseService.planNext[0]["Slutt"]).getTime() - new Date().getTime();
       console.log('Skriver ut hvor lenge det er til slutten av dagen')
@@ -122,7 +126,6 @@ export class HomePage {
       this.startEndCheck();
       this.doneOnce = true;
     }
-
   }
 
   checkInOut() {
@@ -137,7 +140,7 @@ export class HomePage {
 
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
     this.checkInOutTimes.push(new Date());   //register the checkInTime
-    this.firebaseService.addCheckInOutTime(this.checkInOutTimes);
+    this.firebaseService.addCheckInOutTime(new Date());
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
         this.segmentWidth.push(this.currentWidth);
         this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
@@ -324,21 +327,6 @@ export class HomePage {
         sjekketUt = true;
       }
     });
-      
-      
-  }
-
-  checkForLeaving(){
-    console.log('er inni checkforleaving');
-    if (this.locationTracker.paJobb == false && this.locationTracker.forlotTid == null){
-      this.locationTracker.forlotTid = new Date();
-    }
-    else if (this.locationTracker.paJobb == true){
-      this.locationTracker.forlotTid = null;
-    }
-    if(new Date().getTime() - this.locationTracker.forlotTid.getTime() > 5000){
-      this.checkInOut();
-    }
   }
 
   

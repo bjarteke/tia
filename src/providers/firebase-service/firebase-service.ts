@@ -131,26 +131,15 @@ export class FirebaseServiceProvider {
   }
 
   /* Sending a check in or check out time to the Firestore */
-  addCheckInOutTime(timestampArray){
-    var oldTimestamps = [];
+  addCheckInOutTime(timestamp){
+    var oldTimestamps:Array<any> = [];
     var newTimestamps = [];
     
-  
-
-    this.afd.collection<Items>('arbeidsokter').doc(this.planNext[0]["ID"])
-      .valueChanges()
-      .forEach((data) => oldTimestamps.push(data));
+    newTimestamps = this.planNext[0]["Stempletider"];
+    newTimestamps.push(timestamp);
       
-    //oldTimestamps.values("Stempletider").map((item) => console.log(item))
-    
-    console.log("HER");
-    Object.keys(oldTimestamps).map(key => console.log(oldTimestamps[key]));
-
-
-
-
     this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
-      "Stempletider" : timestampArray
+      "Stempletider" : newTimestamps
     })
     .then(function() {
       console.log("CheckInOut successfully written")
