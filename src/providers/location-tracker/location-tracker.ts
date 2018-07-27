@@ -24,9 +24,6 @@ export class LocationTracker {
   }
  
   startTracking() {
-
-  console.log("SEHER");
-
     // Background Tracking
   let config = {
     desiredAccuracy: 0,

@@ -3,10 +3,52 @@ page-contact {
 }
 
 h6 {
-   text-align:center;
+   text-align:left;
    font-weight:300;
    font-size:16px;
    margin:0;
+}
+
+.list-md {
+    background-color:rgba(256, 256, 256,  0)!important;
+}
+
+.label p {
+    padding-left:0;
+    padding-top:1px;
+    font-weight: 300;
+}
+
+.label h2 {
+    padding-top:3px;
+    font-weight:400;
+}
+
+.ion-list:first-child{
+    border-radius: 5px 5px 0px 0px;
+}
+
+.item-block {
+    background-color: #f8f8f8 !important;
+}
+
+.list-header-ios {
+border-bottom:0;
+}
+
+.avatar {
+  border-radius: 50%;
+  behavior: url(PIE.htc);
+  /* remove if you don't care about IE8 */
+  width: 36px;
+  height: 36px;
+  padding: 4px;
+  padding-top: 10px;
+  background: map-get($colors,primary);
+  border: 1px solid #666;
+  color: #ffffff;
+  text-align: center;
+  font-size: 14px;
 }
 
 .loadingBarDown{
@@ -35,6 +77,7 @@ h6 {
 
 .loadingBox {
     height: 350px;
-    width:75%;
+    width:90%;
     margin: auto;
 }
+

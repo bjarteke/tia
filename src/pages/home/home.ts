@@ -58,23 +58,19 @@ export class HomePage {
 
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
-  private earlyCheckInHours = 2; //How many hour before scheduled start up are employees allowed to check in?
+  private earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
   private numberOfSecondsFromOnLocationToCheckIn = 10;
   private activateAutomaticCheckInOut = true;
 
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
-    console.log("ER I KONSTRUKTØR FØR TRACKER");
-    console.log("ER I KONSTRUKTØR FØR START");
     this.start();
 }
  
   start() {
-          //Start tracking location
+    //Start tracking location
     Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
-      console.log("Start");
-
  }
 
   continueslyChecked() {
@@ -86,13 +82,9 @@ export class HomePage {
       var currentDate = new Date();
       var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
 
-      console.log("SJEKKHER");
-      console.log(currentDate.getTime());
-      console.log(this.locationTracker.onLocationTime.getTime());
-      console.log(currentDate.getTime() - this.locationTracker.onLocationTime.getTime());
-
       //Automatic check in
-      if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 && !this.initialCheckIn && this.activateAutomaticCheckInOut) {
+      if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 
+        && !this.initialCheckIn && this.activateAutomaticCheckInOut && currentDate.getTime() > startDate.getTime() - this.earlyCheckInHours*60*60*1000) {
         this.checkInOut();
       }
 
@@ -128,7 +120,7 @@ export class HomePage {
 
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
     this.checkInOutTimes.push(new Date());   //register the checkInTime
-    this.firebaseService.addCheckInOutTime(this.checkInOutTimes);
+    this.firebaseService.addCheckInOutTime(new Date());
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
         this.segmentWidth.push(this.currentWidth);
         this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
