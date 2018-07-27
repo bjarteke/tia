@@ -35,6 +35,10 @@ export class HomePage {
 
   public sluttid;
 
+  public doneOnce: boolean = false;
+  public paJobb: boolean = false;
+  public forlotTid = null;
+
   //Defining the default value of segment
   public planner : string = "kommende";
 
@@ -64,16 +68,23 @@ export class HomePage {
 
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
+    this.start();
   }
  
-  ionViewDidLoad() {
-    this.locationTracker.startTracking();      //Start tracking location
+  start() {
+    console.log("Er i ionView")
     Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
-
- }
-
-  continueslyChecked() {
+    }
+    
+    continueslyChecked() {
+      
+    this.locationTracker.startTracking();      //Start tracking location
+    /* Starter på nytt om man ikke klarer å lese fra databasen*/
+    if (this.firebaseService.planNext[0] == undefined){
+      return;
+    }
+    
     if (this.firebaseService.planNext[0] != undefined){
       this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
     }
@@ -103,6 +114,14 @@ export class HomePage {
 
     this.checkIfBreak(this.firebaseService.planNext[0]["Starttid"], this.firebaseService.planNext[0]["Sluttid"]);
 
+    if (this.firebaseService.planNext[0] != undefined && this.doneOnce == false){
+      var milliSecondsToEnd = new Date (this.firebaseService.planNext[0]["Slutt"]).getTime() - new Date().getTime();
+      console.log('Skriver ut hvor lenge det er til slutten av dagen')
+      console.log(milliSecondsToEnd);
+      /*setTimeout(this.startEndCheck, milliSecondsToEnd);*/ /* 90000 ms er et kvarter */
+      this.startEndCheck();
+      this.doneOnce = true;
+    }
 
   }
 
@@ -277,6 +296,49 @@ export class HomePage {
        item: item,
        segmentwidth : segmentWidth
      });
+  }
+
+  startEndCheck(){
+    var teller = 1;
+    var sjekketUt: boolean = false;
+    console.log('Er inni startEndCheck')
+    if (this.locationTracker != undefined) {
+      this.paJobb = this.locationTracker.paJobb;
+      console.log('sier om vi er på jobb');
+      console.log(this.paJobb);
+      this.forlotTid = this.locationTracker.forlotTid;
+    }
+
+    Observable.interval(1000).subscribe(ref => {
+      teller = teller + 1;
+      this.paJobb = this.locationTracker.paJobb;
+      if (this.paJobb == false && this.forlotTid == null){
+        this.forlotTid = new Date();
+      }
+      else if (this.paJobb == true){
+        this.forlotTid = null;
+      }
+      else if(new Date().getTime() - this.forlotTid.getTime() > 5000 && sjekketUt == false && this.stempleButton == 'Stemple ut'){
+        console.log('skal sjekke ut');
+        this.checkInOut();
+        sjekketUt = true;
+      }
+    });
+      
+      
+  }
+
+  checkForLeaving(){
+    console.log('er inni checkforleaving');
+    if (this.locationTracker.paJobb == false && this.locationTracker.forlotTid == null){
+      this.locationTracker.forlotTid = new Date();
+    }
+    else if (this.locationTracker.paJobb == true){
+      this.locationTracker.forlotTid = null;
+    }
+    if(new Date().getTime() - this.locationTracker.forlotTid.getTime() > 5000){
+      this.checkInOut();
+    }
   }
 
   

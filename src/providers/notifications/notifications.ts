@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AlertController, Platform } from 'ionic-angular';
 import { FirebaseServiceProvider } from '../firebase-service/firebase-service';
+import { retry } from 'rxjs/operators';
 
 /*
   Generated class for the NotificationsProvider provider.
@@ -63,6 +64,9 @@ export class NotificationsProvider {
 
   scheduleLunchNotification(){
     var now = new Date();
+    if (this.fsp.planNext[0] == undefined){
+      return;
+    }
     var lunsj = new Date(this.fsp.planNext[0]['Lunsj']);
     var tidTilLunsj = lunsj.getTime() - now.getTime();
     console.log('skriver masse');

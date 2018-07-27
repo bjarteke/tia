@@ -5,6 +5,8 @@ import 'rxjs/add/operator/filter';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import turf from 'turf'; 
 import { NotificationsProvider } from '../notifications/notifications';
+import { Observable } from 'rxjs';
+
 
 
 @Injectable()
@@ -18,6 +20,7 @@ export class LocationTracker {
   public sentNotification: boolean = false;
   public lastTimestamp : any;
   public onLocationTime;
+  public forlotTid = null; 
  
   constructor(public zone: NgZone, public backgroundGeolocation: BackgroundGeolocation, private geolocation : Geolocation, public notifications: NotificationsProvider) {
  
