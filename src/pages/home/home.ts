@@ -322,7 +322,7 @@ export class HomePage {
         console.log('skal sjekke ut');
         this.checkInOut();
         sjekketUt = true;
-        this.notifications.sendLeavingNotification();
+        this.notifications.sendNotification('leave', this.forlotTid);
       }
     });
   }
