@@ -105,6 +105,10 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
   }
 
   evaluateSendNotification(){
+    //Må her sjekke om man er satt opp til å arbeide i nærmeste periode. 
+
+    //Hent data fra firebase på om man skal jobbe denne dagen og i nærmeste periode. sendArrivalNotification slår bare til dersom man snart skal jobbe eller har begynt. 
+    
     console.log('Her kommer logg! \n');
     console.log(this.paJobb)
     console.log(this.sentNotification)
@@ -117,6 +121,16 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
       this.onLocationTime = new Date();
     }
 
+  }
+
+  //Skal sjekke om du har en økt, sånn at du blir sjekket inn. 
+  canCheckIn(timeStamp : any) {
+    var dayStart = new Date(timeStamp);
+    var currentDate = new Date();
+    if (dayStart.getMonth() == currentDate.getMonth() && dayStart.getDate() == currentDate.getDate() || currentDate.getDate() - dayStart.getDate() > 0 ){
+      return true;
+    }
+    return false;
   }
 
 

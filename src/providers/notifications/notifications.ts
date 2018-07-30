@@ -58,7 +58,7 @@ export class NotificationsProvider {
   sendArrivalNotification() {
     this.localNotifications.schedule({
       title: "Velkommen på jobb!",
-      text: "Du stemples inn om 10 minutter. Ha en fin dag!"
+      text: "Vi stempler deg nå inn. Ha en fin dag!"
     });
   }
 
@@ -91,8 +91,8 @@ export class NotificationsProvider {
   sendLeavingNotification() {
     console.log('skal si fra at du drar')
     this.localNotifications.schedule({
-      title: "Drar du?",
-      text: "Arbeidsdagen din ser ikke ut til å være helt over enda, sjekk appen."
+      title: "Takk for idag!",
+      text: "Vi stempler deg automatisk ut om 5 minutter hvis du ikke er tilbake."
     });
   }
 

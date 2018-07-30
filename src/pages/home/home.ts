@@ -13,10 +13,10 @@ import { Observable } from 'rxjs/Rx';
 
 //testing -->
 import { ContactPage } from '../contact/contact';
-import { LocalNotifications } from '@ionic-native/local-notifications';
 import { getLocaleTimeFormat } from '@angular/common';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
+import { NotificationsProvider } from '../../providers/notifications/notifications';
 
 
 
@@ -67,7 +67,7 @@ export class HomePage {
   private activateAutomaticCheckInOut = true;
 
   //CONSTRUCTOR
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider, public notifications: NotificationsProvider) {
     this.start();
   }
  
@@ -302,7 +302,6 @@ export class HomePage {
   }
 
   startEndCheck(){
-    var teller = 1;
     var sjekketUt: boolean = false;
     console.log('Er inni startEndCheck')
     if (this.locationTracker != undefined) {
@@ -312,8 +311,8 @@ export class HomePage {
       this.forlotTid = this.locationTracker.forlotTid;
     }
 
-    Observable.interval(1000).subscribe(ref => {
-      teller = teller + 1;
+    //Sjekker hvert sekund om man er utenfor jobb
+    Observable.interval(5000).subscribe(ref => {
       this.paJobb = this.locationTracker.paJobb;
       if (this.paJobb == false && this.forlotTid == null){
         this.forlotTid = new Date();
@@ -321,10 +320,12 @@ export class HomePage {
       else if (this.paJobb == true){
         this.forlotTid = null;
       }
-      else if(new Date().getTime() - this.forlotTid.getTime() > 5000 && sjekketUt == false && this.stempleButton == 'Stemple ut'){
+      //Slår til om man har vært utenfor jobbsonen i 5 minutter
+      else if(new Date().getTime() - this.forlotTid.getTime() > 300000 && sjekketUt == false && this.stempleButton == 'Stemple ut'){
         console.log('skal sjekke ut');
         this.checkInOut();
         sjekketUt = true;
+        this.notifications.sendLeavingNotification();
       }
     });
   }
