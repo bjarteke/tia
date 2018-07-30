@@ -193,7 +193,7 @@ export class FirebaseServiceProvider {
 
   decideCheckInTime(arrivedAtWork){
     //600000 ms er 10 minutter
-    var buffer = 300000;
+    var buffer = 5000;
     
     arrivedAtWork = new Date(arrivedAtWork);
 
@@ -204,14 +204,16 @@ export class FirebaseServiceProvider {
     if (workStart.getTime() - arrivedAtWork.getTime() > buffer){
       this.addCheckInOutTime(workStart);
       this.notifications.sendNotification('arrive_early', workStart);
+      return workStart;
     }
 
     //Kommer på jobb etter 10 minutter før. Skal da sjekke deg inn 10 minutter etter.
-    if(workStart.getTime() - arrivedAtWork.getTime() < buffer){
+    else if(workStart.getTime() - arrivedAtWork.getTime() < buffer){
       var checkInTime = arrivedAtWork.getTime() + buffer;
       checkInTime = new Date(checkInTime);
       this.addCheckInOutTime(checkInTime)
       this.notifications.sendNotification('arrive_late', checkInTime);
+      return checkInTime;
     } 
 
   }

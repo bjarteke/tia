@@ -75,9 +75,8 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
     this.lat = position.coords.latitude;
     this.lng = position.coords.longitude;
     this.insidePolygonCheck(this.lat, this.lng);
-    var now = new Date();
+    /*var now = new Date();
     if (this.paJobb && this.fsp.isWorking(now)){
-      console.log('her er gebben vettu');
       
       if (!this.hasArrived){
         this.fsp.writeArrivalTime(now);
@@ -89,10 +88,9 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
 
       
       if (this.sentNotification == false){
-        /*this.sendCustomizedNotification();*/
         this.sentNotification =true;
       }
-    }
+    } */
     this.lastTimestamp = position.timestamp;
   });
  
