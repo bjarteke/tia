@@ -4,6 +4,11 @@ import { NavController, NavParams } from 'ionic-angular';
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
 import { HomePage } from '../home/home';
 
+import firebase from 'firebase';
+import 'firebase/firestore';
+import { AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
+
+import { ToastController } from 'ionic-angular';
 
 @Component({
   selector: 'page-contact',
@@ -16,6 +21,7 @@ export class ContactPage {
   sluttDato:any;
   sluttTid;
   segmentWidth = [];
+  toggleStempletider = false;
  
   segmentWidthPlan = []
   seconds;
@@ -29,90 +35,46 @@ export class ContactPage {
   stempletiderTop = [];
   stempletiderBottom = [];
 
+  newStempletider = new Array();
+  msg = "";
+  timeStarts = '08:00';
 
   
-  constructor(public navCtrl: NavController, public navParams: NavParams, public firebaseService : FirebaseServiceProvider) {
-
-    this.item = navParams.get('item');
-    this.item.Stempletider.push(this.item.Slutt);
-    this.seconds = ((new Date (this.item.Stempletider[this.item.Stempletider.length-1])).getTime()/1000 - (new Date (this.item.Start)).getTime()/1000) //Number of seconds
-
-
-    if(100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds) > 0) {
-      this.lateWidth = (100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds)) + "%";     
-    }
-
-    this.totalWidthSoFar = parseFloat(this.lateWidth.slice(0,-1));
-
-    var planTimes = [new Date(this.item.Start), new Date(this.item.lunsj), new Date(new Date(this.item.lunsj).getTime() + 30*60000), new Date(this.item.Slutt)];
-    console.log(planTimes);
-    for (var x=0; x<3; x++){
-      var temp = Math.min(100-this.totalWidthSoFarPlan,100*(Math.abs((+planTimes[x+1] - +planTimes[x])/1000)/this.seconds));
-      this.totalWidthSoFarPlan += temp;
-      this.segmentWidthPlan.push(temp + "%")
-    }
-
-    console.log(this.segmentWidthPlan);
-
-    for (var x=0; x<this.item.Stempletider.length - 1; x++){
-      var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x]))/1000)/this.seconds));
-      this.totalWidthSoFar += temp;
-      this.segmentWidth.push(temp + "%");
-      console.log("ITERASJON");
-
-      console.log(this.segmentWidth);
-      console.log(this.totalWidthSoFar);
-      
-    }
-    for (var x=0; x<this.item.Stempletider.length-1; x++) {
-    var totalWidthSoFarTop = 0;
-
-      if (x%2==0) {
-        if(x==0){
-          this.marginWidthTop.push(this.lateWidth);
-        }
-        else {
-          var temp = Math.min(100-totalWidthSoFarTop,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x-1]))/1000)/this.seconds));
-          this.marginWidthTop.push(temp - 20 + "%");
-        }
-        this.stempletiderTop.push(this.item.Stempletider[x]);
-            totalWidthSoFarTop += temp;
-
-      }  
-    }
-
-    for (var x = 0; x<this.item.Stempletider.length; x++) {
-      var totalWidthSoFarBottom = 0;
-      if(x%2 != 0) {
-        if(x==1){
-          var temp = Math.min(100-totalWidthSoFarBottom,100*(Math.abs((+new Date(this.item.Stempletider[1]) - +new Date(this.item.Stempletider[0]))/1000)/this.seconds));
-          this.marginWidthBottom.push(parseFloat(this.marginWidthTop[0].slice(0,-1)) + temp -4  + "%");
-        }
-        else{
-          var temp = Math.min(100-totalWidthSoFarBottom,100*(Math.abs((+new Date(this.item.Stempletider[x]) - +new Date(this.item.Stempletider[x-1]))/1000)/this.seconds));
-          this.marginWidthBottom.push(temp - 15 + "%");
-        }
-        this.stempletiderBottom.push(this.item.Stempletider[x]);
-            totalWidthSoFarBottom += temp;
-
-      }
-    }
-    console.log("Dette stedet");
-    console.log(this.marginWidthTop);
-    console.log(this.marginWidthBottom);
-    console.log(this.stempletiderBottom);
-
-
+  constructor(public navCtrl: NavController, public navParams: NavParams, public firebaseService : FirebaseServiceProvider, public afd: AngularFirestore, public toastCtrl: ToastController) {
+    this.item = this.navParams.get('item');
     this.startTid = this.item.Starttid;
     this.sluttTid = this.item.Sluttid;
     this.startDato = this.item.Startdato;
     this.sluttDato = this.item.Sluttdato;
+    for (var x = 0; x<this.item.Stempletider.length; x++){
+      this.newStempletider.push(this.item.Stempletider[x]);
+    }
+    this.newStempletider.sort();
+    this.init();
+    
   }
 
-  showEditButton(item){
-    var currentDate = new Date();
-    var endDate = new Date(item.Slutt);
-    return endDate.getTime() < currentDate.getTime();
+  init() {
+    /* Adding the end time to the "Stempletider" array (making sure that it is not already added */
+    if(this.item.Stempletider[this.item.Stempletider.length - 1] != this.item.Slutt){
+      this.item.Stempletider.push(this.item.Slutt);
+    }
+
+    /* Calculate the duration of the work session, measured in seconds */
+    this.seconds = ((new Date (this.item.Stempletider[this.item.Stempletider.length-1])).getTime()/1000 - (new Date (this.item.Start)).getTime()/1000);
+
+    /* Setting the lateWidth variable if check in was done too late */
+    if(100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds) > 0) {
+      this.lateWidth = (100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds)) + "%";     
+    }
+
+    /* Calculate the segment widths of the loading bar */
+    this.totalWidthSoFar = parseFloat(this.lateWidth.slice(0,-1));
+    for (var x=0; x<this.item.Stempletider.length - 1; x++){
+      var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x]))/1000)/this.seconds));
+      this.totalWidthSoFar += temp;
+      this.segmentWidth.push(temp + "%");      
+    }
   }
 
   fromTimestampToHHMM(timestamp) {
@@ -135,8 +97,85 @@ export class ContactPage {
     return (startDate.getTime() > currentDate.getTime());
   }
 
-  editTimestamp(timestamp) {
+  editTimestamps() {
+    //this.toggleStempletider = true;
+    //this.newStempletider = this.item.Stempletider;
+  }
 
+  deleteTimestamp(x) {
+    this.newStempletider.splice(x,1);
+  }
+
+  addTimestamp(timestamp) {
+    var d = new Date(this.item.Start);
+    var h = this.timeStarts.slice(0,2);
+    var m = this.timeStarts.slice(3,5);
+    d.setUTCHours(parseInt(h)-2);
+    d.setUTCMinutes(parseInt(m));
+    console.log(this.newStempletider);
+    this.newStempletider.push(d);
+    this.newStempletider.sort();
+  }
+
+  sortStempletider() {
+    console.log(this.newStempletider);
+    for (var y = 0; y<this.newStempletider.length; y++) {
+    for (var x = 0; x<this.newStempletider.length-1; x++) {
+      if(new Date(this.newStempletider[x]).getTime() > new Date(this.newStempletider[x+1]).getTime()){
+        var temp = this.newStempletider[x];
+        this.newStempletider[x] = this.newStempletider[x+1];
+        this.newStempletider[x+1] = temp;
+      }
+    }
+    }
+    console.log(this.newStempletider);
+  }
+
+  sendChanges() {
+    console.log(this.msg);
+    if (this.msg == "") {
+      const toast = this.toastCtrl.create({
+        message: 'FEIL: Beskriv årsak til endring',
+        duration: 3000,
+        position: 'top'
+      });
+      toast.present();
+    }
+    if (this.newStempletider.length %2 == 0) {
+      const toast = this.toastCtrl.create({
+        message: 'FEIL: Det må være like mange inn- og utstemplinger',
+        duration: 5000,
+        position: 'top'
+      });
+      toast.present();
+    }
+    if(this.msg != "" && this.newStempletider.length %2 != 0) {
+      this.afd.collection("arbeidsokter").doc(this.item.ID).update({
+        "Stempletider" : this.newStempletider,
+        "EndretMelding" : this.msg
+      })
+      .then(function() {
+        console.log("CheckInOut successfully edited");
+        const toast = this.toastCtrl.create({
+        message: 'Endringer sendt til godkjenning',
+        duration: 3000,
+        position: 'top'
+      });
+      toast.present();
+      })
+      .catch(function(error){
+        console.error("Error when editing CheckInOut: ", error)
+      });
+    }
+  }
+
+  sendEditSuccess(){
+    const toast = this.toastCtrl.create({
+        message: 'Endringer sendt til godkjenning',
+        duration: 3000,
+        position: 'top'
+      });
+      toast.present();
   }
 
   selectBackground(i){
@@ -145,6 +184,15 @@ export class ContactPage {
     }
     else {
       return "repeating-linear-gradient(-45deg,#a00b0b,#a00b0b 10px,#c00b0b 10px,#c00b0b 20px)";
+    }
+  }
+
+  toggleStemple(){
+    if(this.toggleStempletider) {
+      this.toggleStempletider = false;
+    }
+    else {
+      this.toggleStempletider = true;
     }
   }
 
