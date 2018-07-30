@@ -60,6 +60,8 @@ export class HomePage {
 
   public finishedBreak : boolean = false;
 
+  public initialLocationSet : boolean = false;
+
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
   private earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
@@ -78,33 +80,30 @@ export class HomePage {
     }
     
   continueslyChecked() {
+    if(!this.initialLocationSet){
+      this.locationTracker.startTracking();      //Start tracking location
+      this.initialLocationSet = true;
+    }
 
-  
-      
-    this.locationTracker.startTracking();      //Start tracking location
     /* Starter på nytt om man ikke klarer å lese fra databasen*/
     if (this.firebaseService.planNext[0] == undefined || this.locationTracker.onLocationTime == undefined){
       return;
     }
 
-    console.log('sjekker databaseuthenting');
-    console.log(this.firebaseService.planNext[0]);
-    console.log(this.locationTracker.onLocationTime);
-    
-    console.log(this.firebaseService.planNext[0]["Slutt"]);
+    /* Set the duration of the work session in seconds */
     this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
     
 
     var currentDate = new Date();
     var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
 
-    //Automatic check in
+    /* Automatic check in */
     if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 
       && !this.initialCheckIn && this.activateAutomaticCheckInOut && currentDate.getTime() > startDate.getTime() - this.earlyCheckInHours*60*60*1000) {
       this.checkInOut();
     }
 
-    //Updating the loadingBar
+    /* Updating the loadingBar */
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
       //If too late, and not checked in.
       this.lateCheckIn = true;
@@ -129,8 +128,7 @@ export class HomePage {
   }
 
   checkInOut() {
-    //Updating the LoadingBar with a red color corresponding to late check in time.
-
+    /* Updating the LoadingBar with a red color corresponding to late check in time. */
     if(this.lateCheckIn == true && this.segmentWidth.length == 0 && this.stop == false){
       this.segmentWidth.push(this.currentWidth);
       this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
@@ -147,7 +145,7 @@ export class HomePage {
         this.currentWidth = "0%"; //Making sure that the new loadingBar starts at 0%
     }
 
-    //Changing the text of the "Stemple inn/ut" box, changing the color of the pin.
+    /* Changing the text of the "Stemple inn/ut" box, changing the color of the pin. */
     if (this.stempleButton == "Stemple inn"){
       this.stempleButton = "Stemple ut";
       this.checkInOutVar = "checkInOut2";
@@ -198,7 +196,6 @@ export class HomePage {
   //LOADING BAR
   updateLoadingBar() {
     //Adding the first segment if employee has checked in late
-
     if(this.lateCheckIn == true && this.segmentWidth.length == 0) {
       this.segmentWidth.push(this.currentWidth);
     }

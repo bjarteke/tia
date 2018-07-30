@@ -17,31 +17,31 @@
 <ion-content>
   <h1 style="color:black; text-align:center;padding-top:20px">{{item.Startdato}}</h1>
   <h3 style="color:black; text-align:center;padding:0">{{item.Starttid}} - {{item.Sluttid}}</h3>
-  <h6 *ngIf="!inTheFuture()" style="padding:10px">Registrerte stemplinger</h6>
-  <div class="loadingBox" style="height:50px" *ngIf="!inTheFuture()">
-    <!--
-    <div style="height:350px">
-      <div  class="loadingBarDown" *ngFor="let x of segmentWidthPlan, let j = index" style="position:absolute" [ngStyle]="{'height' : x}"> </div>
+  
+ <ion-card style="width:75%;margin-left:auto;margin-right:auto" *ngIf="!inTheFuture()"> 
+    <ion-card-header style="color:#ffffff;background-color:#3a3a3a;padding:9px">Stempletider<ion-icon style="float: right;"  name="build"></ion-icon></ion-card-header>
+    
+    <div class="loadingBox" style="height:10px" >
+        <div *ngIf="lateWidth!='0%'" style="height:10px; margin-right:-4px" class="loadingBoxInner" [ngStyle]="{'width' : lateWidth}" >
+          <div style="height:10px;width:100%" ></div>
+        </div>
+        <div style="margin-top:-40px; height:10px" *ngFor="let x of segmentWidth, let j = index" class="loadingBoxInner" [ngStyle]="{'width' : x}">
+          <div style="height:10px;width:100%;margin-top:-40px"  (click)="editTimestamp(fromTimestampToHHMM(item.Stempletider[j]))"></div>
+        </div>
+        <div class="loadingBoxInner">
+        </div>
     </div>
-    -->
-    <div style="height:50px">
-      <h6 style="text-align:right;float:right">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1])}}</h6>
-      <div>
-        <h6>&#8203; </h6>
-        <div style="height:40px" class="loadingBar" [ngStyle]="{'width' : lateWidth}"></div>
-      </div>
-      <div *ngFor="let x of segmentWidth, let j = index">
-        <h6>{{fromTimestampToHHMM(item.Stempletider[j])}}</h6>
-        <div style="height:40px" class="loadingBar" (click)="editTimestamp(fromTimestampToHHMM(item.Stempletider[j]))" [ngStyle]="{'width' : x}">
-      </div>
-      </div>
+
+    <div style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px">
+      <div style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>
+      <div style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -2 ])}} </span> </h5></div>
     </div>
-  </div>
+  </ion-card>
 
-<ion-list>
-<ion-list-header>På jobb denne dagen</ion-list-header>
-
-    <ion-item style="border-radius:5px 5px 0 0">
+<ion-card style="width:75%;margin-left:auto;margin-right:auto">
+  <ion-card-header style="color:#ffffff;background-color:#3a3a3a;padding:9px">På jobb denne dagen</ion-card-header>
+  <ion-list style="padding:0">
+    <ion-item>
       <ion-avatar item-start>
         <div class="avatar">KÅ</div>
       </ion-avatar>
@@ -73,4 +73,5 @@
       <p>10:00 - 18:00</p>
     </ion-item>
   </ion-list>
+</ion-card>
 </ion-content>
