@@ -16,6 +16,7 @@ export class ContactPage {
   sluttDato:any;
   sluttTid;
   segmentWidth = [];
+ 
   segmentWidthPlan = []
   seconds;
   lateWidth = "0%";
@@ -23,11 +24,19 @@ export class ContactPage {
   totalWidthSoFarPlan = 0;
 
 
+   marginWidthTop = [];
+  marginWidthBottom = [];
+  stempletiderTop = [];
+  stempletiderBottom = [];
+
+
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public firebaseService : FirebaseServiceProvider) {
 
     this.item = navParams.get('item');
-    this.seconds = ((new Date (this.item.Stempletider[this.item.Stempletider.length-1])).getTime()/1000 - (new Date (this.item.Stempletider[0])).getTime()/1000) //Number of seconds
+    this.item.Stempletider.push(this.item.Slutt);
+    this.seconds = ((new Date (this.item.Stempletider[this.item.Stempletider.length-1])).getTime()/1000 - (new Date (this.item.Start)).getTime()/1000) //Number of seconds
+
 
     if(100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds) > 0) {
       this.lateWidth = (100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds)) + "%";     
@@ -42,13 +51,58 @@ export class ContactPage {
       this.totalWidthSoFarPlan += temp;
       this.segmentWidthPlan.push(temp + "%")
     }
+
     console.log(this.segmentWidthPlan);
 
     for (var x=0; x<this.item.Stempletider.length - 1; x++){
       var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x]))/1000)/this.seconds));
       this.totalWidthSoFar += temp;
-      this.segmentWidth.push(temp + "%")
+      this.segmentWidth.push(temp + "%");
+      console.log("ITERASJON");
+
+      console.log(this.segmentWidth);
+      console.log(this.totalWidthSoFar);
+      
     }
+    for (var x=0; x<this.item.Stempletider.length-1; x++) {
+    var totalWidthSoFarTop = 0;
+
+      if (x%2==0) {
+        if(x==0){
+          this.marginWidthTop.push(this.lateWidth);
+        }
+        else {
+          var temp = Math.min(100-totalWidthSoFarTop,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x-1]))/1000)/this.seconds));
+          this.marginWidthTop.push(temp - 20 + "%");
+        }
+        this.stempletiderTop.push(this.item.Stempletider[x]);
+            totalWidthSoFarTop += temp;
+
+      }  
+    }
+
+    for (var x = 0; x<this.item.Stempletider.length; x++) {
+      var totalWidthSoFarBottom = 0;
+      if(x%2 != 0) {
+        if(x==1){
+          var temp = Math.min(100-totalWidthSoFarBottom,100*(Math.abs((+new Date(this.item.Stempletider[1]) - +new Date(this.item.Stempletider[0]))/1000)/this.seconds));
+          this.marginWidthBottom.push(parseFloat(this.marginWidthTop[0].slice(0,-1)) + temp -4  + "%");
+        }
+        else{
+          var temp = Math.min(100-totalWidthSoFarBottom,100*(Math.abs((+new Date(this.item.Stempletider[x]) - +new Date(this.item.Stempletider[x-1]))/1000)/this.seconds));
+          this.marginWidthBottom.push(temp - 15 + "%");
+        }
+        this.stempletiderBottom.push(this.item.Stempletider[x]);
+            totalWidthSoFarBottom += temp;
+
+      }
+    }
+    console.log("Dette stedet");
+    console.log(this.marginWidthTop);
+    console.log(this.marginWidthBottom);
+    console.log(this.stempletiderBottom);
+
+
     this.startTid = this.item.Starttid;
     this.sluttTid = this.item.Sluttid;
     this.startDato = this.item.Startdato;
@@ -83,6 +137,15 @@ export class ContactPage {
 
   editTimestamp(timestamp) {
 
+  }
+
+  selectBackground(i){
+    if(i%2 == 0){
+      return "repeating-linear-gradient(-45deg,#7CFC00,#7CFC00 10px,#4EFC00 10px,#4EFC00 20px)";
+    }
+    else {
+      return "repeating-linear-gradient(-45deg,#a00b0b,#a00b0b 10px,#c00b0b 10px,#c00b0b 20px)";
+    }
   }
 
 }

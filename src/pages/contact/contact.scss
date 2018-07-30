@@ -5,12 +5,28 @@ page-contact {
 h6 {
    text-align:left;
    font-weight:300;
-   font-size:16px;
+   font-size:13px;
    margin:0;
+}
+
+h1 {
+    padding-left:0px !important;
+}
+
+h5 {
+    padding-left:0px !important;
 }
 
 .list-md {
     background-color:rgba(256, 256, 256,  0)!important;
+    padding:0% !important;
+}
+
+
+
+.ion-vard-header {
+    color:#ffffff !important;
+    background-color: #3a3a3a !important;
 }
 
 .label p {
@@ -24,9 +40,6 @@ h6 {
     font-weight:400;
 }
 
-.ion-list:first-child{
-    border-radius: 5px 5px 0px 0px;
-}
 
 .item-block {
     background-color: #f8f8f8 !important;
@@ -55,29 +68,43 @@ border-bottom:0;
     width:50%;
     margin-left:auto;
     margin-right:auto;
-   background: repeating-linear-gradient(
+       text-align:center;
+}
+
+.loadingBarDown:nth-child(odd){
+    color:#ffffff;
+       text-align:center;
+}
+
+.loadingBox {
+    height: 350px;
+    width:100%;
+    margin: auto;
+}
+
+.loadingBoxInner {
+    display: inline-block;
+}
+
+
+
+.loadingBoxInner:nth-child(even) {
+    background: repeating-linear-gradient(
   -45deg,
   #7CFC00,
   #7CFC00 10px,
   #4EFC00 10px,
     #4EFC00 20px
-    );    text-align:center;
+    ) !important;
 }
 
-.loadingBarDown:nth-child(odd){
-    color:#ffffff;
+.loadingBoxInner:nth-child(odd) {
     background: repeating-linear-gradient(
   -45deg,
   #a00b0b,
   #a00b0b 10px,
   #c00b0b 10px,
     #c00b0b 20px
-    );    text-align:center;
-}
-
-.loadingBox {
-    height: 350px;
-    width:90%;
-    margin: auto;
+    ); 
 }
 

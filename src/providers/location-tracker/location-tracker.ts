@@ -8,7 +8,6 @@ import { NotificationsProvider } from '../notifications/notifications';
 import { Observable } from 'rxjs';
 
 
-
 @Injectable()
 export class LocationTracker {
  
@@ -21,12 +20,14 @@ export class LocationTracker {
   public lastTimestamp : any;
   public onLocationTime;
   public forlotTid = null; 
+  public initialRun = false;
  
   constructor(public zone: NgZone, public backgroundGeolocation: BackgroundGeolocation, private geolocation : Geolocation, public notifications: NotificationsProvider) {
  
   }
  
   startTracking() {
+  this.initialRun = true;
     // Background Tracking
   let config = {
     desiredAccuracy: 0,
