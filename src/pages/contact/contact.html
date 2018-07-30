@@ -19,23 +19,49 @@
   <h3 style="color:black; text-align:center;padding:0">{{item.Starttid}} - {{item.Sluttid}}</h3>
   
  <ion-card style="width:75%;margin-left:auto;margin-right:auto" *ngIf="!inTheFuture()"> 
-    <ion-card-header style="color:#ffffff;background-color:#3a3a3a;padding:9px">Stempletider<ion-icon style="float: right;"  name="build"></ion-icon></ion-card-header>
+    <ion-card-header style="color:#ffffff;background-color:#3a3a3a;padding:9px">Stempletider<ion-icon style="float: right;" name="build" (click)="toggleStemple()"></ion-icon></ion-card-header>
     
-    <div class="loadingBox" style="height:10px" >
+
+    <div *ngIf="!toggleStempletider" class="loadingBox" style="height:10px" >
         <div *ngIf="lateWidth!='0%'" style="height:10px; margin-right:-4px" class="loadingBoxInner" [ngStyle]="{'width' : lateWidth}" >
           <div style="height:10px;width:100%" ></div>
         </div>
         <div style="margin-top:-40px; height:10px" *ngFor="let x of segmentWidth, let j = index" class="loadingBoxInner" [ngStyle]="{'width' : x}">
-          <div style="height:10px;width:100%;margin-top:-40px"  (click)="editTimestamp(fromTimestampToHHMM(item.Stempletider[j]))"></div>
+          <div style="height:10px;width:100%;margin-top:-40px"></div>
         </div>
         <div class="loadingBoxInner">
         </div>
     </div>
 
-    <div style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px">
-      <div style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>
-      <div style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -2 ])}} </span> </h5></div>
+    <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">
+      <div *ngIf="item.Stempletider.length==1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>
+      <div *ngIf="item.Stempletider.length!=1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>
+      <div *ngIf="item.Stempletider.length==1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>
+      <div *ngIf="item.Stempletider.length!=1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -2 ])}} </span> </h5></div>
     </div>
+    <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">
+      <ion-item class="checkInOutInfoBox" *ngFor="let x of newStempletider | slice:0:-1, let j = index">
+        <!--<h6 *ngIf="j%2==0">Inn </h6>
+        <h6 *ngIf="j%2!=0">Ut </h6> -->
+        <ion-label style="display:table;height:100%">
+        <h4 style="display:table-cell;vertical-align:middle">{{fromTimestampToHHMM(x)}} </h4>
+        <button style="height:100%;width:30%;border-radius:0;opacity:0.8;font-size:20px" ion-button color="danger" class="editButtons"><ion-icon name="trash" (click)="deleteTimestamp(j)"></ion-icon></button>
+        </ion-label>
+        <!--<button ion-button color="primary" class="editButtons"><ion-icon name="build" ></ion-icon></button> -->
+      </ion-item>
+      <ion-item>
+          <ion-label>Nytt klokkeslett</ion-label>
+
+        <ion-datetime displayFormat="HH:mm" pickerFormat="HH:mm" [(ngModel)]="timeStarts"></ion-datetime>
+      </ion-item>
+        <button (click)="addTimestamp()" style="padding:0; margin:0" ion-button full color="primary">Legg til</button>
+     
+      <ion-item>
+        <ion-label stacked style="padding:5px">Årsak til endring: </ion-label>
+        <ion-textarea style="padding:5px" [(ngModel)]="msg"></ion-textarea>
+      </ion-item>
+      <button ion-button full (click)="sendChanges()">Utfør endringer</button>
+    </ion-list> 
   </ion-card>
 
 <ion-card style="width:75%;margin-left:auto;margin-right:auto">

@@ -22,6 +22,14 @@ h5 {
     padding:0% !important;
 }
 
+.checkInOutInfoBox:nth-child(odd){
+    background: repeating-linear-gradient(-45deg,#7CFC00,#7CFC00 10px,#4EFC00 10px,#4EFC00 20px);
+}
+
+.checkInOutInfoBox:nth-child(even){
+    background: repeating-linear-gradient(-45deg,#a00b0b,#a00b0b 10px,#c00b0b 10px,#c00b0b 20px);
+}
+
 
 
 .ion-vard-header {
@@ -40,6 +48,10 @@ h5 {
     font-weight:400;
 }
 
+.posts{
+    height:100%;
+    display:table;
+}
 
 .item-block {
     background-color: #f8f8f8 !important;
@@ -108,3 +120,12 @@ border-bottom:0;
     ); 
 }
 
+.editButtons {
+    float:right;
+    height:30px;
+    margin-right: 5px;
+    font-size: 15px;
+    height: 100%;
+    margin: 0;
+    width: 15%;
+}
