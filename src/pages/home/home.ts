@@ -308,6 +308,7 @@ export class HomePage {
 
 
   itemSelected(item,segmentWidth) {
+    console.log(item);
      this.navCtrl.push(ContactPage, {
        item: item,
        segmentwidth : segmentWidth

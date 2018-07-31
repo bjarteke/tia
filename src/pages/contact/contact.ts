@@ -35,8 +35,8 @@ export class ContactPage {
   stempletiderTop = [];
   stempletiderBottom = [];
 
-  newStempletider = new Array();
-  sendingStempletider = new Array();
+  newStempletider = new Array(); //used for loading bar
+  sendingStempletider = new Array(); //used for editing
   msg = "";
   timeStarts = '08:00';
 
@@ -46,15 +46,37 @@ export class ContactPage {
     for (var x = 0; x<this.item.Stempletider.length; x++){
       this.newStempletider.push(this.item.Stempletider[x]);
     }
+    if(this.newStempletider[this.newStempletider.length - 1] != this.item.Slutt) {
+      this.newStempletider.push(this.item.Slutt);
+    }    
     this.newStempletider.sort();
     console.log("CONSTRUCTOR");
-    console.log(this.newStempletider);
-    console.log(this.sendingStempletider);
-    this.sendingStempletider = this.newStempletider;
+    console.log(this.item.Stempletider);
+    this.sendingStempletider = this.item.Stempletider.sort();
     this.init();
     
   }
 
+  init() {
+    /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
+   
+
+    /* Calculate the duration of the work session, measured in seconds */
+    this.seconds = ((new Date (this.newStempletider[this.newStempletider.length-1])).getTime()/1000 - (new Date (this.item.Start)).getTime()/1000);
+
+    /* Setting the lateWidth variable if check in was done too late */
+    if(100*(Math.abs((+new Date(this.newStempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds) > 0) {
+      this.lateWidth = (100*(Math.abs((+new Date(this.newStempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds)) + "%";     
+    }
+
+    /* Calculate the segment widths of the loading bar */
+    this.totalWidthSoFar = parseFloat(this.lateWidth.slice(0,-1));
+    for (var x=0; x<this.newStempletider.length - 1; x++){
+      var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.newStempletider[x+1]) - +new Date(this.newStempletider[x]))/1000)/this.seconds));
+      this.totalWidthSoFar += temp;
+      this.segmentWidth.push(temp + "%");      
+    }
+  }
   timestampToDate2(timestamp){
     timestamp = new Date(timestamp);
     var months = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august" , "september" , "oktober" , "november" , "desember" ]
@@ -77,28 +99,6 @@ export class ContactPage {
     return (outH + ":" + outM);
   }
 
-  init() {
-    /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
-    if(this.item.Stempletider[this.item.Stempletider.length - 1] != this.item.Slutt && new Date(this.item.Stempletider[this.item.Stempletider.length - 1]).getTime() < new Date(this.item.Slutt).getTime()){
-      this.item.Stempletider.push(this.item.Slutt);
-    }
-
-    /* Calculate the duration of the work session, measured in seconds */
-    this.seconds = ((new Date (this.item.Stempletider[this.item.Stempletider.length-1])).getTime()/1000 - (new Date (this.item.Start)).getTime()/1000);
-
-    /* Setting the lateWidth variable if check in was done too late */
-    if(100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds) > 0) {
-      this.lateWidth = (100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds)) + "%";     
-    }
-
-    /* Calculate the segment widths of the loading bar */
-    this.totalWidthSoFar = parseFloat(this.lateWidth.slice(0,-1));
-    for (var x=0; x<this.item.Stempletider.length - 1; x++){
-      var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x]))/1000)/this.seconds));
-      this.totalWidthSoFar += temp;
-      this.segmentWidth.push(temp + "%");      
-    }
-  }
 
   fromTimestampToHHMM(timestamp) {
     var date = new Date(timestamp);

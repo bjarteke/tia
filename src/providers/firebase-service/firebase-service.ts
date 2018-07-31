@@ -46,6 +46,8 @@ export class FirebaseServiceProvider {
   public weeknumbers = [];
   public uniqueWeeknumbers = [];
 
+  public doneInitial = false;
+
 
   constructor(public afd: AngularFirestore, public notifications: NotificationsProvider) {
     /* Retrieving data from Firestore */
@@ -117,6 +119,8 @@ export class FirebaseServiceProvider {
         this.uniqueWeeknumbers.push(this.weeknumbers[y]);
       }
     }
+
+    this.doneInitial = true;
   }
 
   /* Calculating the week number of a date object given as a parameter */

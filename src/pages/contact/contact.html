@@ -40,7 +40,7 @@
       <div *ngIf="item.Stempletider.length==1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>
       <div *ngIf="item.Stempletider.length!=1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>
       <div *ngIf="item.Stempletider.length==1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>
-      <div *ngIf="item.Stempletider.length!=1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -2 ])}} </span> </h5></div>
+      <div *ngIf="item.Stempletider.length!=1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>
     </div>
     <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">
       <ion-item style="padding:0;height:30px" *ngFor="let x of sendingStempletider, let j = index">
