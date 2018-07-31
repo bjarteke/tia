@@ -42,10 +42,6 @@ export class ContactPage {
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public firebaseService : FirebaseServiceProvider, public afd: AngularFirestore, public toastCtrl: ToastController) {
     this.item = this.navParams.get('item');
-    this.startTid = this.item.Starttid;
-    this.sluttTid = this.item.Sluttid;
-    this.startDato = this.item.Startdato;
-    this.sluttDato = this.item.Sluttdato;
     for (var x = 0; x<this.item.Stempletider.length; x++){
       this.newStempletider.push(this.item.Stempletider[x]);
     }
@@ -54,10 +50,30 @@ export class ContactPage {
     
   }
 
+  timestampToDate2(timestamp){
+    timestamp = new Date(timestamp);
+    var months = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august" , "september" , "oktober" , "november" , "desember" ]
+    var d = timestamp.getDate();
+    var outD = (d<10) ? "0"+ d : d;
+    return (outD + ". " + months[timestamp.getMonth()] + " " + timestamp.getFullYear());
+  }
+
+  fromTimestampToHHMM2(timestamp) {
+    var date = new Date(timestamp);
+    var m = Math.abs((new Date (date).getMinutes()));
+    var h = Math.abs((new Date (date).getHours()));
+
+    var outH = ""+h;
+    var outM = ""+m;
+
+    outH = (h<10) ? "0"+ h : outH;
+    outM = (m<10) ? "0"+ m : outM;
+
+    return (outH + ":" + outM);
+  }
+
   init() {
     /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
-    console.log(this.item.Stempletider);
-
     if(this.item.Stempletider[this.item.Stempletider.length - 1] != this.item.Slutt && new Date(this.item.Stempletider[this.item.Stempletider.length - 1]).getTime() < new Date(this.item.Slutt).getTime()){
       this.item.Stempletider.push(this.item.Slutt);
     }
@@ -74,8 +90,6 @@ export class ContactPage {
     this.totalWidthSoFar = parseFloat(this.lateWidth.slice(0,-1));
     for (var x=0; x<this.item.Stempletider.length - 1; x++){
       var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x]))/1000)/this.seconds));
-      console.log("ITERASJON");
-      console.log(this.item.Stempletider);
       this.totalWidthSoFar += temp;
       this.segmentWidth.push(temp + "%");      
     }
