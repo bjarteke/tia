@@ -21,6 +21,12 @@
  <ion-card class="ionCard" *ngIf="!inTheFuture()"> 
     <ion-card-header class="ionCardHeader">Stempletider<ion-icon style="float: right;" name="build" (click)="toggleStemple()"></ion-icon></ion-card-header>
     
+    <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">
+      <div *ngIf="item.Stempletider.length==1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>
+      <div *ngIf="item.Stempletider.length!=1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>
+      <div *ngIf="item.Stempletider.length==1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>
+      <div *ngIf="item.Stempletider.length!=1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>
+    </div>
 
     <div *ngIf="!toggleStempletider" class="loadingBox" style="height:10px" >
         <div class="loadingBoxInner" *ngIf="lateWidth!='0%'" style="width:0px;margin-left:-4px">
@@ -36,17 +42,11 @@
         </div>
     </div>
 
-    <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">
-      <div *ngIf="item.Stempletider.length==1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>
-      <div *ngIf="item.Stempletider.length!=1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>
-      <div *ngIf="item.Stempletider.length==1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>
-      <div *ngIf="item.Stempletider.length!=1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>
-    </div>
     <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">
       <ion-item style="padding:0;height:30px" *ngFor="let x of sendingStempletider, let j = index">
         <div class="checkInOutInfoBox" style="display:table-cell; width:30px;padding-top:20px;padding-bottom:20px" [ngStyle]="{'background' : selectBackground(j)}">
-          <h2 *ngIf="j%2==0" style="text-transform:uppercase; text-align:center; font-size: 25px; font-weight:800;">I</h2>
-          <h2 *ngIf="j%2!=0" style="color:white; text-transform:uppercase; text-align:center; font-size: 25px; font-weight:800;">U</h2>
+          <h2 *ngIf="j%2==0" style="text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:5px">INN</h2>
+          <h2 *ngIf="j%2!=0" style="color:white; text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:8.5px">UT</h2>
         </div>          
         <div style="display:table-cell;padding:15px;vertical-align:middle"> {{fromTimestampToHHMM(x)}}</div>
         <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>
