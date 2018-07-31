@@ -55,8 +55,10 @@ export class ContactPage {
   }
 
   init() {
-    /* Adding the end time to the "Stempletider" array (making sure that it is not already added */
-    if(this.item.Stempletider[this.item.Stempletider.length - 1] != this.item.Slutt){
+    /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
+    console.log(this.item.Stempletider);
+
+    if(this.item.Stempletider[this.item.Stempletider.length - 1] != this.item.Slutt && new Date(this.item.Stempletider[this.item.Stempletider.length - 1]).getTime() < new Date(this.item.Slutt).getTime()){
       this.item.Stempletider.push(this.item.Slutt);
     }
 
@@ -72,6 +74,8 @@ export class ContactPage {
     this.totalWidthSoFar = parseFloat(this.lateWidth.slice(0,-1));
     for (var x=0; x<this.item.Stempletider.length - 1; x++){
       var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x]))/1000)/this.seconds));
+      console.log("ITERASJON");
+      console.log(this.item.Stempletider);
       this.totalWidthSoFar += temp;
       this.segmentWidth.push(temp + "%");      
     }
@@ -97,6 +101,15 @@ export class ContactPage {
     return (startDate.getTime() > currentDate.getTime());
   }
 
+  alreadyInList(d){
+    for (var x=0; x<this.newStempletider.length;x++){
+      if (new Date(this.newStempletider[x]).getMinutes() == d.getMinutes() && new Date(this.newStempletider[x]).getHours() == d.getHours() ){
+        return true;
+      }
+    }
+    return false;
+  }
+
   editTimestamps() {
     //this.toggleStempletider = true;
     //this.newStempletider = this.item.Stempletider;
@@ -112,9 +125,17 @@ export class ContactPage {
     var m = this.timeStarts.slice(3,5);
     d.setUTCHours(parseInt(h)-2);
     d.setUTCMinutes(parseInt(m));
-    console.log(this.newStempletider);
-    this.newStempletider.push(d);
-    this.newStempletider.sort();
+    if(!this.alreadyInList(d)){
+      this.newStempletider.push(d);
+      this.newStempletider.sort();
+    }
+    else {
+      this.toastCtrl.create({
+        message: 'FEIL: Allerede lagt til',
+        duration: 3000,
+        position: 'top'
+      }).present();
+    }
   }
 
   sortStempletider() {
@@ -128,54 +149,56 @@ export class ContactPage {
       }
     }
     }
-    console.log(this.newStempletider);
+  }
+
+  toast(text, duration){
+    const toast = this.toastCtrl.create({
+        message: text,
+        duration: duration,
+        position: 'top'
+      });
+    toast.present();
+  }
+
+  sendChangesHandler() {
+    if(this.sendChanges()){
+      this.toast('Endringer sendt til godkjenning',3000);
+    }
+    else {
+      this.toast('FEIL: Noe gikk galt. Sjekk internett-tilkoblingen din',5000);
+    }
   }
 
   sendChanges() {
-    console.log(this.msg);
+    /* Error handling */
     if (this.msg == "") {
-      const toast = this.toastCtrl.create({
-        message: 'FEIL: Beskriv årsak til endring',
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
+      this.toast('FEIL: Beskriv årsak til endring',3000);
     }
     if (this.newStempletider.length %2 == 0) {
-      const toast = this.toastCtrl.create({
-        message: 'FEIL: Det må være like mange inn- og utstemplinger',
-        duration: 5000,
-        position: 'top'
-      });
-      toast.present();
+      this.toast('FEIL: Det må være like mange inn- og utstemplinger',5000);
     }
+
+    /* Creating an array consisting of old and new change messages */
+    var listEndretMelding = [];
+    if(this.item.EndretMelding != undefined) {
+      listEndretMelding.push(this.item.EndretMelding);
+    }
+    listEndretMelding.push(this.msg);
+
+    /* Sending */
     if(this.msg != "" && this.newStempletider.length %2 != 0) {
-      this.afd.collection("arbeidsokter").doc(this.item.ID).update({
+      return this.afd.collection("arbeidsokter").doc(this.item.ID).update({
         "Stempletider" : this.newStempletider,
-        "EndretMelding" : this.msg
+        "EndretMelding" : listEndretMelding
       })
       .then(function() {
-        console.log("CheckInOut successfully edited");
-        const toast = this.toastCtrl.create({
-        message: 'Endringer sendt til godkjenning',
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
+        return true;
       })
       .catch(function(error){
-        console.error("Error when editing CheckInOut: ", error)
+        console.error("Error when editing CheckInOut: ", error);
+        return false;
       });
     }
-  }
-
-  sendEditSuccess(){
-    const toast = this.toastCtrl.create({
-        message: 'Endringer sendt til godkjenning',
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
   }
 
   selectBackground(i){
