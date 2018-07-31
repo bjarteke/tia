@@ -145,7 +145,7 @@ export class ContactPage {
     }
     else {
       this.toastCtrl.create({
-        message: 'FEIL: Allerede lagt til',
+        message: 'FEIL: Allerede lagt til stempling på dette tidspunktet',
         duration: 3000,
         position: 'top'
       }).present();

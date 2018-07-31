@@ -146,10 +146,10 @@ border-bottom:0;
 
 .addIcon {
     background-color:map-get($colors,secondary);
-    padding:10px;
+    padding:10px 20px 10px 20px;
     margin:0px !important;
 }
 
-#datetime-17-0{
-    width:50%;
+.item-cover {
+    width:50% !important;
 }

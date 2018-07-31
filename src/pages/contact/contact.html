@@ -51,8 +51,9 @@
         <div style="display:table-cell;padding:5px;vertical-align:middle"> {{fromTimestampToHHMM(x)}}</div>
         <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>
       </ion-item>
-      <ion-item>
-        <ion-datetime displayFormat="HH:mm" pickerFormat="HH:mm" [(ngModel)]="timeStarts"></ion-datetime>
+      <ion-item style="border-top:3px solid #4D4D4D; border-bottom:3px solid #4D4D4D; background-color:#E3C5FF!important"> 
+        <ion-label> Ny tid:</ion-label>
+        <ion-datetime displayFormat="HH:mm" pickerFormat="HH:mm" [(ngModel)]="timeStarts"> </ion-datetime>
         <ion-icon class="addIcon" (click)="addTimestamp()" name="add" item-end></ion-icon>
       </ion-item>
      
@@ -60,7 +61,7 @@
         <ion-label stacked style="padding:5px">Årsak til endring: </ion-label>
         <ion-textarea style="padding:5px" [(ngModel)]="msg"></ion-textarea>
       </ion-item>
-      <button ion-button full (click)="sendChangesHandler()">Utfør endringer</button>
+      <button ion-button full (click)="sendChangesHandler()">Lagre endringer</button>
     </ion-list> 
   </ion-card>
 
