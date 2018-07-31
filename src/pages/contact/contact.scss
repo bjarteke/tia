@@ -144,11 +144,41 @@ border-bottom:0;
 }
 
 .addIcon {
-    background-color:map-get($colors,secondary);
-    padding:10px 20px 10px 20px;
-    margin:0px !important;
+    padding:0px;
+    margin:auto !important;
+    width: 100%;
+    text-align: center;
 }
 
 .item-cover {
     width:50% !important;
+}
+
+.datetime-text{
+    text-align:center;
+}
+
+.ionCard {
+    width:95%;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.ionCardHeader {
+    color:#ffffff;
+    background-color:#3a3a3a;
+    padding:9px
+}
+
+.toast-success {
+  > div{
+       background-color:map-get($colors,secondary)!important;
+   }
+}
+
+.toast-failed {
+  > div{
+       background-color:map-get($colors,danger)!important;
+       color:white;
+   }
 }

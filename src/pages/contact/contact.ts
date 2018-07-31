@@ -158,7 +158,6 @@ export class ContactPage {
   }
 
   sortStempletider() {
-    console.log(this.newStempletider);
     for (var y = 0; y<this.newStempletider.length; y++) {
     for (var x = 0; x<this.newStempletider.length-1; x++) {
       if(new Date(this.newStempletider[x]).getTime() > new Date(this.newStempletider[x+1]).getTime()){
@@ -170,56 +169,46 @@ export class ContactPage {
     }
   }
 
-  toast(text, duration){
+  toast(text, duration, css){
     const toast = this.toastCtrl.create({
         message: text,
         duration: duration,
-        position: 'top'
+        position: 'top',
+        cssClass: css
       });
     toast.present();
   }
 
   sendChangesHandler() {
     if(this.sendChanges()){
-      this.toast('Endringer sendt til godkjenning',3000);
-    }
-    else {
-      this.toast('FEIL: Noe gikk galt. Sjekk internett-tilkoblingen din',5000);
+      this.toast('Endringer sendt til godkjenning',3000,"toast-success");
     }
   }
 
   sendChanges() {
     /* Error handling */
     if (this.msg == "") {
-      this.toast('FEIL: Beskriv årsak til endring',3000);
+      this.toast('FEIL: Beskriv årsak til endring',3000,"toast-failed");
     }
-    if (this.newStempletider.length %2 == 0) {
-      this.toast('FEIL: Det må være like mange inn- og utstemplinger',5000);
+    if (this.newStempletider.length %2 != 0) {
+      this.toast('FEIL: Det må være like mange inn- og utstemplinger',5000,"toast-failed");
     }
 
     /* Creating an array consisting of old and new change messages */
     var listEndretMelding = [];
-    console.log("Fra firebase");
-    console.log(this.item.EndretMelding);
-
     if(this.item.EndretMelding.length > 0){
       for (var i = 0; i<this.item.EndretMelding.length ; i++){
         listEndretMelding.push(this.item.EndretMelding[i]);
       }
-      console.log("Etter for");
-      console.log(listEndretMelding);
       listEndretMelding.push(this.msg);
-      console.log(listEndretMelding);
 
     }
     else {
       listEndretMelding.push(this.msg);
     }
 
-    console.log(listEndretMelding);
-
     /* Sending */
-    if(this.msg != "" && this.sendingStempletider.length %2 != 0) {
+    if(this.msg != "" && this.sendingStempletider.length %2 == 0) {
       return this.afd.collection("arbeidsokter").doc(this.item.ID).update({
         "Stempletider" : this.sendingStempletider,
         "EndretMelding" : listEndretMelding
