@@ -40,14 +40,14 @@
       <div *ngIf="item.Stempletider.length!=1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -2 ])}} </span> </h5></div>
     </div>
     <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">
-      <ion-item class="checkInOutInfoBox" *ngFor="let x of newStempletider | slice:0:-1, let j = index">
-        <!--<h6 *ngIf="j%2==0">Inn </h6>
-        <h6 *ngIf="j%2!=0">Ut </h6> -->
-        <ion-label style="display:table;height:100%">
-        <h4 style="display:table-cell;vertical-align:middle">{{fromTimestampToHHMM(x)}} </h4>
-        <button style="height:100%;width:30%;border-radius:0;opacity:0.8;font-size:20px" ion-button color="danger" class="editButtons"><ion-icon name="trash" (click)="deleteTimestamp(j)"></ion-icon></button>
-        </ion-label>
-        <!--<button ion-button color="primary" class="editButtons"><ion-icon name="build" ></ion-icon></button> -->
+      
+      <ion-item style="padding:0;height:30px" *ngFor="let x of newStempletider | slice:0:-1, let j = index">
+        <div class="checkInOutInfoBox" style="display:table-cell; width:30px;height:30px" [ngStyle]="{'background' : selectBackground(j)}">
+          <h2 *ngIf="j%2==0" style="text-transform:uppercase; text-align:center; font-size: 25px; font-weight:800;">I</h2>
+          <h2 *ngIf="j%2!=0" style="color:white; text-transform:uppercase; text-align:center; font-size: 25px; font-weight:800;">U</h2>
+        </div>          
+        <div style="display:table-cell;padding:5px;vertical-align:middle"> Herbology</div>
+        <ion-icon style= "background-color:red;padding:10px;margin:0px" name="trash" item-end></ion-icon>
       </ion-item>
       <ion-item>
           <ion-label>Nytt klokkeslett</ion-label>

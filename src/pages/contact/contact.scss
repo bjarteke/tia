@@ -30,6 +30,10 @@ h5 {
     background: repeating-linear-gradient(-45deg,#a00b0b,#a00b0b 10px,#c00b0b 10px,#c00b0b 20px);
 }
 
+.checkInOutInfoBox2 {
+    padding:0;
+}
+
 
 
 .ion-vard-header {
@@ -128,4 +132,12 @@ border-bottom:0;
     height: 100%;
     margin: 0;
     width: 15%;
+}
+
+.ion-button {
+    color:white;
+}
+
+.button-inner{
+    color:black !important;
 }
