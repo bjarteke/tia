@@ -28,6 +28,8 @@ import { NotExpr } from '../../../node_modules/@angular/compiler';
 export class HomePage {
  
   public checkedIn : boolean = false;
+  public checkInTime = null;
+  public waitingToCheckIn: boolean = false;
   public withinRange : boolean = false;
 
   //Variables used to change the text and color of the "stemple inn"-button.
@@ -103,20 +105,22 @@ export class HomePage {
 
     /* Automatic Check-in */
     var now = new Date();
-    if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && this.activateAutomaticCheckInOut){
+    if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && !this.waitingToCheckIn){
       
       this.fsp.writeArrivalTime(now);
-      var checkInTime = new Date(this.fsp.decideCheckInTime(now));
-      console.log(checkInTime);
+      this.checkInTime = new Date(this.fsp.decideCheckInTime(now));
+      console.log(this.checkInTime);
 
-      var timeToCheckIn = checkInTime.getTime() - new Date().getTime();
+      this.waitingToCheckIn = true;
       console.log('time to check in');
-      console.log(timeToCheckIn);
       //this.checkInOut();
-      setTimeout(this.checkInOut(checkInTime), timeToCheckIn);
+
       
     }
-    
+    else if(this.checkInTime != null && this.waitingToCheckIn && new Date().getTime() > this.checkInTime.getTime() && !this.checkedIn && this.activateAutomaticCheckInOut){
+      this.checkInOut(this.checkInTime);
+    }
+
     /* Automatic check in */
     /*if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 
       && !this.initialCheckIn && this.activateAutomaticCheckInOut && currentDate.getTime() > startDate.getTime() - this.earlyCheckInHours*60*60*1000) {
