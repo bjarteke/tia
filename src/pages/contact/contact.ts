@@ -36,6 +36,7 @@ export class ContactPage {
   stempletiderBottom = [];
 
   newStempletider = new Array();
+  sendingStempletider = new Array();
   msg = "";
   timeStarts = '08:00';
 
@@ -46,6 +47,10 @@ export class ContactPage {
       this.newStempletider.push(this.item.Stempletider[x]);
     }
     this.newStempletider.sort();
+    console.log("CONSTRUCTOR");
+    console.log(this.newStempletider);
+    console.log(this.sendingStempletider);
+    this.sendingStempletider = this.newStempletider;
     this.init();
     
   }
@@ -116,8 +121,8 @@ export class ContactPage {
   }
 
   alreadyInList(d){
-    for (var x=0; x<this.newStempletider.length;x++){
-      if (new Date(this.newStempletider[x]).getMinutes() == d.getMinutes() && new Date(this.newStempletider[x]).getHours() == d.getHours() ){
+    for (var x=0; x<this.sendingStempletider.length;x++){
+      if (new Date(this.sendingStempletider[x]).getMinutes() == d.getMinutes() && new Date(this.sendingStempletider[x]).getHours() == d.getHours() ){
         return true;
       }
     }
@@ -130,7 +135,7 @@ export class ContactPage {
   }
 
   deleteTimestamp(x) {
-    this.newStempletider.splice(x,1);
+    this.sendingStempletider.splice(x,1);
   }
 
   addTimestamp(timestamp) {
@@ -140,8 +145,8 @@ export class ContactPage {
     d.setUTCHours(parseInt(h)-2);
     d.setUTCMinutes(parseInt(m));
     if(!this.alreadyInList(d)){
-      this.newStempletider.push(d);
-      this.newStempletider.sort();
+      this.sendingStempletider.push(d);
+      this.sendingStempletider.sort();
     }
     else {
       this.toastCtrl.create({
@@ -194,15 +199,29 @@ export class ContactPage {
 
     /* Creating an array consisting of old and new change messages */
     var listEndretMelding = [];
-    if(this.item.EndretMelding != undefined) {
-      listEndretMelding.push(this.item.EndretMelding);
+    console.log("Fra firebase");
+    console.log(this.item.EndretMelding);
+
+    if(this.item.EndretMelding.length > 0){
+      for (var i = 0; i<this.item.EndretMelding.length ; i++){
+        listEndretMelding.push(this.item.EndretMelding[i]);
+      }
+      console.log("Etter for");
+      console.log(listEndretMelding);
+      listEndretMelding.push(this.msg);
+      console.log(listEndretMelding);
+
     }
-    listEndretMelding.push(this.msg);
+    else {
+      listEndretMelding.push(this.msg);
+    }
+
+    console.log(listEndretMelding);
 
     /* Sending */
-    if(this.msg != "" && this.newStempletider.length %2 != 0) {
+    if(this.msg != "" && this.sendingStempletider.length %2 != 0) {
       return this.afd.collection("arbeidsokter").doc(this.item.ID).update({
-        "Stempletider" : this.newStempletider,
+        "Stempletider" : this.sendingStempletider,
         "EndretMelding" : listEndretMelding
       })
       .then(function() {
