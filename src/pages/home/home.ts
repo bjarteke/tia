@@ -94,11 +94,11 @@ export class HomePage {
     if (this.fsp.planNext[0] == undefined){
       return;
     }
+    //this.checkedIn = this.fsp.planNext[0]["checkedIn"];
 
     /* Set the duration of the work session in seconds */
     this.seconds = ((new Date (this.fsp.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.fsp.planNext[0]["Start"])).getTime()/1000) //Number of seconds
     
-
     var currentDate = new Date();
     var startDate = new Date(this.fsp.planNext[0]["Start"]);
     var endDate = new Date(this.fsp.planNext[0]['Slutt']);
@@ -119,6 +119,7 @@ export class HomePage {
     }
     else if(this.checkInTime != null && this.waitingToCheckIn && new Date().getTime() > this.checkInTime.getTime() && !this.checkedIn && this.activateAutomaticCheckInOut){
       this.checkInOut(this.checkInTime);
+      //this.waitingToCheckIn = false;
     }
 
     /* Automatic check in */
@@ -170,11 +171,13 @@ export class HomePage {
       this.stempleButton = "Stemple ut";
       this.checkInOutVar = "checkInOut2";
       this.checkedIn = true;
+      //this.fsp.writeCheckedIn(this.checkedIn);
     }
     else{
       this.stempleButton = "Stemple inn";
       this.checkInOutVar = "checkInOut";
       this.checkedIn = false;
+      //this.fsp.writeCheckedIn(this.checkedIn);
     }
     
   }
@@ -241,7 +244,6 @@ export class HomePage {
     if (width < 100) {
       this.currentWidth = Math.min(100 - this.totalWidthSoFar, width)  +"%";
       
-      this.checkedIn = false;
     }
     else {
       this.currentWidth = "100%";
@@ -337,43 +339,27 @@ export class HomePage {
     console.log(this.checkedIn);
 
     if (bufferTime < endDate.getTime() && this.paJobb == false && this.forlotTid == null && this.checkedIn){
-      
       this.forlotTid = now;
+    }
+    else if(this.forlotTid == null){
+      return;
+    }
+    else if(now.getTime() - this.forlotTid.getTime() > 5000 && bufferTime < endDate.getTime() && this.paJobb == false && this.checkedIn){
       this.notifications.sendNotification('leftEarly', endDate);
     }
     //hvis man går inn i sonen igjen blir tiden man dro resatt
     else if (this.paJobb == true){
       this.forlotTid = null;
     }
-    else if(this.forlotTid == null){
-      return;
-    }
+
     //Hvis man har vært utenfor området i mer enn 5 minutter blir man automatisk sjekket ut. 
-    else if(now.getTime() - this.forlotTid.getTime() > 300000 && this.checkedIn && this.paJobb == false){
+    else if(now.getTime() - this.forlotTid.getTime() > 5000 && this.checkedIn && this.paJobb == false){
       this.checkInOut(this.forlotTid);
     }
     //Må også sende notification første gang man registrerer at man forlater jobb. 
     else if(now.getTime() >= endDate.getTime() && this.paJobb == false && this.checkedIn && this.forlotTid != null){
       this.notifications.sendNotification('check_out', this.forlotTid);
     }
-
-
-    /*if (this.paJobb == false && this.forlotTid == null && this.stempleButton == 'Stemple ut'){
-      this.forlotTid = new Date();
-      this.notifications.sendNotification('left', this.forlotTid);
-    }
-    else if (this.paJobb == true){
-      this.forlotTid = null;
-    }
-    
-    //Gir når notification 5 minutter etter at man gikk fra jobb. 
-    //Slår til om man har vært utenfor jobbsonen i 5 minutter
-    else if(new Date().getTime() - this.forlotTid.getTime() > 300000 && sjekketUt == false && this.stempleButton == 'Stemple ut'){
-      console.log('skal sjekke ut');
-      this.checkInOut(this.forlotTid);
-      sjekketUt = true;
-      this.notifications.sendNotification('check_out', this.forlotTid);
-    }*/
   }
 
    timestampToDate(timestamp){
