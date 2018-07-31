@@ -372,6 +372,28 @@ export class HomePage {
     }*/
   }
 
+   timestampToDate(timestamp){
+    timestamp = new Date(timestamp);
+    var months = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august" , "september" , "oktober" , "november" , "desember" ]
+    var d = timestamp.getDate();
+    var outD = (d<10) ? "0"+ d : d;
+    return (outD + " " + months[timestamp.getMonth()] + " " + timestamp.getFullYear());
+  }
+
+  fromTimestampToHHMM(timestamp) {
+    var date = new Date(timestamp);
+    var m = Math.abs((new Date (date).getMinutes()));
+    var h = Math.abs((new Date (date).getHours()));
+
+    var outH = ""+h;
+    var outM = ""+m;
+
+    outH = (h<10) ? "0"+ h : outH;
+    outM = (m<10) ? "0"+ m : outM;
+
+    return (outH + ":" + outM);
+  }
+
   
 
   

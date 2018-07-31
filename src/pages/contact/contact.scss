@@ -30,6 +30,10 @@ h5 {
     background: repeating-linear-gradient(-45deg,#a00b0b,#a00b0b 10px,#c00b0b 10px,#c00b0b 20px);
 }
 
+.checkInOutInfoBox2 {
+    padding:0;
+}
+
 
 
 .ion-vard-header {
@@ -100,7 +104,7 @@ border-bottom:0;
 
 
 
-.loadingBoxInner:nth-child(even) {
+.loadingBoxInner:nth-child(odd) {
     background: repeating-linear-gradient(
   -45deg,
   #7CFC00,
@@ -110,7 +114,7 @@ border-bottom:0;
     ) !important;
 }
 
-.loadingBoxInner:nth-child(odd) {
+.loadingBoxInner:nth-child(even) {
     background: repeating-linear-gradient(
   -45deg,
   #a00b0b,
@@ -128,4 +132,23 @@ border-bottom:0;
     height: 100%;
     margin: 0;
     width: 15%;
+}
+
+.ion-button {
+    color:white;
+}
+
+.trashIcon {
+    padding:10px;
+    margin:0px !important;
+}
+
+.addIcon {
+    background-color:map-get($colors,secondary);
+    padding:10px 20px 10px 20px;
+    margin:0px !important;
+}
+
+.item-cover {
+    width:50% !important;
 }

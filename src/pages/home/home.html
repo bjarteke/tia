@@ -21,8 +21,8 @@
   <div class="record" *ngFor="let x of fsp.planNext, let i=index" >
     <div class="topBox" (click)="itemSelected(fsp.planNext[0],segmentWidth)">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
-      <h1>{{ fromTimestampToTextIdagImorgen(fsp.planNext[i]['Startdato'],fsp.planNext[i]['Start']) }} </h1>
-      <h3>{{fsp.planNext[i]["Starttid"]}} - {{fsp.planNext[i]["Sluttid"]}}</h3>
+      <h1>{{ fromTimestampToTextIdagImorgen(timestampToDate(fsp.planNext[i]['Start']),fsp.planNext[i]['Start']) }} </h1>
+      <h3>{{fromTimestampToHHMM(fsp.planNext[i]["Start"])}} - {{fromTimestampToHHMM(fsp.planNext[i]["Slutt"])}}</h3>
     </div>
     <div class="infoField">
       <div ng-if="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px"></div>
@@ -77,12 +77,12 @@
               <span>Ny vakt</span>
           </div>
           <div class="futureDate">
-            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{fsp.upcoming2[j][i]["Startdato"] | slice:0:2}}</span><br>
-            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{fsp.upcoming2[j][i]["Startdato"] | slice:3:7}}</span> 
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> 
           </div>
           <div class="futureInfo">
             <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>
-            <h3>{{fsp.upcoming2[j][i]["Starttid"]}} - {{fsp.upcoming2[j][i]["Sluttid"]}}</h3>
+            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>
           </div> 
       </ion-item>
       <ion-item-options>
@@ -99,12 +99,12 @@
     <ion-item-sliding *ngFor="let x of fsp.previous | slice:0:3, let i=index" >
       <ion-item *ngSwitchCase="'fullfort'" (click)="itemSelected(x)">
           <div class="futureDate">
-            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{fsp.previous[i]["Startdato"] | slice:0:2}}</span><br>
-            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{fsp.previous[i]["Startdato"] | slice:3:7}}</span> 
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.previous[i]["Start"]) | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.previous[i].Start) | slice:3:6}}</span> 
           </div>
           <div class="futureInfo">
             <h3 style="font-weight: 800">{{getWeekdayName(fsp.previous[i]["Start"])}}</h3>
-            <h3>{{fsp.previous[i]["Starttid"]}} - {{fsp.previous[i]["Sluttid"]}}</h3>
+            <h3>{{fromTimestampToHHMM(fsp.previous[i]["Start"])}} - {{fromTimestampToHHMM(fsp.previous[i]["Slutt"])}}</h3>
           </div> 
       </ion-item>
       <ion-item-options>

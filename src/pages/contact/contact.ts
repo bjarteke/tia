@@ -36,27 +36,50 @@ export class ContactPage {
   stempletiderBottom = [];
 
   newStempletider = new Array();
+  sendingStempletider = new Array();
   msg = "";
   timeStarts = '08:00';
 
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public firebaseService : FirebaseServiceProvider, public afd: AngularFirestore, public toastCtrl: ToastController) {
     this.item = this.navParams.get('item');
-    this.startTid = this.item.Starttid;
-    this.sluttTid = this.item.Sluttid;
-    this.startDato = this.item.Startdato;
-    this.sluttDato = this.item.Sluttdato;
     for (var x = 0; x<this.item.Stempletider.length; x++){
       this.newStempletider.push(this.item.Stempletider[x]);
     }
     this.newStempletider.sort();
+    console.log("CONSTRUCTOR");
+    console.log(this.newStempletider);
+    console.log(this.sendingStempletider);
+    this.sendingStempletider = this.newStempletider;
     this.init();
     
   }
 
+  timestampToDate2(timestamp){
+    timestamp = new Date(timestamp);
+    var months = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august" , "september" , "oktober" , "november" , "desember" ]
+    var d = timestamp.getDate();
+    var outD = (d<10) ? "0"+ d : d;
+    return (outD + ". " + months[timestamp.getMonth()] + " " + timestamp.getFullYear());
+  }
+
+  fromTimestampToHHMM2(timestamp) {
+    var date = new Date(timestamp);
+    var m = Math.abs((new Date (date).getMinutes()));
+    var h = Math.abs((new Date (date).getHours()));
+
+    var outH = ""+h;
+    var outM = ""+m;
+
+    outH = (h<10) ? "0"+ h : outH;
+    outM = (m<10) ? "0"+ m : outM;
+
+    return (outH + ":" + outM);
+  }
+
   init() {
-    /* Adding the end time to the "Stempletider" array (making sure that it is not already added */
-    if(this.item.Stempletider[this.item.Stempletider.length - 1] != this.item.Slutt){
+    /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
+    if(this.item.Stempletider[this.item.Stempletider.length - 1] != this.item.Slutt && new Date(this.item.Stempletider[this.item.Stempletider.length - 1]).getTime() < new Date(this.item.Slutt).getTime()){
       this.item.Stempletider.push(this.item.Slutt);
     }
 
@@ -97,13 +120,22 @@ export class ContactPage {
     return (startDate.getTime() > currentDate.getTime());
   }
 
+  alreadyInList(d){
+    for (var x=0; x<this.sendingStempletider.length;x++){
+      if (new Date(this.sendingStempletider[x]).getMinutes() == d.getMinutes() && new Date(this.sendingStempletider[x]).getHours() == d.getHours() ){
+        return true;
+      }
+    }
+    return false;
+  }
+
   editTimestamps() {
     //this.toggleStempletider = true;
     //this.newStempletider = this.item.Stempletider;
   }
 
   deleteTimestamp(x) {
-    this.newStempletider.splice(x,1);
+    this.sendingStempletider.splice(x,1);
   }
 
   addTimestamp(timestamp) {
@@ -112,9 +144,17 @@ export class ContactPage {
     var m = this.timeStarts.slice(3,5);
     d.setUTCHours(parseInt(h)-2);
     d.setUTCMinutes(parseInt(m));
-    console.log(this.newStempletider);
-    this.newStempletider.push(d);
-    this.newStempletider.sort();
+    if(!this.alreadyInList(d)){
+      this.sendingStempletider.push(d);
+      this.sendingStempletider.sort();
+    }
+    else {
+      this.toastCtrl.create({
+        message: 'FEIL: Allerede lagt til stempling på dette tidspunktet',
+        duration: 3000,
+        position: 'top'
+      }).present();
+    }
   }
 
   sortStempletider() {
@@ -128,54 +168,70 @@ export class ContactPage {
       }
     }
     }
-    console.log(this.newStempletider);
+  }
+
+  toast(text, duration){
+    const toast = this.toastCtrl.create({
+        message: text,
+        duration: duration,
+        position: 'top'
+      });
+    toast.present();
+  }
+
+  sendChangesHandler() {
+    if(this.sendChanges()){
+      this.toast('Endringer sendt til godkjenning',3000);
+    }
+    else {
+      this.toast('FEIL: Noe gikk galt. Sjekk internett-tilkoblingen din',5000);
+    }
   }
 
   sendChanges() {
-    console.log(this.msg);
+    /* Error handling */
     if (this.msg == "") {
-      const toast = this.toastCtrl.create({
-        message: 'FEIL: Beskriv årsak til endring',
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
+      this.toast('FEIL: Beskriv årsak til endring',3000);
     }
     if (this.newStempletider.length %2 == 0) {
-      const toast = this.toastCtrl.create({
-        message: 'FEIL: Det må være like mange inn- og utstemplinger',
-        duration: 5000,
-        position: 'top'
-      });
-      toast.present();
+      this.toast('FEIL: Det må være like mange inn- og utstemplinger',5000);
     }
-    if(this.msg != "" && this.newStempletider.length %2 != 0) {
-      this.afd.collection("arbeidsokter").doc(this.item.ID).update({
-        "Stempletider" : this.newStempletider,
-        "EndretMelding" : this.msg
+
+    /* Creating an array consisting of old and new change messages */
+    var listEndretMelding = [];
+    console.log("Fra firebase");
+    console.log(this.item.EndretMelding);
+
+    if(this.item.EndretMelding.length > 0){
+      for (var i = 0; i<this.item.EndretMelding.length ; i++){
+        listEndretMelding.push(this.item.EndretMelding[i]);
+      }
+      console.log("Etter for");
+      console.log(listEndretMelding);
+      listEndretMelding.push(this.msg);
+      console.log(listEndretMelding);
+
+    }
+    else {
+      listEndretMelding.push(this.msg);
+    }
+
+    console.log(listEndretMelding);
+
+    /* Sending */
+    if(this.msg != "" && this.sendingStempletider.length %2 != 0) {
+      return this.afd.collection("arbeidsokter").doc(this.item.ID).update({
+        "Stempletider" : this.sendingStempletider,
+        "EndretMelding" : listEndretMelding
       })
       .then(function() {
-        console.log("CheckInOut successfully edited");
-        const toast = this.toastCtrl.create({
-        message: 'Endringer sendt til godkjenning',
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
+        return true;
       })
       .catch(function(error){
-        console.error("Error when editing CheckInOut: ", error)
+        console.error("Error when editing CheckInOut: ", error);
+        return false;
       });
     }
-  }
-
-  sendEditSuccess(){
-    const toast = this.toastCtrl.create({
-        message: 'Endringer sendt til godkjenning',
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
   }
 
   selectBackground(i){
