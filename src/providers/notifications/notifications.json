@@ -1,0 +1,12 @@
+{
+    "tidlig": {
+        "title": "Velkommen på jobb morgenfugl!",
+        "text_pre": "Vi stempler deg inn automatisk ved oppstart klokka ",
+        "text_post": ", men den tidlige ankomsten din er logget."
+    },
+    "sent": {
+        "title": "Velkommen på jobb!",
+        "text_pre": "Vi stempler deg inn automatisk klokka ",
+        "text_post": ""
+    }
+}

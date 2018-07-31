@@ -13,10 +13,10 @@ import { Observable } from 'rxjs/Rx';
 
 //testing -->
 import { ContactPage } from '../contact/contact';
-import { LocalNotifications } from '@ionic-native/local-notifications';
 import { getLocaleTimeFormat } from '@angular/common';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
+import { NotificationsProvider } from '../../providers/notifications/notifications';
 
 
 
@@ -69,7 +69,7 @@ export class HomePage {
   private activateAutomaticCheckInOut = true;
 
   //CONSTRUCTOR
-  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public firebaseService : FirebaseServiceProvider) {
+  constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public fsp : FirebaseServiceProvider, public notifications: NotificationsProvider) {
     this.start();
   }
  
@@ -85,23 +85,48 @@ export class HomePage {
       this.initialLocationSet = true;
     }
 
+
     /* Starter på nytt om man ikke klarer å lese fra databasen*/
-    if (this.firebaseService.planNext[0] == undefined || this.locationTracker.onLocationTime == undefined){
+    if (this.fsp.planNext[0] == undefined){
       return;
     }
 
     /* Set the duration of the work session in seconds */
-    this.seconds = ((new Date (this.firebaseService.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.firebaseService.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+    this.seconds = ((new Date (this.fsp.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.fsp.planNext[0]["Start"])).getTime()/1000) //Number of seconds
     
 
     var currentDate = new Date();
-    var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
+    var startDate = new Date(this.fsp.planNext[0]["Start"]);
 
+    /* Automatic Check-in */
+    var now = new Date();
+    if (this.locationTracker.paJobb && this.fsp.isWorking(now) && !this.initialCheckIn && this.activateAutomaticCheckInOut){
+      
+      if (!this.locationTracker.hasArrived){
+        this.fsp.writeArrivalTime(now);
+        var checkInTime = new Date(this.fsp.decideCheckInTime(now));
+        console.log(checkInTime);
+
+        var timeToCheckIn = checkInTime.getTime() - new Date().getTime();
+        console.log(timeToCheckIn);
+        //this.checkInOut();
+        setTimeout(this.checkInOut(checkInTime), timeToCheckIn);
+
+
+        this.locationTracker.hasArrived = true;
+
+        if (this.locationTracker.sentNotification == false){
+          /*this.sendCustomizedNotification();*/
+          this.locationTracker.sentNotification =true;
+        }
+      }
+    }
+    
     /* Automatic check in */
-    if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 
+    /*if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 
       && !this.initialCheckIn && this.activateAutomaticCheckInOut && currentDate.getTime() > startDate.getTime() - this.earlyCheckInHours*60*60*1000) {
       this.checkInOut();
-    }
+      }*/
 
     /* Updating the loadingBar */
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
@@ -117,8 +142,8 @@ export class HomePage {
       //If not not too late, and not checked in
     }
 
-    if (this.firebaseService.planNext[0] != undefined && this.doneOnce == false){
-      var milliSecondsToEnd = new Date (this.firebaseService.planNext[0]["Slutt"]).getTime() - new Date().getTime();
+    if (this.fsp.planNext[0] != undefined && this.doneOnce == false){
+      var milliSecondsToEnd = new Date (this.fsp.planNext[0]["Slutt"]).getTime() - new Date().getTime();
       console.log('Skriver ut hvor lenge det er til slutten av dagen')
       console.log(milliSecondsToEnd);
       /*setTimeout(this.startEndCheck, milliSecondsToEnd);*/ /* 90000 ms er et kvarter */
@@ -127,7 +152,7 @@ export class HomePage {
     }
   }
 
-  checkInOut() {
+  checkInOut(checkInTime) {
     /* Updating the LoadingBar with a red color corresponding to late check in time. */
     if(this.lateCheckIn == true && this.segmentWidth.length == 0 && this.stop == false){
       this.segmentWidth.push(this.currentWidth);
@@ -137,8 +162,10 @@ export class HomePage {
     }
 
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
-    this.checkInOutTimes.push(new Date());   //register the checkInTime
-    this.firebaseService.addCheckInOutTime(new Date());
+    console.log('før smellen');
+    this.checkInOutTimes.push(new Date(checkInTime));   //register the checkInTime
+    console.log('kommer vi hit?');
+    //this.fsp.addCheckInOutTime(new Date());
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
         this.segmentWidth.push(this.currentWidth);
         this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
@@ -200,7 +227,7 @@ export class HomePage {
       this.segmentWidth.push(this.currentWidth);
     }
     var currentDate = new Date();
-    var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
+    var startDate = new Date(this.fsp.planNext[0]["Start"]);
 
     //Setting the width of the current segment
     this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";
@@ -216,7 +243,7 @@ export class HomePage {
 
   updateLoadingBarLate() {
     var currentDate = new Date();
-    var startDate = new Date(this.firebaseService.planNext[0]["Start"]);
+    var startDate = new Date(this.fsp.planNext[0]["Start"]);
     var width = 100*(Math.abs((+currentDate - +startDate)/1000)/this.seconds);
     if (width < 100) {
       this.currentWidth = Math.min(100 - this.totalWidthSoFar, width)  +"%";
@@ -299,7 +326,6 @@ export class HomePage {
   }
 
   startEndCheck(){
-    var teller = 1;
     var sjekketUt: boolean = false;
     console.log('Er inni startEndCheck')
     if (this.locationTracker != undefined) {
@@ -309,8 +335,8 @@ export class HomePage {
       this.forlotTid = this.locationTracker.forlotTid;
     }
 
-    Observable.interval(1000).subscribe(ref => {
-      teller = teller + 1;
+    //Sjekker hvert sekund om man er utenfor jobb
+    Observable.interval(5000).subscribe(ref => {
       this.paJobb = this.locationTracker.paJobb;
       if (this.paJobb == false && this.forlotTid == null){
         this.forlotTid = new Date();
@@ -318,10 +344,12 @@ export class HomePage {
       else if (this.paJobb == true){
         this.forlotTid = null;
       }
-      else if(new Date().getTime() - this.forlotTid.getTime() > 5000 && sjekketUt == false && this.stempleButton == 'Stemple ut'){
+      //Slår til om man har vært utenfor jobbsonen i 5 minutter
+      else if(new Date().getTime() - this.forlotTid.getTime() > 300000 && sjekketUt == false && this.stempleButton == 'Stemple ut'){
         console.log('skal sjekke ut');
-        this.checkInOut();
+        this.checkInOut(this.forlotTid);
         sjekketUt = true;
+        this.notifications.sendNotification('leave', this.forlotTid);
       }
     });
   }

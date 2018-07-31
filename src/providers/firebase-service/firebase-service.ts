@@ -5,6 +5,7 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 import { AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
+import { NotificationsProvider } from '../notifications/notifications';
 
 /*
   Generated class for the FirebaseServiceProvider provider.
@@ -46,7 +47,7 @@ export class FirebaseServiceProvider {
   public uniqueWeeknumbers = [];
 
 
-  constructor(public afd: AngularFirestore) {
+  constructor(public afd: AngularFirestore, public notifications: NotificationsProvider) {
     /* Retrieving data from Firestore */
     this.afd.collection<Items>('arbeidsokter', ref => ref.orderBy('Start'))
       .valueChanges()
@@ -98,7 +99,7 @@ export class FirebaseServiceProvider {
 
     /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */ 
     var temp = [];
-    console.log(this.upcoming);
+    //console.log(this.upcoming);
     for (var i = 0; i<this.weeknumbers.length; i++){
       if (this.weeknumbers[i] == this.weeknumbers[i+1]) {
         temp.push(this.upcoming[i])
@@ -151,6 +152,18 @@ export class FirebaseServiceProvider {
 
   }
 
+  writeArrivalTime(timestamp){
+    this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
+      "arrivedAtWork" : timestamp
+    })
+    .then(function() {
+      console.log("arrivedAtWork successfully written")
+    })
+    .catch(function(error){
+      console.error("Error when writing arrivedAtWork: ", error)
+    });
+  }
+
   /* Reseting all arrays */
   resetArrays(){
     this.upcoming = [];
@@ -165,6 +178,44 @@ export class FirebaseServiceProvider {
 
     console.log("Hei");
     console.log(docID);
+  }
+
+  isWorking(timestamp) {
+    //Will take in a timestamp and check if this matches a block that is scheduled for work. 
+    var nextStartTime = new Date(this.planNext[0]['Start']);
+    var now = new Date(timestamp);
+    //Checks if it's the same date and if we are still in before the end of the workday. 
+    if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.planNext[0]['Slutt']).getTime()) < 0) {
+      return true;
+    }
+    return false;
+  }
+
+  decideCheckInTime(arrivedAtWork){
+    //600000 ms er 10 minutter
+    var buffer = 5000;
+    
+    arrivedAtWork = new Date(arrivedAtWork);
+
+    var workStart = new Date(this.planNext[0]['Start']);
+
+
+    //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
+    if (workStart.getTime() - arrivedAtWork.getTime() > buffer){
+      this.addCheckInOutTime(workStart);
+      this.notifications.sendNotification('arrive_early', workStart);
+      return workStart;
+    }
+
+    //Kommer på jobb etter 10 minutter før. Skal da sjekke deg inn 10 minutter etter.
+    else if(workStart.getTime() - arrivedAtWork.getTime() < buffer){
+      var checkInTime = arrivedAtWork.getTime() + buffer;
+      checkInTime = new Date(checkInTime);
+      this.addCheckInOutTime(checkInTime)
+      this.notifications.sendNotification('arrive_late', checkInTime);
+      return checkInTime;
+    } 
+
   }
 
 }
