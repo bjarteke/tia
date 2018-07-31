@@ -193,7 +193,7 @@ export class FirebaseServiceProvider {
 
   decideCheckInTime(arrivedAtWork){
     //600000 ms er 10 minutter
-    var buffer = 5000;
+    var buffer = 100000;
     
     arrivedAtWork = new Date(arrivedAtWork);
 

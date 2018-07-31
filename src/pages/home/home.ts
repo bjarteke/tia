@@ -17,6 +17,7 @@ import { getLocaleTimeFormat } from '@angular/common';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
 import { NotificationsProvider } from '../../providers/notifications/notifications';
+import { NotExpr } from '../../../node_modules/@angular/compiler';
 
 
 
@@ -26,7 +27,7 @@ import { NotificationsProvider } from '../../providers/notifications/notificatio
 })
 export class HomePage {
  
-  public checkedIn : boolean = true;
+  public checkedIn : boolean = false;
   public withinRange : boolean = false;
 
   //Variables used to change the text and color of the "stemple inn"-button.
@@ -85,6 +86,7 @@ export class HomePage {
       this.initialLocationSet = true;
     }
 
+    this.paJobb = this.locationTracker.paJobb;
 
     /* Starter på nytt om man ikke klarer å lese fra databasen*/
     if (this.fsp.planNext[0] == undefined){
@@ -97,29 +99,22 @@ export class HomePage {
 
     var currentDate = new Date();
     var startDate = new Date(this.fsp.planNext[0]["Start"]);
+    var endDate = new Date(this.fsp.planNext[0]['Slutt']);
 
     /* Automatic Check-in */
     var now = new Date();
-    if (this.locationTracker.paJobb && this.fsp.isWorking(now) && !this.initialCheckIn && this.activateAutomaticCheckInOut){
+    if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && this.activateAutomaticCheckInOut){
       
-      if (!this.locationTracker.hasArrived){
-        this.fsp.writeArrivalTime(now);
-        var checkInTime = new Date(this.fsp.decideCheckInTime(now));
-        console.log(checkInTime);
+      this.fsp.writeArrivalTime(now);
+      var checkInTime = new Date(this.fsp.decideCheckInTime(now));
+      console.log(checkInTime);
 
-        var timeToCheckIn = checkInTime.getTime() - new Date().getTime();
-        console.log(timeToCheckIn);
-        //this.checkInOut();
-        setTimeout(this.checkInOut(checkInTime), timeToCheckIn);
-
-
-        this.locationTracker.hasArrived = true;
-
-        if (this.locationTracker.sentNotification == false){
-          /*this.sendCustomizedNotification();*/
-          this.locationTracker.sentNotification =true;
-        }
-      }
+      var timeToCheckIn = checkInTime.getTime() - new Date().getTime();
+      console.log('time to check in');
+      console.log(timeToCheckIn);
+      //this.checkInOut();
+      setTimeout(this.checkInOut(checkInTime), timeToCheckIn);
+      
     }
     
     /* Automatic check in */
@@ -142,14 +137,8 @@ export class HomePage {
       //If not not too late, and not checked in
     }
 
-    if (this.fsp.planNext[0] != undefined && this.doneOnce == false){
-      var milliSecondsToEnd = new Date (this.fsp.planNext[0]["Slutt"]).getTime() - new Date().getTime();
-      console.log('Skriver ut hvor lenge det er til slutten av dagen')
-      console.log(milliSecondsToEnd);
-      /*setTimeout(this.startEndCheck, milliSecondsToEnd);*/ /* 90000 ms er et kvarter */
-      this.startEndCheck();
-      this.doneOnce = true;
-    }
+    //Logic for checking if you leave work 
+    this.checkLeave(endDate);
   }
 
   checkInOut(checkInTime) {
@@ -176,12 +165,12 @@ export class HomePage {
     if (this.stempleButton == "Stemple inn"){
       this.stempleButton = "Stemple ut";
       this.checkInOutVar = "checkInOut2";
-      this.checkedIn = false;
+      this.checkedIn = true;
     }
     else{
       this.stempleButton = "Stemple inn";
       this.checkInOutVar = "checkInOut";
-      this.checkedIn = true;
+      this.checkedIn = false;
     }
     
   }
@@ -248,7 +237,7 @@ export class HomePage {
     if (width < 100) {
       this.currentWidth = Math.min(100 - this.totalWidthSoFar, width)  +"%";
       
-      this.checkedIn = true;
+      this.checkedIn = false;
     }
     else {
       this.currentWidth = "100%";
@@ -325,33 +314,62 @@ export class HomePage {
      });
   }
 
-  startEndCheck(){
-    var sjekketUt: boolean = false;
-    console.log('Er inni startEndCheck')
+  checkLeave(endDate){
     if (this.locationTracker != undefined) {
       this.paJobb = this.locationTracker.paJobb;
       console.log('sier om vi er på jobb');
       console.log(this.paJobb);
-      this.forlotTid = this.locationTracker.forlotTid;
     }
 
-    //Sjekker hvert sekund om man er utenfor jobb
-    Observable.interval(5000).subscribe(ref => {
-      this.paJobb = this.locationTracker.paJobb;
-      if (this.paJobb == false && this.forlotTid == null){
-        this.forlotTid = new Date();
-      }
-      else if (this.paJobb == true){
-        this.forlotTid = null;
-      }
-      //Slår til om man har vært utenfor jobbsonen i 5 minutter
-      else if(new Date().getTime() - this.forlotTid.getTime() > 300000 && sjekketUt == false && this.stempleButton == 'Stemple ut'){
-        console.log('skal sjekke ut');
-        this.checkInOut(this.forlotTid);
-        sjekketUt = true;
-        this.notifications.sendNotification('leave', this.forlotTid);
-      }
-    });
+    //Må hente ut når man slutter for dagen og sjekke om man går for tidlig. Gir da en notifikasjon på når man slutter og at man kan melde sykdom i appen. 
+    //Sjekker om man går fra jobb før man er ferdig
+    var now = new Date();
+    var bufferTime = now.getTime() + 600000
+    console.log('her kommer data fra checkLeave');
+    console.log(bufferTime);
+    console.log(endDate.getTime());
+    console.log(this.paJobb);
+    console.log(this.forlotTid);
+    console.log(this.checkedIn);
+
+    if (bufferTime < endDate.getTime() && this.paJobb == false && this.forlotTid == null && this.checkedIn){
+      
+      this.forlotTid = now;
+      this.notifications.sendNotification('leftEarly', endDate);
+    }
+    //hvis man går inn i sonen igjen blir tiden man dro resatt
+    else if (this.paJobb == true){
+      this.forlotTid = null;
+    }
+    else if(this.forlotTid == null){
+      return;
+    }
+    //Hvis man har vært utenfor området i mer enn 5 minutter blir man automatisk sjekket ut. 
+    else if(now.getTime() - this.forlotTid.getTime() > 300000 && this.checkedIn && this.paJobb == false){
+      this.checkInOut(this.forlotTid);
+    }
+    //Må også sende notification første gang man registrerer at man forlater jobb. 
+    else if(now.getTime() >= endDate.getTime() && this.paJobb == false && this.checkedIn && this.forlotTid != null){
+      this.notifications.sendNotification('check_out', this.forlotTid);
+    }
+
+
+    /*if (this.paJobb == false && this.forlotTid == null && this.stempleButton == 'Stemple ut'){
+      this.forlotTid = new Date();
+      this.notifications.sendNotification('left', this.forlotTid);
+    }
+    else if (this.paJobb == true){
+      this.forlotTid = null;
+    }
+    
+    //Gir når notification 5 minutter etter at man gikk fra jobb. 
+    //Slår til om man har vært utenfor jobbsonen i 5 minutter
+    else if(new Date().getTime() - this.forlotTid.getTime() > 300000 && sjekketUt == false && this.stempleButton == 'Stemple ut'){
+      console.log('skal sjekke ut');
+      this.checkInOut(this.forlotTid);
+      sjekketUt = true;
+      this.notifications.sendNotification('check_out', this.forlotTid);
+    }*/
   }
 
   
