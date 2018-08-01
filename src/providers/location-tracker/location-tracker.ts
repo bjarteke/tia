@@ -21,7 +21,6 @@ export class LocationTracker {
   public hasArrived: boolean = false;
   public lastTimestamp : any;
   public onLocationTime;
-  public forlotTid = null; 
   public initialRun = false;
  
   constructor(public zone: NgZone, public backgroundGeolocation: BackgroundGeolocation, private geolocation : Geolocation, public notifications: NotificationsProvider, public fsp: FirebaseServiceProvider) {
@@ -131,7 +130,6 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
       this.paJobb = booleanPointInPolygon(pt,poly);
       if(this.paJobb == false){
         this.sentNotification = false;
-        this.hasArrived = false;
       }
   }
 

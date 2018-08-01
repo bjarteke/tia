@@ -84,6 +84,16 @@ export class HomePage {
     }
     
   continueslyChecked() {
+    
+    if (this.checkedIn){
+      this.stempleButton = 'Stemple ut';
+      this.checkInOutVar = "checkInOut2";
+    }
+    else if(!this.checkedIn){
+      this.stempleButton = 'Stemple inn';
+      this.checkInOutVar = 'checkInOut';
+    }
+
     if(!this.initialLocationSet){
       this.locationTracker.startTracking();      //Start tracking location
       this.initialLocationSet = true;
@@ -95,6 +105,11 @@ export class HomePage {
     if (this.fsp.planNext[0] == undefined){
       return;
     }
+
+    this.fsp.getCheckedIn();
+    console.log('status på checkedIn', this.checkedIn);
+    this.checkedIn = this.fsp.checkedIn;
+
     //this.checkedIn = this.fsp.planNext[0]["checkedIn"];
 
     /* Set the duration of the work session in seconds */
@@ -106,7 +121,7 @@ export class HomePage {
 
     /* Automatic Check-in */
     var now = new Date();
-    if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && !this.waitingToCheckIn){
+    if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && !this.waitingToCheckIn && this.activateAutomaticCheckInOut){
       
       this.fsp.writeArrivalTime(now);
       this.checkInTime = new Date(this.fsp.decideCheckInTime(now));
@@ -114,20 +129,13 @@ export class HomePage {
 
       this.waitingToCheckIn = true;
       console.log('time to check in');
-      //this.checkInOut();
 
       
     }
     else if(this.checkInTime != null && this.waitingToCheckIn && new Date().getTime() > this.checkInTime.getTime() && !this.checkedIn && this.activateAutomaticCheckInOut){
       this.checkInOut(this.checkInTime);
-      //this.waitingToCheckIn = false;
+      this.waitingToCheckIn = false;
     }
-
-    /* Automatic check in */
-    /*if (currentDate.getTime() - this.locationTracker.onLocationTime.getTime() > this.numberOfSecondsFromOnLocationToCheckIn*1000 
-      && !this.initialCheckIn && this.activateAutomaticCheckInOut && currentDate.getTime() > startDate.getTime() - this.earlyCheckInHours*60*60*1000) {
-      this.checkInOut();
-      }*/
 
     /* Updating the loadingBar */
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
@@ -147,6 +155,11 @@ export class HomePage {
     this.checkLeave(endDate);
   }
 
+  manuallyCheckInOut(){
+    this.activateAutomaticCheckInOut = false;
+    this.checkInOut(new Date());
+  }
+
   checkInOut(checkInTime) {
     /* Updating the LoadingBar with a red color corresponding to late check in time. */
     if(this.lateCheckIn == true && this.segmentWidth.length == 0 && this.stop == false){
@@ -157,9 +170,7 @@ export class HomePage {
     }
 
     this.initialCheckIn = true;    //set that we have done an initial CheckIn
-    console.log('før smellen');
     this.checkInOutTimes.push(new Date(checkInTime));   //register the checkInTime
-    console.log('kommer vi hit?');
     //this.fsp.addCheckInOutTime(new Date());
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
         this.segmentWidth.push(this.currentWidth);
@@ -172,13 +183,13 @@ export class HomePage {
       this.stempleButton = "Stemple ut";
       this.checkInOutVar = "checkInOut2";
       this.checkedIn = true;
-      //this.fsp.writeCheckedIn(this.checkedIn);
+      this.fsp.writeCheckedIn(this.checkedIn);
     }
     else{
       this.stempleButton = "Stemple inn";
       this.checkInOutVar = "checkInOut";
       this.checkedIn = false;
-      //this.fsp.writeCheckedIn(this.checkedIn);
+      this.fsp.writeCheckedIn(this.checkedIn);
     }
     
   }
@@ -325,20 +336,13 @@ export class HomePage {
   checkLeave(endDate){
     if (this.locationTracker != undefined) {
       this.paJobb = this.locationTracker.paJobb;
-      console.log('sier om vi er på jobb');
-      console.log(this.paJobb);
+
     }
 
     //Må hente ut når man slutter for dagen og sjekke om man går for tidlig. Gir da en notifikasjon på når man slutter og at man kan melde sykdom i appen. 
     //Sjekker om man går fra jobb før man er ferdig
     var now = new Date();
     var bufferTime = now.getTime() + 600000
-    console.log('her kommer data fra checkLeave');
-    console.log(bufferTime);
-    console.log(endDate.getTime());
-    console.log(this.paJobb);
-    console.log(this.forlotTid);
-    console.log(this.checkedIn);
 
     if (bufferTime < endDate.getTime() && this.paJobb == false && this.forlotTid == null && this.checkedIn){
       this.forlotTid = now;

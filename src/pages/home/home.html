@@ -30,7 +30,7 @@
       <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{'width' : x}"></div>
       <div class="loadingBar" id="currentlyLoading" [ngStyle] = "{'width' : currentWidth}"></div>
     </div>
-    <button [disabled]="((!locationTracker.paJobb && !this.checkedIn) || !correctTime(fsp.planNext[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+    <button [disabled]="((!locationTracker.paJobb && !fsp.checkedIn) || !correctTime(fsp.planNext[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>
   </div>
   </ion-slide>
   <ion-slide>
@@ -41,7 +41,7 @@
     </div>
     <div class="infoField">
     </div>
-    <button ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="checkInOut()">{{stempleButton}}</button>
+    <button ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>
   </div>
   </ion-slide>
 </ion-slides>
