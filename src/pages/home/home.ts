@@ -66,6 +66,8 @@ export class HomePage {
   public finishedBreak : boolean = false;
 
   public initialLocationSet : boolean = false;
+  public initialFirebase : boolean = false;
+
 
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
@@ -76,6 +78,21 @@ export class HomePage {
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public fsp : FirebaseServiceProvider, public notifications: NotificationsProvider) {
     this.start();
+    //this.setInitialLoadingBar();
+  }
+
+  setInitialLoadingBar(){
+    var stempletider = this.fsp.planNext[0]["Stempletider"];
+    this.totalWidthSoFar = 0;
+    /*for (var x = 0; x<stempletider.length; x++) {
+      this.segmentWidth = this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(stempletider[x]) - +new Date(stempletider[stempletider.length-1])/1000)/this.seconds)) + "%");
+      this.totalWidthSoFar += parseFloat;
+    }*/
+    console.log(this.segmentWidth);
+
+
+    console.log("STEMPLING");
+    console.log(stempletider);
   }
  
   start() {
@@ -84,9 +101,6 @@ export class HomePage {
     }
     
   continueslyChecked() {
-    
-
-
     if(!this.initialLocationSet){
       this.locationTracker.startTracking();      //Start tracking location
       this.initialLocationSet = true;
@@ -119,7 +133,12 @@ export class HomePage {
 
     /* Set the duration of the work session in seconds */
     this.seconds = ((new Date (this.fsp.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.fsp.planNext[0]["Start"])).getTime()/1000) //Number of seconds
-    
+
+    if(!this.initialFirebase){
+      this.setInitialLoadingBar();
+      this.initialFirebase = true;
+    }
+
     var currentDate = new Date();
     var startDate = new Date(this.fsp.planNext[0]["Start"]);
     var endDate = new Date(this.fsp.planNext[0]['Slutt']);

@@ -23,8 +23,8 @@ export class SettingsPage {
   public earlyCheckIn;
   public automaticCheckIn;
   public timeFromArrivalToCheckIn;
-  public address;
-  public number;
+  public address = "";
+  public number = "";
   public polygon;
 
   constructor(public navCtrl: NavController, public http: HttpClient, public navParams: NavParams,public fsp : FirebaseServiceProvider, public toastCtrl: ToastController) {
@@ -41,23 +41,44 @@ export class SettingsPage {
   }
 
   ionChanges(){
-    console.log("IONCHANGE");
     this.fsp.earlyCheckInMinutes = this.earlyCheckIn;
     this.fsp.autoCheckIn = this.automaticCheckIn;
     this.fsp.timeFromArrivalToCheckIn = this.timeFromArrivalToCheckIn;
-    this.fsp.number = this.number;
-    this.fsp.address = this.address;
-    this.getPolygon();
-    this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.number);
+    if(this.number != "" && this.address !=""){
+      this.fsp.number = this.number;
+      this.fsp.address = this.address;
+      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.number);
+      this.getPolygon(this.address,this.number);
+    }
+    else if (this.address != "" && this.number == ""){
+      this.fsp.address = this.address;
+      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.fsp.number);
+      this.getPolygon(this.address,this.fsp.number);
+    }
+    else if (this.address == "" && this.number != ""){
+      this.fsp.number = this.number;
+      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.number);
+      this.getPolygon(this.fsp.address, this.number);
+    }
+    else {
+      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number);
+    }
+    const toast = this.toastCtrl.create({
+        message: 'Innstillinger lagret',
+        duration: 3000,
+        position: 'top',
+        cssClass: 'toast-success'
+      });
+    toast.present();
 }
 
-  getPolygon() {
+  getPolygon(adr,num) {
     var url = "https://nominatim.openstreetmap.org/search.php?q="
     
-    for (var x = 0; x<this.address.split(" ").length; x++) {
-      url = url + this.address.split(" ")[x] + "+";
+    for (var x = 0; x<adr.split(" ").length; x++) {
+      url = url + adr.split(" ")[x] + "+";
     }
-    url = url + this.number + "&polygon_geojson=1&viewbox=&format=json";
+    url = url + num + "&polygon_geojson=1&viewbox=&format=json";
 
     console.log("getPolygon");
     console.log(url);
@@ -67,7 +88,6 @@ export class SettingsPage {
   }
 
   setPolygon(data){
-    console.log(data);
     var polygon = [];
     polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][2]);
     polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][3]);
