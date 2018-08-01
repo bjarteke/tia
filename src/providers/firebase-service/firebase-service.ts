@@ -7,6 +7,7 @@ import { AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firest
 import { Observable } from 'rxjs/Observable';
 import { NotificationsProvider } from '../notifications/notifications';
 import { getScrollData } from '../../../node_modules/ionic-angular/umd/components/input/input';
+import { ToastController } from 'ionic-angular';
 
 /*
   Generated class for the FirebaseServiceProvider provider.
@@ -72,7 +73,7 @@ export class FirebaseServiceProvider {
   public number;
   public polygon;
 
-  constructor(public afd: AngularFirestore, public notifications: NotificationsProvider) {
+  constructor(public afd: AngularFirestore, public notifications: NotificationsProvider, public toastCtrl: ToastController) {
     /* Retrieving data from Firestore */
     this.afd.collection<Items>('arbeidsokter', ref => ref.orderBy('Start'))
       .valueChanges()
@@ -268,20 +269,30 @@ export class FirebaseServiceProvider {
 
   }
 
-  updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, polygon){
+  updateSettingsHandler(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number) {
+    console.log("updateSettingshNdler");
+    if(this.updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number)){
+      console.log("RETURNERTE TRUE");
+      this.toast('Innstillinger lagret',2000,"toast-success");
+    }
+  }
+
+  updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number){
     this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
       "earlyCheckInMinutes" : earlyCheckInMinutes,
       "automaticCheckIn" : automaticCheckIn,
       "timeFromArrivalToCheckIn" : timeFromArrivalToCheckIn,
-      "polygon" : polygon,
+      "polygon" : this.polygon,
       "address" : address,
       "postalCode" : number
     })
     .then(function() {
-      console.log("earlyCheckMinutes successfully written")
+      console.log("earlyCheckMinutes successfully written");
+      return true;
     })
     .catch(function(error){
-      console.error("Error when writing earlyCheckMinutes: ", error)
+      console.error("Error when writing earlyCheckMinutes: ", error);
+      return false;
     });
   }
 
@@ -289,7 +300,16 @@ export class FirebaseServiceProvider {
     this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
       'automaticCheckIn' : value
     });
-
+  }
+  
+  toast(text, duration, css){
+    const toast = this.toastCtrl.create({
+        message: text,
+        duration: duration,
+        position: 'top',
+        cssClass: css
+      });
+    toast.present();
   }
 
   setSettings(){

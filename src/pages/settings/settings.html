@@ -16,47 +16,46 @@
 <ion-content padding>
 
   <ion-list style="padding:5px;margin:0">
-    <ion-item>
-      <ion-label>Automatisk stempling</ion-label>
+    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">
+      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>
       <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>
     </ion-item>
     <ion-item *ngIf="automaticCheckIn">
     <ion-label>
-      <ion-label>
+      <ion-label style="padding-top:5px;" >
         Tid fra ankomst til stempling
-        <ion-badge item-end color="secondary">{{timeFromArrivalToCheckIn}}</ion-badge>
       </ion-label>
     </ion-label>
       <ion-range debounce="1000" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">
-        <ion-label range-left>0</ion-label>
-        <ion-label range-right>60</ion-label>
+        <ion-label range-left>0 min</ion-label>
+        <ion-label range-right>60 min</ion-label>
       </ion-range>
     </ion-item>
   </ion-list>
 
-   <ion-list style="padding:5px;margin:0">
-    <ion-item>
-    <ion-label>
-      Tidlig innstempling (i minutter) 
-      <ion-badge item-end color="secondary">{{earlyCheckIn}}</ion-badge>
-    </ion-label>
-      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">
-        <ion-label range-left>0</ion-label>
-        <ion-label range-right>120</ion-label>
-      </ion-range>
-    </ion-item>
-  </ion-list>
-  
   <ion-list style="padding:5px;margin:0">
     <ion-item>
-      <ion-label color="primary" stacked>{{address}}</ion-label>
+      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>
       <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label color="primary" stacked>{{number}}</ion-label>
+      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>
       <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>
     </ion-item>
   </ion-list>
+
+  <ion-list style="padding:5px;margin:0">
+    <ion-item>
+    <ion-label style="padding-top:5px;" >
+      Tidlig innstempling 
+    </ion-label>
+      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">
+        <ion-label range-left>0 min</ion-label>
+        <ion-label range-right>120 min</ion-label>
+      </ion-range>
+    </ion-item>
+  </ion-list>
+
   <ion-footer no-shadow>
 	<ion-toolbar position="bottom">
         <button (click)="ionChanges()" full ion-button>Lagre</button>

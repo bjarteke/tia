@@ -108,23 +108,26 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
     var coordinates = [];
     console.log(this.fsp.polygon);
     for (var x = 0; x< 5;x++) {
-      coordinates.push([this.fsp.polygon[x*2],this.fsp.polygon[x*2+1]]);
+      coordinates.push([parseFloat(this.fsp.polygon[x*2]),parseFloat(this.fsp.polygon[x*2+1])]);
     }
 
     var pt = turf.point([lat, lng]);
-    //var poly = turf.polygon([coordinates]);
+    var poly = turf.polygon([coordinates]);
     console.log(poly);
-    /* SKØYEN:
-     */ var poly = turf.polygon([[
+    /* SKØYEN: 
+     var poly2 = turf.polygon([[
        [59.92129099886785,10.676581263542177],
        [59.921715793124974,10.678812861442568],
         [59.920544214017035,10.678955353796484],
         [59.92064638252022,10.67635897547007],
       [59.92129099886785,10.676581263542177]
-      ]]);
+      ]]); 
+      console.log("222");
+      console.log(poly2);
+    */
     
 
-    //poly = turf.buffer(poly, 1, 'kilometers');
+    poly = turf.buffer(poly, 1.5, 'kilometers');
       console.log("ER VI PÅ JOBB?????")
       console.log(booleanPointInPolygon(pt,poly));
       this.paJobb = booleanPointInPolygon(pt,poly);
