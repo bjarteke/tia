@@ -28,6 +28,9 @@ export class SettingsPage {
   public polygon;
 
   constructor(public navCtrl: NavController, public http: HttpClient, public navParams: NavParams,public fsp : FirebaseServiceProvider, public toastCtrl: ToastController) {
+    this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
+    this.automaticCheckIn = this.fsp.autoCheckIn;
+    this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
   }
 
   ionViewDidLoad() {
@@ -35,8 +38,6 @@ export class SettingsPage {
     this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
     this.automaticCheckIn = this.fsp.autoCheckIn;
     this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
-    this.address = this.fsp.address;
-    this.number = this.fsp.number;
   }
 
   ionChanges(){
@@ -47,15 +48,7 @@ export class SettingsPage {
     this.fsp.number = this.number;
     this.fsp.address = this.address;
     this.getPolygon();
-    this.fsp.polygon = this.polygon;
-    this.fsp.updateSettings(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.number, this.polygon);
-    const toast = this.toastCtrl.create({
-        message: 'Innstillinger lagret',
-        duration: 2000,
-        position: 'top',
-        cssClass: 'toast-success'
-      });
-    toast.present();
+    this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.number);
 }
 
   getPolygon() {
@@ -81,7 +74,7 @@ export class SettingsPage {
     polygon.push(data[0]["boundingbox"][1],data[0]["boundingbox"][2]);
     polygon.push(data[0]["boundingbox"][1],data[0]["boundingbox"][3]);
     polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][2]);
-    this.polygon = polygon;
+    this.fsp.polygon = polygon;
   }
 
 }
