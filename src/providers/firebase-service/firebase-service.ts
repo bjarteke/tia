@@ -6,6 +6,7 @@ import 'firebase/firestore';
 import { AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 import { NotificationsProvider } from '../notifications/notifications';
+import { getScrollData } from '../../../node_modules/ionic-angular/umd/components/input/input';
 
 /*
   Generated class for the FirebaseServiceProvider provider.
@@ -24,6 +25,7 @@ interface Items {
  Sluttid: string;
  Slutt: string;
  Added: string;
+ arrivedAtWork: boolean;
 }
 
 @Injectable()
@@ -45,6 +47,8 @@ export class FirebaseServiceProvider {
 
   public weeknumbers = [];
   public uniqueWeeknumbers = [];
+
+  public checkedIn: boolean = false;
 
 
   constructor(public afd: AngularFirestore, public notifications: NotificationsProvider) {
@@ -164,6 +168,14 @@ export class FirebaseServiceProvider {
     });
   }
 
+  getCheckedIn(){
+    this.afd.collection('arbeidsokter').doc(this.planNext[0]['ID'])
+      .valueChanges()
+      .subscribe(data => {
+        this.checkedIn =  data['checkedIn'];
+      });
+  }
+
   writeArrivalTime(timestamp){
     this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
       "arrivedAtWork" : timestamp
@@ -175,6 +187,8 @@ export class FirebaseServiceProvider {
       console.error("Error when writing arrivedAtWork: ", error)
     });
   }
+
+
 
   /* Reseting all arrays */
   resetArrays(){
