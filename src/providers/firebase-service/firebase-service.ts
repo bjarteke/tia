@@ -285,6 +285,13 @@ export class FirebaseServiceProvider {
     });
   }
 
+  updateAutomaticSetting(value){
+    this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
+      'automaticCheckIn' : value
+    });
+
+  }
+
   setSettings(){
     var settings = [];
     this.afd.collection<Settings>("settings").doc("6uSk7azHsXowUL2BSy8i").valueChanges()

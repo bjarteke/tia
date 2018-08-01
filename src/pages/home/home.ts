@@ -121,6 +121,8 @@ export class HomePage {
     var startDate = new Date(this.fsp.planNext[0]["Start"]);
     var endDate = new Date(this.fsp.planNext[0]['Slutt']);
 
+    this.activateAutomaticCheckInOut = this.fsp.autoCheckIn;
+
     /* Automatic Check-in */
     var now = new Date();
     if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && !this.waitingToCheckIn && this.activateAutomaticCheckInOut){
@@ -159,6 +161,7 @@ export class HomePage {
 
   manuallyCheckInOut(){
     this.activateAutomaticCheckInOut = false;
+    this.fsp.updateAutomaticSetting(false);
     this.checkInOut(new Date());
   }
 
