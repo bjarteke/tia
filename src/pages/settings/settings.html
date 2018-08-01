@@ -14,10 +14,11 @@
 
 
 <ion-content padding>
-  <ion-list>
+
+  <ion-list style="padding:5px;margin:0">
     <ion-item>
       <ion-label>Automatisk stempling</ion-label>
-      <ion-toggle (ionChange)="ionChanges()" [(ngModel)]="automaticCheckIn"></ion-toggle>
+      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>
     </ion-item>
     <ion-item *ngIf="automaticCheckIn">
     <ion-label>
@@ -26,37 +27,44 @@
         <ion-badge item-end color="secondary">{{timeFromArrivalToCheckIn}}</ion-badge>
       </ion-label>
     </ion-label>
-      <ion-range debounce="1000" (ionChange)="ionChanges()" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">
+      <ion-range debounce="1000" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">
         <ion-label range-left>0</ion-label>
         <ion-label range-right>60</ion-label>
       </ion-range>
     </ion-item>
   </ion-list>
-   <ion-list>
+
+   <ion-list style="padding:5px;margin:0">
     <ion-item>
     <ion-label>
       Tidlig innstempling (i minutter) 
       <ion-badge item-end color="secondary">{{earlyCheckIn}}</ion-badge>
     </ion-label>
-      <ion-range debounce="1000" (ionChange)="ionChanges()" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">
+      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">
         <ion-label range-left>0</ion-label>
         <ion-label range-right>120</ion-label>
       </ion-range>
     </ion-item>
   </ion-list>
   
-  <ion-list>
+  <ion-list style="padding:5px;margin:0">
     <ion-item>
       <ion-label color="primary" stacked>{{address}}</ion-label>
       <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>
-      <ion-button></ion-button>
     </ion-item>
     <ion-item>
       <ion-label color="primary" stacked>{{number}}</ion-label>
-      <ion-input [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>
-      <ion-button></ion-button>
+      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>
     </ion-item>
   </ion-list>
+  <ion-footer no-shadow>
+	<ion-toolbar position="bottom">
+        <button (click)="ionChanges()" full ion-button>Lagre</button>
+	</ion-toolbar>
+</ion-footer>
+
+
+
   
 
 </ion-content>
