@@ -3,6 +3,8 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
 import { HomePage } from '../home/home';
+import { SettingsPage } from '../settings/settings';
+
 
 import firebase from 'firebase';
 import 'firebase/firestore';
@@ -149,11 +151,7 @@ export class ContactPage {
       this.sendingStempletider.sort();
     }
     else {
-      this.toastCtrl.create({
-        message: 'FEIL: Allerede lagt til stempling på dette tidspunktet',
-        duration: 3000,
-        position: 'top'
-      }).present();
+      this.toast('FEIL: Allerede lagt til stempling på dette tidspunktet',3000,"toast-failed");
     }
   }
 
@@ -181,18 +179,22 @@ export class ContactPage {
 
   sendChangesHandler() {
     if(this.sendChanges()){
+      console.log("RETURNERTE TRUE");
       this.toast('Endringer sendt til godkjenning',3000,"toast-success");
     }
   }
 
   sendChanges() {
     /* Error handling */
+    console.log("SEND CHANGES");
     if (this.msg == "") {
       this.toast('FEIL: Beskriv årsak til endring',3000,"toast-failed");
     }
-    if (this.newStempletider.length %2 != 0) {
+    if (this.sendingStempletider.length %2 != 0) {
+      console.log(this.sendingStempletider);
       this.toast('FEIL: Det må være like mange inn- og utstemplinger',5000,"toast-failed");
     }
+
 
     /* Creating an array consisting of old and new change messages */
     var listEndretMelding = [];
@@ -206,6 +208,8 @@ export class ContactPage {
     else {
       listEndretMelding.push(this.msg);
     }
+    console.log("KOM HIT");
+
 
     /* Sending */
     if(this.msg != "" && this.sendingStempletider.length %2 == 0) {
@@ -239,6 +243,11 @@ export class ContactPage {
     else {
       this.toggleStempletider = true;
     }
+  }
+
+  selectSettings() {
+    this.navCtrl.push(SettingsPage, {
+     });
   }
 
 }

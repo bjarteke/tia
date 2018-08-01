@@ -47,7 +47,8 @@ const firebaseConfig = {
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage
+    TabsPage,
+    SettingsPage
   ],
   imports: [
     BrowserModule,
@@ -67,7 +68,8 @@ const firebaseConfig = {
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage
+    TabsPage,
+    SettingsPage
   ],
   providers: [
     StatusBar,
