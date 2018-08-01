@@ -85,14 +85,7 @@ export class HomePage {
     
   continueslyChecked() {
     
-    if (this.checkedIn){
-      this.stempleButton = 'Stemple ut';
-      this.checkInOutVar = "checkInOut2";
-    }
-    else if(!this.checkedIn){
-      this.stempleButton = 'Stemple inn';
-      this.checkInOutVar = 'checkInOut';
-    }
+
 
     if(!this.initialLocationSet){
       this.locationTracker.startTracking();      //Start tracking location
@@ -109,6 +102,15 @@ export class HomePage {
     this.fsp.getCheckedIn();
     console.log('status på checkedIn', this.checkedIn);
     this.checkedIn = this.fsp.checkedIn;
+
+    if (this.checkedIn){
+      this.stempleButton = 'Stemple ut';
+      this.checkInOutVar = "checkInOut2";
+    }
+    else if(!this.checkedIn){
+      this.stempleButton = 'Stemple inn';
+      this.checkInOutVar = 'checkInOut';
+    }
 
     //this.checkedIn = this.fsp.planNext[0]["checkedIn"];
 
