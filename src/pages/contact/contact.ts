@@ -3,6 +3,8 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
 import { HomePage } from '../home/home';
+import { SettingsPage } from '../settings/settings';
+
 
 import firebase from 'firebase';
 import 'firebase/firestore';
@@ -35,8 +37,8 @@ export class ContactPage {
   stempletiderTop = [];
   stempletiderBottom = [];
 
-  newStempletider = new Array();
-  sendingStempletider = new Array();
+  newStempletider = new Array(); //used for loading bar
+  sendingStempletider = new Array(); //used for editing
   msg = "";
   timeStarts = '08:00';
 
@@ -46,15 +48,37 @@ export class ContactPage {
     for (var x = 0; x<this.item.Stempletider.length; x++){
       this.newStempletider.push(this.item.Stempletider[x]);
     }
+    if(this.newStempletider[this.newStempletider.length - 1] != this.item.Slutt) {
+      this.newStempletider.push(this.item.Slutt);
+    }    
     this.newStempletider.sort();
     console.log("CONSTRUCTOR");
-    console.log(this.newStempletider);
-    console.log(this.sendingStempletider);
-    this.sendingStempletider = this.newStempletider;
+    console.log(this.item.Stempletider);
+    this.sendingStempletider = this.item.Stempletider.sort();
     this.init();
     
   }
 
+  init() {
+    /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
+   
+
+    /* Calculate the duration of the work session, measured in seconds */
+    this.seconds = ((new Date (this.newStempletider[this.newStempletider.length-1])).getTime()/1000 - (new Date (this.item.Start)).getTime()/1000);
+
+    /* Setting the lateWidth variable if check in was done too late */
+    if(100*(Math.abs((+new Date(this.newStempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds) > 0) {
+      this.lateWidth = (100*(Math.abs((+new Date(this.newStempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds)) + "%";     
+    }
+
+    /* Calculate the segment widths of the loading bar */
+    this.totalWidthSoFar = parseFloat(this.lateWidth.slice(0,-1));
+    for (var x=0; x<this.newStempletider.length - 1; x++){
+      var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.newStempletider[x+1]) - +new Date(this.newStempletider[x]))/1000)/this.seconds));
+      this.totalWidthSoFar += temp;
+      this.segmentWidth.push(temp + "%");      
+    }
+  }
   timestampToDate2(timestamp){
     timestamp = new Date(timestamp);
     var months = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august" , "september" , "oktober" , "november" , "desember" ]
@@ -77,28 +101,6 @@ export class ContactPage {
     return (outH + ":" + outM);
   }
 
-  init() {
-    /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
-    if(this.item.Stempletider[this.item.Stempletider.length - 1] != this.item.Slutt && new Date(this.item.Stempletider[this.item.Stempletider.length - 1]).getTime() < new Date(this.item.Slutt).getTime()){
-      this.item.Stempletider.push(this.item.Slutt);
-    }
-
-    /* Calculate the duration of the work session, measured in seconds */
-    this.seconds = ((new Date (this.item.Stempletider[this.item.Stempletider.length-1])).getTime()/1000 - (new Date (this.item.Start)).getTime()/1000);
-
-    /* Setting the lateWidth variable if check in was done too late */
-    if(100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds) > 0) {
-      this.lateWidth = (100*(Math.abs((+new Date(this.item.Stempletider[0]) - +new Date(this.item.Start))/1000)/this.seconds)) + "%";     
-    }
-
-    /* Calculate the segment widths of the loading bar */
-    this.totalWidthSoFar = parseFloat(this.lateWidth.slice(0,-1));
-    for (var x=0; x<this.item.Stempletider.length - 1; x++){
-      var temp = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(this.item.Stempletider[x+1]) - +new Date(this.item.Stempletider[x]))/1000)/this.seconds));
-      this.totalWidthSoFar += temp;
-      this.segmentWidth.push(temp + "%");      
-    }
-  }
 
   fromTimestampToHHMM(timestamp) {
     var date = new Date(timestamp);
@@ -149,16 +151,11 @@ export class ContactPage {
       this.sendingStempletider.sort();
     }
     else {
-      this.toastCtrl.create({
-        message: 'FEIL: Allerede lagt til stempling på dette tidspunktet',
-        duration: 3000,
-        position: 'top'
-      }).present();
+      this.toast('FEIL: Allerede lagt til stempling på dette tidspunktet',3000,"toast-failed");
     }
   }
 
   sortStempletider() {
-    console.log(this.newStempletider);
     for (var y = 0; y<this.newStempletider.length; y++) {
     for (var x = 0; x<this.newStempletider.length-1; x++) {
       if(new Date(this.newStempletider[x]).getTime() > new Date(this.newStempletider[x+1]).getTime()){
@@ -170,56 +167,52 @@ export class ContactPage {
     }
   }
 
-  toast(text, duration){
+  toast(text, duration, css){
     const toast = this.toastCtrl.create({
         message: text,
         duration: duration,
-        position: 'top'
+        position: 'top',
+        cssClass: css
       });
     toast.present();
   }
 
   sendChangesHandler() {
     if(this.sendChanges()){
-      this.toast('Endringer sendt til godkjenning',3000);
-    }
-    else {
-      this.toast('FEIL: Noe gikk galt. Sjekk internett-tilkoblingen din',5000);
+      console.log("RETURNERTE TRUE");
+      this.toast('Endringer sendt til godkjenning',3000,"toast-success");
     }
   }
 
   sendChanges() {
     /* Error handling */
+    console.log("SEND CHANGES");
     if (this.msg == "") {
-      this.toast('FEIL: Beskriv årsak til endring',3000);
+      this.toast('FEIL: Beskriv årsak til endring',3000,"toast-failed");
     }
-    if (this.newStempletider.length %2 == 0) {
-      this.toast('FEIL: Det må være like mange inn- og utstemplinger',5000);
+    if (this.sendingStempletider.length %2 != 0) {
+      console.log(this.sendingStempletider);
+      this.toast('FEIL: Det må være like mange inn- og utstemplinger',5000,"toast-failed");
     }
+
 
     /* Creating an array consisting of old and new change messages */
     var listEndretMelding = [];
-    console.log("Fra firebase");
-    console.log(this.item.EndretMelding);
-
     if(this.item.EndretMelding.length > 0){
       for (var i = 0; i<this.item.EndretMelding.length ; i++){
         listEndretMelding.push(this.item.EndretMelding[i]);
       }
-      console.log("Etter for");
-      console.log(listEndretMelding);
       listEndretMelding.push(this.msg);
-      console.log(listEndretMelding);
 
     }
     else {
       listEndretMelding.push(this.msg);
     }
+    console.log("KOM HIT");
 
-    console.log(listEndretMelding);
 
     /* Sending */
-    if(this.msg != "" && this.sendingStempletider.length %2 != 0) {
+    if(this.msg != "" && this.sendingStempletider.length %2 == 0) {
       return this.afd.collection("arbeidsokter").doc(this.item.ID).update({
         "Stempletider" : this.sendingStempletider,
         "EndretMelding" : listEndretMelding
@@ -250,6 +243,11 @@ export class ContactPage {
     else {
       this.toggleStempletider = true;
     }
+  }
+
+  selectSettings() {
+    this.navCtrl.push(SettingsPage, {
+     });
   }
 
 }

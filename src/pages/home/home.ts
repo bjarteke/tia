@@ -13,6 +13,8 @@ import { Observable } from 'rxjs/Rx';
 
 //testing -->
 import { ContactPage } from '../contact/contact';
+import { SettingsPage } from '../settings/settings';
+
 import { getLocaleTimeFormat } from '@angular/common';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
@@ -77,7 +79,6 @@ export class HomePage {
   }
  
   start() {
-    console.log("Er i ionView")
     Observable.interval(1000).subscribe(
       ref => this.continueslyChecked());
     }
@@ -325,6 +326,7 @@ export class HomePage {
 
 
   itemSelected(item,segmentWidth) {
+    console.log(item);
      this.navCtrl.push(ContactPage, {
        item: item,
        segmentwidth : segmentWidth
@@ -386,6 +388,11 @@ export class HomePage {
     outM = (m<10) ? "0"+ m : outM;
 
     return (outH + ":" + outM);
+  }
+
+  selectSettings() {
+    this.navCtrl.push(SettingsPage, {
+     });
   }
 
   

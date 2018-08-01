@@ -4,7 +4,7 @@
       Min arbeidsplan
     </ion-title>
     <ion-buttons end>
-      <button ion-button icon-only>
+      <button ion-button icon-only (click)="selectSettings()">
         <ion-icon name="settings"></ion-icon>
       </button>
     </ion-buttons>
@@ -16,6 +16,7 @@
 <div class="info">
 
 <!-- Next record, checking in/out -->
+
 <ion-slides>
   <ion-slide>
   <div class="record" *ngFor="let x of fsp.planNext, let i=index" >
@@ -27,7 +28,7 @@
     <div class="infoField">
       <div ng-if="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px"></div>
       <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{'width' : x}"></div>
-      <div class="loadingBar" [ngStyle] = "{'width' : currentWidth}"></div>
+      <div class="loadingBar" id="currentlyLoading" [ngStyle] = "{'width' : currentWidth}"></div>
     </div>
     <button [disabled]="((!locationTracker.paJobb && !fsp.checkedIn) || !correctTime(fsp.planNext[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>
   </div>
@@ -45,9 +46,12 @@
   </ion-slide>
 </ion-slides>
 
+<div *ngIf="!fsp.doneInitial" style="text-align:center">
+  <ion-spinner icon="bubbles"></ion-spinner>
+</div>
 
 <!-- Segment buttons-->
-<div class="records">
+<div *ngIf="fsp.doneInitial" class="records">
   <div style="background-color: rgb(242, 242, 242); border-radius: 5px 5px 0px 0px; margin-bottom: -25px;">
   <ion-segment [(ngModel)]="planner">
     <ion-segment-button value="kommende">
@@ -64,6 +68,7 @@
 
 <!-- Future records -->
 <ion-list style="background-color: rgb(242, 242, 242); border-radius: 0px 0px 5px 5px">
+
   <div [ngSwitch]="planner" >
 
     <!-- Upcoming -->

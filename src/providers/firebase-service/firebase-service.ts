@@ -28,6 +28,15 @@ interface Items {
  arrivedAtWork: boolean;
 }
 
+interface Settings {
+  autoCheckIn: boolean;
+  earlyCheckInMinutes: number;
+  timeFromArrivalToCheckIn: number;
+  address : string;
+  number : string;
+  polygon;
+}
+
 @Injectable()
 export class FirebaseServiceProvider {
   public testList = [];
@@ -50,12 +59,25 @@ export class FirebaseServiceProvider {
 
   public checkedIn: boolean = false;
 
+  public doneInitial = false;
+
+  public settingsData = [];
+
+
+  //* SETTINGS *//
+  public earlyCheckInMinutes;
+  public autoCheckIn;
+  public timeFromArrivalToCheckIn;
+  public address;
+  public number;
+  public polygon;
 
   constructor(public afd: AngularFirestore, public notifications: NotificationsProvider) {
     /* Retrieving data from Firestore */
     this.afd.collection<Items>('arbeidsokter', ref => ref.orderBy('Start'))
       .valueChanges()
       .subscribe ((data) => this.inTheFuture(data));
+    this.setSettings();
   }
 
   inTheFuture(data){
@@ -121,6 +143,8 @@ export class FirebaseServiceProvider {
         this.uniqueWeeknumbers.push(this.weeknumbers[y]);
       }
     }
+
+    this.doneInitial = true;
   }
 
   /* Calculating the week number of a date object given as a parameter */
@@ -241,6 +265,42 @@ export class FirebaseServiceProvider {
       this.notifications.sendNotification('arrive_late', checkInTime);
       return checkInTime;
     } 
+
+  }
+
+  updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, polygon){
+    this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
+      "earlyCheckInMinutes" : earlyCheckInMinutes,
+      "automaticCheckIn" : automaticCheckIn,
+      "timeFromArrivalToCheckIn" : timeFromArrivalToCheckIn,
+      "polygon" : polygon,
+      "address" : address,
+      "postalCode" : number
+    })
+    .then(function() {
+      console.log("earlyCheckMinutes successfully written")
+    })
+    .catch(function(error){
+      console.error("Error when writing earlyCheckMinutes: ", error)
+    });
+  }
+
+  setSettings(){
+    var settings = [];
+    this.afd.collection<Settings>("settings").doc("6uSk7azHsXowUL2BSy8i").valueChanges()
+    .subscribe((data) => this.setSettings2(data))
+  }
+
+  setSettings2(data){
+    this.settingsData = data;
+    this.earlyCheckInMinutes = this.settingsData["earlyCheckInMinutes"];
+    this.autoCheckIn = this.settingsData["automaticCheckIn"];
+    this.timeFromArrivalToCheckIn = this.settingsData["timeFromArrivalToCheckIn"];
+    this.polygon = this.settingsData["polygon"];
+    this.number = this.settingsData["postalCode"];
+    this.address = this.settingsData["address"];
+
+    
 
   }
 
