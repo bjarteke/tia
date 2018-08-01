@@ -112,10 +112,11 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
     }
 
     var pt = turf.point([lat, lng]);
-    var poly = turf.polygon([coordinates]);
-    console.log(poly);
-    /* SKØYEN: 
-     var poly2 = turf.polygon([[
+    //var poly = turf.polygon([coordinates]);
+    //console.log(poly);
+    //SKØYEN: 
+
+     var poly = turf.polygon([[
        [59.92129099886785,10.676581263542177],
        [59.921715793124974,10.678812861442568],
         [59.920544214017035,10.678955353796484],
@@ -123,11 +124,11 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
       [59.92129099886785,10.676581263542177]
       ]]); 
       console.log("222");
-      console.log(poly2);
-    */
+      console.log(poly);
+    
     
 
-    poly = turf.buffer(poly, 1.5, 'kilometers');
+    //poly = turf.buffer(poly, 1.5, 'kilometers');
       console.log("ER VI PÅ JOBB?????")
       console.log(booleanPointInPolygon(pt,poly));
       this.paJobb = booleanPointInPolygon(pt,poly);

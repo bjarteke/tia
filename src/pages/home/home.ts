@@ -102,6 +102,9 @@ export class HomePage {
     this.fsp.getCheckedIn();
     console.log('status på checkedIn', this.checkedIn);
     this.checkedIn = this.fsp.checkedIn;
+    console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
+    console.log('status på autoCheckIn', this.fsp.autoCheckIn);
+
 
     if (this.checkedIn){
       this.stempleButton = 'Stemple ut';
@@ -133,9 +136,8 @@ export class HomePage {
 
       this.waitingToCheckIn = true;
       console.log('time to check in');
-
-      
     }
+
     else if(this.checkInTime != null && this.waitingToCheckIn && new Date().getTime() > this.checkInTime.getTime() && !this.checkedIn && this.activateAutomaticCheckInOut){
       this.checkInOut(this.checkInTime);
       this.waitingToCheckIn = false;
@@ -355,11 +357,13 @@ export class HomePage {
     else if(this.forlotTid == null){
       return;
     }
-    else if(now.getTime() - this.forlotTid.getTime() > 5000 && bufferTime < endDate.getTime() && this.paJobb == false && this.checkedIn){
+    else if(now.getTime() - this.forlotTid.getTime() > 5000 && bufferTime < endDate.getTime() && this.paJobb == false && this.checkedIn && !this.doneOnce){
       this.notifications.sendNotification('leftEarly', endDate);
+      this.doneOnce = true;
     }
     //hvis man går inn i sonen igjen blir tiden man dro resatt
     else if (this.paJobb == true){
+      this.doneOnce = false;
       this.forlotTid = null;
     }
 
