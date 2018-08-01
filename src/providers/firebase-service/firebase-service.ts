@@ -176,6 +176,18 @@ export class FirebaseServiceProvider {
 
   }
 
+  writeCheckedIn(checkedIn){
+    this.afd.collection('arbeidsokter').doc(this.planNext[0]['ID']).update({
+      'checkedIn': checkedIn
+    })
+    .then(function() {
+      console.log("checkedIn-variable successfully written")
+    })
+    .catch(function(error){
+      console.error("Error when writing checkedIn-variable: ", error)
+    });
+  }
+
   writeArrivalTime(timestamp){
     this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
       "arrivedAtWork" : timestamp
@@ -198,7 +210,7 @@ export class FirebaseServiceProvider {
   }
 
   getCurrentID() {
-     var docID = (this.afd.collection<Items>("arbeidsokter", ref => ref.where("Start", "==", this.planNext[0]["Start"])).valueChanges());
+    var docID = (this.afd.collection<Items>("arbeidsokter", ref => ref.where("Start", "==", this.planNext[0]["Start"])).valueChanges());
 
     console.log("Hei");
     console.log(docID);
@@ -217,7 +229,7 @@ export class FirebaseServiceProvider {
 
   decideCheckInTime(arrivedAtWork){
     //600000 ms er 10 minutter
-    var buffer = 100000;
+    var buffer = 5000;
     
     arrivedAtWork = new Date(arrivedAtWork);
 
