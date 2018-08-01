@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
 import { HttpClient } from '@angular/common/http';
 
+import { ToastController } from 'ionic-angular';
 
 
 /**
@@ -22,11 +23,11 @@ export class SettingsPage {
   public earlyCheckIn;
   public automaticCheckIn;
   public timeFromArrivalToCheckIn;
-  public address = "Karenslyst Allé 54";
-  public number = "0277";
+  public address;
+  public number;
   public polygon;
 
-  constructor(public navCtrl: NavController, public http: HttpClient, public navParams: NavParams,public fsp : FirebaseServiceProvider) {
+  constructor(public navCtrl: NavController, public http: HttpClient, public navParams: NavParams,public fsp : FirebaseServiceProvider, public toastCtrl: ToastController) {
   }
 
   ionViewDidLoad() {
@@ -34,12 +35,12 @@ export class SettingsPage {
     this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
     this.automaticCheckIn = this.fsp.autoCheckIn;
     this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
-    this.getPolygon();
+    this.address = this.fsp.address;
+    this.number = this.fsp.number;
   }
 
   ionChanges(){
     console.log("IONCHANGE");
-    this.fsp.updateSettings(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.number, this.polygon);
     this.fsp.earlyCheckInMinutes = this.earlyCheckIn;
     this.fsp.autoCheckIn = this.automaticCheckIn;
     this.fsp.timeFromArrivalToCheckIn = this.timeFromArrivalToCheckIn;
@@ -47,7 +48,15 @@ export class SettingsPage {
     this.fsp.address = this.address;
     this.getPolygon();
     this.fsp.polygon = this.polygon;
-  }
+    this.fsp.updateSettings(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.number, this.polygon);
+    const toast = this.toastCtrl.create({
+        message: 'Innstillinger lagret',
+        duration: 2000,
+        position: 'top',
+        cssClass: 'toast-success'
+      });
+    toast.present();
+}
 
   getPolygon() {
     var url = "https://nominatim.openstreetmap.org/search.php?q="
