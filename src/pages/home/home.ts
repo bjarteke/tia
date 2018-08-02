@@ -80,20 +80,6 @@ export class HomePage {
     this.start();
     //this.setInitialLoadingBar();
   }
-
-  setInitialLoadingBar(){
-    var stempletider = this.fsp.planNext[0]["Stempletider"];
-    this.totalWidthSoFar = 0;
-    /*for (var x = 0; x<stempletider.length; x++) {
-      this.segmentWidth = this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+new Date(stempletider[x]) - +new Date(stempletider[stempletider.length-1])/1000)/this.seconds)) + "%");
-      this.totalWidthSoFar += parseFloat;
-    }*/
-    console.log(this.segmentWidth);
-
-
-    console.log("STEMPLING");
-    console.log(stempletider);
-  }
  
   start() {
     Observable.interval(1000).subscribe(
@@ -114,7 +100,7 @@ export class HomePage {
     }
 
     this.fsp.getCheckedIn();
-    console.log('status på checkedIn', this.checkedIn);
+    //console.log('status på checkedIn', this.checkedIn);
     this.checkedIn = this.fsp.checkedIn;
     console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
     console.log('status på autoCheckIn', this.fsp.autoCheckIn);
@@ -135,6 +121,7 @@ export class HomePage {
     this.seconds = ((new Date (this.fsp.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.fsp.planNext[0]["Start"])).getTime()/1000) //Number of seconds
 
     if(!this.initialFirebase){
+      console.log("SET INITIAL LOADING BAR");
       this.setInitialLoadingBar();
       this.initialFirebase = true;
     }
@@ -288,21 +275,24 @@ export class HomePage {
     }
   }
 
-  checkIfBreak(startTime : any, endTime : any) {
-    var currentTime = new Date();
-    var lengthOfDayInMinutes = this.calculateTimePeriodMinutes(endTime, startTime);
-    var minutesSinceStart = this.calculateTimePeriodMinutes(currentTime,endTime);
-
-    if (minutesSinceStart/lengthOfDayInMinutes > 0.4 && !this.finishedBreak) {
-      //Method for sending notification.
+  /* Sets the segments of the initial loading bar based on check in/out times stored in Firebase*/
+  setInitialLoadingBar(){
+    var stempletider = this.fsp.planNext[0]["Stempletider"];
+    this.totalWidthSoFar = 0;
+    var segmentWidth = [];
+    for (var x = 1; x<stempletider.length; x++) {
+      var date1 = new Date(stempletider[x]);
+      var date0 = new Date(stempletider[x-1]);
+      var temp = 100*(Math.abs((+date1 - +date0)/1000)/this.seconds);
+      segmentWidth.push(Math.min(100-this.totalWidthSoFar,temp) + "%");
+      this.totalWidthSoFar += parseFloat(segmentWidth[x-1].slice(0,-1));
     }
-    else {
-    }
-
-
+    this.segmentWidth = segmentWidth;
   }
 
-    // Used to determine whether a rec is markered with a ribbon
+  /* STYLING */
+
+  // Used to determine whether a rec is markered with a ribbon
   checkIfNew(addedDate : any) {
     var addedDating = new Date(addedDate).getTime();
     var today = new Date().getTime();
@@ -313,6 +303,7 @@ export class HomePage {
     return true;
   }
 
+  // Write "i dag" or "i morgen" in the upper box if the next work session is today or tomorrow
   fromTimestampToTextIdagImorgen(dato : any, timestamp : any) {
     var today = new Date(); 
     var tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
@@ -336,21 +327,14 @@ export class HomePage {
     return false;
   }
 
+  // Returning the name of the weekday from a timestamp
   getWeekdayName(timestamp) {
     var d = new Date(timestamp);
-    var weekday = new Array(7);
-    weekday[0] = "Søndag";
-    weekday[1] = "Mandag";
-    weekday[2] = "Tirsdag";
-    weekday[3] = "Onsdag";
-    weekday[4] = "Torsdag";
-    weekday[5] = "Fredag";
-    weekday[6] = "Lørdag";
-
+    var weekday = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
     return weekday[d.getDay()];
   }
 
-
+  // Called when the used click on one of the work sessions in order to open the detailed page
   itemSelected(item,segmentWidth) {
     console.log(item);
      this.navCtrl.push(ContactPage, {
