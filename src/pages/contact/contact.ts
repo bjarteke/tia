@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams} from 'ionic-angular';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
 import { HomePage } from '../home/home';
@@ -41,6 +41,7 @@ export class ContactPage {
   sendingStempletider = new Array(); //used for editing
   msg = "";
   timeStarts = '08:00';
+  datePicker;
 
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public firebaseService : FirebaseServiceProvider, public afd: AngularFirestore, public toastCtrl: ToastController) {
@@ -52,10 +53,10 @@ export class ContactPage {
       this.newStempletider.push(this.item.Slutt);
     }    
     this.newStempletider.sort();
-    console.log("CONSTRUCTOR");
-    console.log(this.item.Stempletider);
+
     this.sendingStempletider = this.item.Stempletider.sort();
     this.init();
+    console.log(this.navCtrl.getActive().name);
     
   }
 
