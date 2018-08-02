@@ -87,6 +87,8 @@ export class HomePage {
     }
     
   continueslyChecked() {
+    console.log("LATECHECKIN2");
+    console.log(this.lateCheckIn);
     if(!this.initialLocationSet){
       this.locationTracker.startTracking();      //Start tracking location
       this.initialLocationSet = true;
@@ -123,6 +125,8 @@ export class HomePage {
       this.initialFirebase = true;
     }
 
+    
+
     var currentDate = new Date();
     var startDate = new Date(this.fsp.planNext[0]["Start"]);
     var endDate = new Date(this.fsp.planNext[0]['Slutt']);
@@ -147,19 +151,32 @@ export class HomePage {
       this.waitingToCheckIn = false;
     }
 
+    
+
     /* Updating the loadingBar */
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
       //If too late, and not checked in.
-      this.lateCheckIn = true;
-      this.updateLoadingBarLate();
+      if(this.currentWidth == "0%"){
+        this.updateLoadingBarLate();
+        this.lateCheckIn = true;
+      }
+      else{
+        console.log("LATECHECKIN1");
+        console.log(this.lateCheckIn);
+      }
     }
     else if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == true && this.stop == false){
       //If already checked in.
+      
+      
       this.updateLoadingBar();
+      
     }
     else {
       //If not not too late, and not checked in
     }
+
+    
 
     //Logic for checking if you leave work 
     this.checkLeave(endDate);
@@ -205,21 +222,7 @@ export class HomePage {
     
   }
 
-  //Calculate how many hours and minutes between two timestamps.
-  calculateTimePeriod(time1 : any, time2 : any) {
-    if (this.checkInOutTimes.length > 1) {
-      var m = Math.abs((new Date (time2).getMinutes()-new Date (time1).getMinutes()));
-      var h = Math.abs((new Date (time2).getHours()-new Date (time1).getHours()));
 
-      var outH = ""+h;
-      var outM = ""+m;
-
-      outH = (h<10) ? "0"+ h : outH;
-      outM = (m<10) ? "0"+ m : outM;
-
-      return (outH + ":" + outM);
-    }
-  }
 
   calculateTimePeriodMinutes(time1 : any, time2 : any) {
     if (this.checkInOutTimes.length > 1) {
@@ -232,12 +235,6 @@ export class HomePage {
     }
   }
 
-  calculateLengthOfAllIntervals(){
-    for (var x = 0; x < this.checkInOutTimes.length -1 ; x++ ) {
-      this.intervalTimes.push(this.calculateTimePeriod(this.checkInOutTimes[x],this.checkInOutTimes[x+1]));
-      this.intervalTimesMinutes.push(this.calculateTimePeriodMinutes(this.checkInOutTimes[x],this.checkInOutTimes[x+1]));
-    }
-  }
 
   //LOADING BAR
   updateLoadingBar() {
@@ -251,6 +248,7 @@ export class HomePage {
     //Setting the width of the current segment
     this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";
     
+
     //Stopping loading bar when it has been filled.
     if (this.currentWidth == 100-this.totalWidthSoFar + "%" && this.stop == false){
       this.segmentWidth.push(this.currentWidth);
@@ -286,6 +284,12 @@ export class HomePage {
       this.totalWidthSoFar += parseFloat(segmentWidth[x-1].slice(0,-1));
     }
     this.segmentWidth = segmentWidth;
+    var currentDate = new Date();
+    var temp = 100*(Math.abs((+new Date(stempletider[stempletider.length - 1]) - +currentDate)/1000)/this.seconds);
+    this.currentWidth = Math.min(100-this.totalWidthSoFar,temp) + "%";
+    if(+new Date(stempletider[0]) - +new Date(this.fsp.planNext[0]["Start"]) > 0){
+      this.lateCheckIn = true;
+    }
   }
 
   /* STYLING */

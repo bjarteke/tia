@@ -188,11 +188,11 @@ export class ContactPage {
   sendChanges() {
     /* Error handling */
     console.log("SEND CHANGES");
+    console.log(this.sendingStempletider);
     if (this.msg == "") {
       this.toast('FEIL: Beskriv årsak til endring',3000,"toast-failed");
     }
     if (this.sendingStempletider.length %2 != 0) {
-      console.log(this.sendingStempletider);
       this.toast('FEIL: Det må være like mange inn- og utstemplinger',5000,"toast-failed");
     }
 

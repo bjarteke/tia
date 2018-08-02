@@ -62,9 +62,6 @@ p {
     margin-right:-3px;
 }
 
-#currentlyLoading {
-    margin-left:4px !important;
-}
 
 // *Stemple inn/ut button* //
 .button-inner {
@@ -206,7 +203,7 @@ ion-item-options .button:last-child {
 
 .checkInOut {
     background-color: map-get($colors,primary) !important;
-    color: #000000;
+    color: #ffffff;
 }
 
 .checkInOut2 {
