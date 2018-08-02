@@ -1,11 +1,119 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Arkiv
+      Statistikk
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
+  <ion-card class="ionCard" >
+  <ion-card-header class="ionCardHeader">Denne perioden
+    <ion-icon  class="documentIcon" name="document"></ion-icon>
+  </ion-card-header>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-list style="padding:0">
+          <ion-item>
+            Ordinært:
+          </ion-item>
+          <ion-item>
+            Overtid:
+          </ion-item>
+          <ion-item class="finalSum">
+            Sum
+          </ion-item>
+        </ion-list>
+      </ion-col>
+      <ion-col>
+        <ion-list style="padding:0">
+          <ion-item>
+            24,6 timer
+          </ion-item>
+          <ion-item>
+            10,2 timer
+          </ion-item>
+          <ion-item class="finalSum">
+          34,8 timer
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </ion-card>
 
-</ion-content>
+  <ion-card class="ionCard" >
+  <ion-card-header (click)="toggle()" class="ionCardHeader">21. mai - 20. juni
+    <ion-icon class="documentIcon" name="document"></ion-icon>
+  </ion-card-header>
+  <ion-grid *ngIf="toggle1">
+    <ion-row>
+      <ion-col>
+        <ion-list style="padding:0">
+          <ion-item>
+            Ordinært:
+          </ion-item>
+          <ion-item>
+            Overtid:
+          </ion-item>
+          <ion-item class="finalSum">
+            Sum
+          </ion-item>
+        </ion-list>
+      </ion-col>
+      <ion-col>
+        <ion-list style="padding:0">
+          <ion-item>
+            24,6 timer
+          </ion-item>
+          <ion-item>
+            10,2 timer
+          </ion-item>
+          <ion-item class="finalSum">
+          34,8 timer
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </ion-card>
+
+  <ion-card class="ionCard" >
+  <ion-card-header (click)="toggle21()" class="ionCardHeader">21. april - 20. mai
+    <ion-icon class="documentIcon" name="document"></ion-icon>
+  </ion-card-header>
+  <ion-grid *ngIf="toggle2">
+    <ion-row>
+      <ion-col>
+        <ion-list style="padding:0">
+          <ion-item>
+            Ordinært:
+          </ion-item>
+          <ion-item>
+            Overtid:
+          </ion-item>
+          <ion-item class="finalSum">
+            Sum
+          </ion-item>
+        </ion-list>
+      </ion-col>
+      <ion-col>
+        <ion-list style="padding:0">
+          <ion-item>
+            24,6 timer
+          </ion-item>
+          <ion-item>
+            10,2 timer
+          </ion-item>
+          <ion-item class="finalSum">
+          34,8 timer
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </ion-card>
+
+  
+</ion-content>>
