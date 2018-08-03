@@ -936,7 +936,7 @@ var HomePage = /** @class */ (function () {
         //Variables meant to be changed by the admin user
         this.numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
         this.earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
-        this.numberOfSecondsFromOnLocationToCheckIn = 10;
+        //private numberOfSecondsFromOnLocationToCheckIn = 10;
         this.activateAutomaticCheckInOut = true;
         this.enableNotifications = true;
         this.start();
@@ -1069,7 +1069,7 @@ var HomePage = /** @class */ (function () {
             this.segmentWidth.push(this.currentWidth);
         }
         var currentDate = new Date();
-        var startDate = new Date(this.fsp.planNext[0]["Start"]);
+        //var startDate = new Date(this.fsp.planNext[0]["Start"]);
         //Setting the width of the current segment
         this.currentWidth = Math.min(100 - this.totalWidthSoFar, 100 * (Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length - 1]) / 1000) / this.seconds)) + "%";
         //Stopping loading bar when it has been filled.

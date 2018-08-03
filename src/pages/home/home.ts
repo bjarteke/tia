@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-import { NavController, AlertController, Platform } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 import { LocationTracker } from '../../providers/location-tracker/location-tracker';
 
-import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
-import turf from 'turf';
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Rx';
 
@@ -15,11 +12,9 @@ import { Observable } from 'rxjs/Rx';
 import { ContactPage } from '../contact/contact';
 import { SettingsPage } from '../settings/settings';
 
-import { getLocaleTimeFormat } from '@angular/common';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
 import { NotificationsProvider } from '../../providers/notifications/notifications';
-import { NotExpr } from '../../../node_modules/@angular/compiler';
 
 
 
@@ -72,7 +67,7 @@ export class HomePage {
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
   private earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
-  private numberOfSecondsFromOnLocationToCheckIn = 10;
+  //private numberOfSecondsFromOnLocationToCheckIn = 10;
   private activateAutomaticCheckInOut = true;
   private enableNotifications = true;
 
@@ -247,7 +242,7 @@ export class HomePage {
       this.segmentWidth.push(this.currentWidth);
     }
     var currentDate = new Date();
-    var startDate = new Date(this.fsp.planNext[0]["Start"]);
+    //var startDate = new Date(this.fsp.planNext[0]["Start"]);
 
     //Setting the width of the current segment
     this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";

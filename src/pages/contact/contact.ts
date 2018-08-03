@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { NavController, NavParams} from 'ionic-angular';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
-import { HomePage } from '../home/home';
+
 import { SettingsPage } from '../settings/settings';
 
 
-import firebase from 'firebase';
+
 import 'firebase/firestore';
 import { AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
 
