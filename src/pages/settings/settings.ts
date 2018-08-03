@@ -26,6 +26,7 @@ export class SettingsPage {
   public address = "";
   public number = "";
   public polygon;
+  public addressDataFromAPI;
 
   constructor(public navCtrl: NavController, public http: HttpClient, public navParams: NavParams,public fsp : FirebaseServiceProvider, public toastCtrl: ToastController) {
     this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
@@ -45,29 +46,26 @@ export class SettingsPage {
     this.fsp.autoCheckIn = this.automaticCheckIn;
     this.fsp.timeFromArrivalToCheckIn = this.timeFromArrivalToCheckIn;
     if(this.number != "" && this.address !=""){
-      this.fsp.number = this.number;
-      this.fsp.address = this.address;
-      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.number);
       this.getPolygon(this.address,this.number);
     }
     else if (this.address != "" && this.number == ""){
-      this.fsp.address = this.address;
-      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.address, this.fsp.number);
       this.getPolygon(this.address,this.fsp.number);
     }
     else if (this.address == "" && this.number != ""){
-      this.fsp.number = this.number;
-      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.number);
       this.getPolygon(this.fsp.address, this.number);
     }
     else {
-      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number);
+      this.getPolygon(this.fsp.address, this.fsp.number);
     }
-    const toast = this.toastCtrl.create({
-        message: 'Innstillinger lagret',
+    
+}
+
+toast(message,cssClass){
+  const toast = this.toastCtrl.create({
+        message: message,
         duration: 3000,
         position: 'top',
-        cssClass: 'toast-success'
+        cssClass: cssClass
       });
     toast.present();
 }
@@ -89,12 +87,33 @@ export class SettingsPage {
 
   setPolygon(data){
     var polygon = [];
-    polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][2]);
-    polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][3]);
-    polygon.push(data[0]["boundingbox"][1],data[0]["boundingbox"][2]);
-    polygon.push(data[0]["boundingbox"][1],data[0]["boundingbox"][3]);
-    polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][2]);
-    this.fsp.polygon = polygon;
+    console.log("BOUND");
+    this.addressDataFromAPI = data;
+    if(data.length == 0) {
+      this.toast('Fant ikke adresse','toast-failed');
+    }
+    else {
+      polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][2]);
+      polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][3]);
+      polygon.push(data[0]["boundingbox"][1],data[0]["boundingbox"][2]);
+      polygon.push(data[0]["boundingbox"][1],data[0]["boundingbox"][3]);
+      polygon.push(data[0]["boundingbox"][0],data[0]["boundingbox"][2]);
+      this.fsp.polygon = polygon;
+      if(this.number != "" && this.address !=""){
+        this.fsp.number = this.number;
+        this.fsp.address = this.address;
+      }
+      else if (this.address != "" && this.number == ""){
+        this.fsp.address = this.address;
+      }
+      else if (this.address == "" && this.number != ""){
+        this.fsp.number = this.number;
+      }
+      else {
+      }
+      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number);
+      this.toast('Innstillinger endret','toast-success');
+    }
   }
 
 }
