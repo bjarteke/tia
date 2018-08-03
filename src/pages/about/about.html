@@ -1,14 +1,27 @@
 <ion-header>
+
   <ion-navbar>
     <ion-title>
       Statistikk
     </ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="selectSettings()">
+        <ion-icon name="settings"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
+
 </ion-header>
 
 <ion-content padding>
+  <ion-card class="flexitid">
+    Tilgjengelig flexitid: 24,4 timer
+  </ion-card>
+
+
   <ion-card class="ionCard" >
-  <ion-card-header class="ionCardHeader">Denne perioden
+  <ion-card-header class="ionCardHeader">21. juni - 
     <ion-icon  class="documentIcon" name="document"></ion-icon>
   </ion-card-header>
   <ion-grid>
@@ -38,6 +51,13 @@
           34,8 timer
           </ion-item>
         </ion-list>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-item class="sum">
+          Opptjent: 10.203,-
+        </ion-item>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -76,6 +96,13 @@
         </ion-list>
       </ion-col>
     </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-item class="sum">
+          Opptjent: 10.203,-
+        </ion-item>
+      </ion-col>
+    </ion-row>
   </ion-grid>
   </ion-card>
 
@@ -110,6 +137,13 @@
           34,8 timer
           </ion-item>
         </ion-list>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-item class="sum">
+          Opptjent: 10.203,-
+        </ion-item>
       </ion-col>
     </ion-row>
   </ion-grid>

@@ -9,3 +9,23 @@ page-about {
 .documentIcon {
     float:right;
 }
+
+.col {
+    padding:0 !important;
+}
+
+.item-block {
+    border-bottom: 0.55px solid #c8c7cc;
+}
+
+.sum{
+    font-size: 20px;
+    text-align: center;
+    background-color:map-get($colors,secondary) !important;
+}
+
+.flexitid {
+    padding:15px;
+    font-size: 14px;
+
+}
