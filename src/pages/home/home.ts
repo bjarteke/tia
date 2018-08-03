@@ -375,7 +375,7 @@ export class HomePage {
     }
 
     //Hvis man har vært utenfor området i mer enn 5 minutter blir man automatisk sjekket ut. 
-    else if(now.getTime() - this.forlotTid.getTime() > 5000 && this.checkedIn && this.paJobb == false){
+    else if(now.getTime() - this.forlotTid.getTime() > 60000 && this.checkedIn && this.paJobb == false){
       this.checkInOut(this.forlotTid);
     }
     //Må også sende notification første gang man registrerer at man forlater jobb. 
