@@ -203,32 +203,37 @@ var FirebaseServiceProvider = /** @class */ (function () {
         //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
         if (workStart.getTime() - arrivedAtWork.getTime() > buffer) {
             this.addCheckInOutTime(workStart);
-            this.notifications.sendNotification('arrive_early', workStart);
+            if (this.enableNotifications) {
+                this.notifications.sendNotification('arrive_early', workStart);
+            }
             return workStart;
         }
         else if (workStart.getTime() - arrivedAtWork.getTime() < buffer) {
             var checkInTime = arrivedAtWork.getTime() + buffer;
             checkInTime = new Date(checkInTime);
             this.addCheckInOutTime(checkInTime);
-            this.notifications.sendNotification('arrive_late', checkInTime);
+            if (this.enableNotifications) {
+                this.notifications.sendNotification('arrive_late', checkInTime);
+            }
             return checkInTime;
         }
     };
-    FirebaseServiceProvider.prototype.updateSettingsHandler = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number) {
+    FirebaseServiceProvider.prototype.updateSettingsHandler = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
         console.log("updateSettingshNdler");
-        if (this.updateSettings(earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number)) {
+        if (this.updateSettings(earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications)) {
             console.log("RETURNERTE TRUE");
             this.toast('Innstillinger lagret', 2000, "toast-success");
         }
     };
-    FirebaseServiceProvider.prototype.updateSettings = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number) {
+    FirebaseServiceProvider.prototype.updateSettings = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
         this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
             "earlyCheckInMinutes": earlyCheckInMinutes,
             "automaticCheckIn": automaticCheckIn,
             "timeFromArrivalToCheckIn": timeFromArrivalToCheckIn,
             "polygon": this.polygon,
             "address": address,
-            "postalCode": number
+            "postalCode": number,
+            "enableNotifications": enableNotifications
         })
             .then(function () {
             console.log("earlyCheckMinutes successfully written");
@@ -262,6 +267,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
     FirebaseServiceProvider.prototype.setSettings2 = function (data) {
         this.settingsData = data;
         this.earlyCheckInMinutes = this.settingsData["earlyCheckInMinutes"];
+        this.enableNotifications = this.settingsData['enableNotifications'];
         this.autoCheckIn = this.settingsData["automaticCheckIn"];
         this.timeFromArrivalToCheckIn = this.settingsData["timeFromArrivalToCheckIn"];
         this.polygon = this.settingsData["polygon"];
@@ -319,17 +325,20 @@ var SettingsPage = /** @class */ (function () {
         this.number = "";
         this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
         this.automaticCheckIn = this.fsp.autoCheckIn;
+        this.enableNotifications = this.fsp.enableNotifications;
         this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
     }
     SettingsPage.prototype.ionViewDidLoad = function () {
         console.log('ionViewDidLoad SettingsPage');
         this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
         this.automaticCheckIn = this.fsp.autoCheckIn;
+        this.enableNotifications = this.fsp.enableNotifications;
         this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
     };
     SettingsPage.prototype.ionChanges = function () {
         this.fsp.earlyCheckInMinutes = this.earlyCheckIn;
         this.fsp.autoCheckIn = this.automaticCheckIn;
+        this.fsp.enableNotifications = this.enableNotifications;
         this.fsp.timeFromArrivalToCheckIn = this.timeFromArrivalToCheckIn;
         if (this.number != "" && this.address != "") {
             this.getPolygon(this.address, this.number);
@@ -392,13 +401,13 @@ var SettingsPage = /** @class */ (function () {
             }
             else {
             }
-            this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number);
+            this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number, this.fsp.enableNotifications);
             this.toast('Innstillinger endret', 'toast-success');
         }
     };
     SettingsPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-settings',template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/pages/settings/settings.html"*/'<!--\n  Generated template for the SettingsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>Innstillinger</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>\n      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn">\n    <ion-label>\n      <ion-label style="padding-top:5px;" >\n        Tid fra ankomst til stempling\n      </ion-label>\n    </ion-label>\n      <ion-range debounce="1000" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>60 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>\n      <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>\n      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n    <ion-label style="padding-top:5px;" >\n      Tidlig innstempling \n    </ion-label>\n      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>120 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-footer no-shadow>\n	<ion-toolbar position="bottom">\n        <button (click)="ionChanges()" full ion-button>Lagre</button>\n	</ion-toolbar>\n</ion-footer>\n\n\n\n  \n\n</ion-content>\n'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/pages/settings/settings.html"*/,
+            selector: 'page-settings',template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/pages/settings/settings.html"*/'<!--\n  Generated template for the SettingsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>Innstillinger</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Send varslinger</ion-label>\n      <ion-toggle [(ngModel)]="enableNotifications"></ion-toggle>\n    </ion-item>\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>\n      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn">\n    <ion-label>\n      <ion-label style="padding-top:5px;" >\n        Tid fra ankomst til stempling\n      </ion-label>\n    </ion-label>\n      <ion-range debounce="1000" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>60 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>\n      <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>\n      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n    <ion-label style="padding-top:5px;" >\n      Tidlig innstempling \n    </ion-label>\n      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>120 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-footer no-shadow>\n	<ion-toolbar position="bottom">\n        <button (click)="ionChanges()" full ion-button>Lagre</button>\n	</ion-toolbar>\n</ion-footer>\n\n\n\n  \n\n</ion-content>\n'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/pages/settings/settings.html"*/,
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]])
     ], SettingsPage);
@@ -929,6 +938,7 @@ var HomePage = /** @class */ (function () {
         this.earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
         this.numberOfSecondsFromOnLocationToCheckIn = 10;
         this.activateAutomaticCheckInOut = true;
+        this.enableNotifications = true;
         this.start();
         //this.setInitialLoadingBar();
     }
@@ -973,6 +983,7 @@ var HomePage = /** @class */ (function () {
         var startDate = new Date(this.fsp.planNext[0]["Start"]);
         var endDate = new Date(this.fsp.planNext[0]['Slutt']);
         this.activateAutomaticCheckInOut = this.fsp.autoCheckIn;
+        this.enableNotifications = this.fsp.enableNotifications;
         /* Automatic Check-in */
         var now = new Date();
         if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && !this.waitingToCheckIn && this.activateAutomaticCheckInOut) {
@@ -1159,7 +1170,7 @@ var HomePage = /** @class */ (function () {
         else if (this.forlotTid == null) {
             return;
         }
-        else if (now.getTime() - this.forlotTid.getTime() > 5000 && bufferTime < endDate.getTime() && this.paJobb == false && this.checkedIn && !this.doneOnce) {
+        else if (now.getTime() - this.forlotTid.getTime() > 5000 && bufferTime < endDate.getTime() && this.paJobb == false && this.checkedIn && !this.doneOnce && this.enableNotifications) {
             this.notifications.sendNotification('leftEarly', endDate);
             this.doneOnce = true;
         }
@@ -1170,7 +1181,7 @@ var HomePage = /** @class */ (function () {
         else if (now.getTime() - this.forlotTid.getTime() > 60000 && this.checkedIn && this.paJobb == false) {
             this.checkInOut(this.forlotTid);
         }
-        else if (now.getTime() >= endDate.getTime() && this.paJobb == false && this.checkedIn && this.forlotTid != null) {
+        else if (now.getTime() >= endDate.getTime() && this.paJobb == false && this.checkedIn && this.forlotTid != null && this.enableNotifications) {
             this.notifications.sendNotification('check_out', this.forlotTid);
         }
     };
