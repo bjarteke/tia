@@ -1,0 +1,110 @@
+{
+    "ID1": {
+      "Startdato": "14. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 14, 2018 08:00:00",
+      "Sluttdato": "14. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 14, 2018 16:00:00",
+      "Added": "June 1, 2018 08:00:00"
+    },
+    "ID2": {
+      "Startdato": "16. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 16, 2018 08:00:00",
+      "Sluttdato": "16. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 16, 2018 16:00:00",
+      "Added": "June 1, 2018 08:00:00"
+    },
+    "ID3": {
+      "Startdato": "21. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 21, 2018 08:00:00",
+      "Sluttdato": "21. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 21, 2018 16:00:00",
+      "Added": "July 10, 2018 08:00:00"
+    },
+    "ID4": {
+      "Startdato": "23. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 23, 2018 08:00:00",
+      "Sluttdato": "23. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 23, 2018 16:00:00",
+      "Added": "July 23, 2018 08:00:00"
+    },
+    "ID5": {
+      "Startdato": "24. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 24, 2018 08:00:00",
+      "Sluttdato": "24. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 24, 2018 16:00:00",
+      "Added": "July 19, 2018 08:00:00"
+    },
+    "ID6": {
+      "Startdato": "25. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 25, 2018 08:00:00",
+      "Sluttdato": "25. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 25, 2018 16:00:00",
+      "Added": "July 23, 2018 08:00:00"
+    },
+    "ID7": {
+      "Startdato": "26. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 26, 2018 08:00:00",
+      "Sluttdato": "26. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 26, 2018 16:00:00",
+      "Added": "July 23, 2018 08:00:00"
+    },
+    "ID8": {
+      "Startdato": "27. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 27, 2018 08:00:00",
+      "Sluttdato": "27. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 27, 2018 16:00:00",
+      "Added": "July 23, 2018 08:00:00"
+    },
+    "ID9": {
+      "Startdato": "28. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 28, 2018 08:00:00",
+      "Sluttdato": "28. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 28, 2018 16:00:00",
+      "Added": "July 28, 2018 08:00:00"
+    },
+    "ID10": {
+      "Startdato": "29. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 29, 2018 08:00:00",
+      "Sluttdato": "29. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 29, 2018 16:00:00",
+      "Added": "July 23, 2018 08:00:00"
+    },
+    "ID11": {
+      "Startdato": "30. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 30, 2018 08:00:00",
+      "Sluttdato": "30. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 30, 2018 16:00:00",
+      "Added": "July 23, 2018 08:00:00"
+    },
+    "ID12": {
+      "Startdato": "31. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 31, 2018 08:00:00",
+      "Sluttdato": "31. juli 2018",
+      "Sluttid" : "16:00",
+      "Slutt": "July 31, 2018 16:00:00",
+      "Added": "July 23, 2018 08:00:00"
+    }
+}

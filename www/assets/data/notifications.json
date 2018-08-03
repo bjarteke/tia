@@ -1,0 +1,24 @@
+{
+    "arrive_early": {
+        "title": "Velkommen på jobb morgenfugl!",
+        "text_pre": "Vi stempler deg inn automatisk ved oppstart klokka ",
+        "text_post": ", men ankomsten din er logget. Meld fra om du vil logge en tidligere start på arbeidsdagen."
+    },
+    "arrive_late": {
+        "title": "Velkommen på jobb!",
+        "text_pre": "Vi stempler deg inn automatisk klokka ",
+        "text_post": ""
+    },
+    "check_out": {
+        "title": "Takk for i dag!",
+        "text_pre": "Vi stemplet deg ut klokka ",
+        "text_post": ""
+    },
+    "leftEarly": {
+        "title": "Ferdig for dagen?",
+        "text_pre": "I arbeidsplanen står det at du jobber til klokka ",
+        "text_post": ". Meld eventuell sykdom i appen. "
+    }
+
+
+}

@@ -1,0 +1,34 @@
+{
+    "ID1": {
+      "Startdato": "10. juli 2018",
+      "Starttid": "08:05",
+      "Start": "July 10, 2018 08:05:00",
+      "Sluttdato": "10. juli 2018",
+      "Sluttid" : "16:00",
+      "Added": "June 1, 2018 08:00:00"
+    },
+    "ID2": {
+      "Startdato": "16. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 16, 2018 08:00:00",
+      "Sluttdato": "16. juli 2018",
+      "Sluttid" : "16:00",
+      "Added": "June 1, 2018 08:00:00"
+    },
+    "ID3": {
+      "Startdato": "21. juli 2018",
+      "Starttid": "08:00",
+      "Start": "July 21, 2018 08:00:00",
+      "Sluttdato": "21. juli 2018",
+      "Sluttid" : "16:00",
+      "Added": "July 8, 2018 08:00:00"
+    },
+    "ID4": {
+      "Startdato": "01. august 2018",
+      "Starttid": "08:00",
+      "Start": "August 23, 2018 08:00:00",
+      "Sluttdato": "23. august 2018",
+      "Sluttid" : "16:00",
+      "Added": "July 8, 2018 08:00:00"
+    }
+}
