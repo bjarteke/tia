@@ -115,7 +115,9 @@ toast(message,cssClass){
       }
       else {
       }
-      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number, this.fsp.enableNotifications);
+      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number, this.enableNotifications);
+      console.log("ENABLE NOTIFICATIONS:");
+      console.log(this.enableNotifications);
       this.toast('Innstillinger endret','toast-success');
     }
   }

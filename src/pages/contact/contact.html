@@ -52,7 +52,7 @@
         <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>
       </ion-item>
       <button ion-button full outline style="border-top:0;background-color: #f8f8f8" (click)="picker.open()">
-        <ion-datetime #picker cancelText="tilbake" doneText="ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>
+        <ion-datetime #picker cancelText="Tilbake" doneText="Ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>
         <ion-icon style="font-size: 30px;" name="add-circle"></ion-icon>
       </button>
      

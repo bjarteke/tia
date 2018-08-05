@@ -226,13 +226,6 @@ export class FirebaseServiceProvider {
     this.uniqueWeeknumbers = [];
   }
 
-  getCurrentID() {
-    var docID = (this.afd.collection<Items>("arbeidsokter", ref => ref.where("Start", "==", this.planNext[0]["Start"])).valueChanges());
-
-    console.log("Hei");
-    console.log(docID);
-  }
-
   isWorking(timestamp) {
     //Will take in a timestamp and check if this matches a block that is scheduled for work. 
     var nextStartTime = new Date(this.planNext[0]['Start']);
@@ -276,9 +269,7 @@ export class FirebaseServiceProvider {
   }
 
   updateSettingsHandler(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
-    console.log("updateSettingshNdler");
     if(this.updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications)){
-      console.log("RETURNERTE TRUE");
       this.toast('Innstillinger lagret',2000,"toast-success");
     }
   }

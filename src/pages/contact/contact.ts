@@ -31,12 +31,6 @@ export class ContactPage {
   totalWidthSoFar = 0;
   totalWidthSoFarPlan = 0;
 
-
-   marginWidthTop = [];
-  marginWidthBottom = [];
-  stempletiderTop = [];
-  stempletiderBottom = [];
-
   newStempletider = new Array(); //used for loading bar
   sendingStempletider = new Array(); //used for editing
   msg = "";
@@ -46,9 +40,6 @@ export class ContactPage {
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public firebaseService : FirebaseServiceProvider, public afd: AngularFirestore, public toastCtrl: ToastController) {
     this.item = this.navParams.get('item');
-    console.log("ITEM");
-    console.log(this.item.ID);
-    console.log(firebaseService.planNext[0]['ID']);
     for (var x = 0; x<this.item.Stempletider.length; x++){
       this.newStempletider.push(this.item.Stempletider[x]);
     }
@@ -59,7 +50,6 @@ export class ContactPage {
 
     this.sendingStempletider = this.item.Stempletider.sort();
     this.init();
-    console.log(this.navCtrl.getActive().name);
     
   }
 
