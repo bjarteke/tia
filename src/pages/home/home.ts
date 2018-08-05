@@ -22,7 +22,6 @@ import { NotificationsProvider } from '../../providers/notifications/notificatio
 import { NotExpr } from '../../../node_modules/@angular/compiler';
 
 
-
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'

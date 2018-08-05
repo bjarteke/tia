@@ -46,6 +46,9 @@ export class ContactPage {
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public firebaseService : FirebaseServiceProvider, public afd: AngularFirestore, public toastCtrl: ToastController) {
     this.item = this.navParams.get('item');
+    console.log("ITEM");
+    console.log(this.item.ID);
+    console.log(firebaseService.planNext[0]['ID']);
     for (var x = 0; x<this.item.Stempletider.length; x++){
       this.newStempletider.push(this.item.Stempletider[x]);
     }
