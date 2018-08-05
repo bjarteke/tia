@@ -22,6 +22,7 @@ export class SettingsPage {
 
   public earlyCheckIn;
   public automaticCheckIn;
+  public enableNotifications;
   public timeFromArrivalToCheckIn;
   public address = "";
   public number = "";
@@ -31,6 +32,7 @@ export class SettingsPage {
   constructor(public navCtrl: NavController, public http: HttpClient, public navParams: NavParams,public fsp : FirebaseServiceProvider, public toastCtrl: ToastController) {
     this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
     this.automaticCheckIn = this.fsp.autoCheckIn;
+    this.enableNotifications = this.fsp.enableNotifications;
     this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
   }
 
@@ -38,12 +40,14 @@ export class SettingsPage {
     console.log('ionViewDidLoad SettingsPage');
     this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
     this.automaticCheckIn = this.fsp.autoCheckIn;
+    this.enableNotifications = this.fsp.enableNotifications;
     this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
   }
 
   ionChanges(){
     this.fsp.earlyCheckInMinutes = this.earlyCheckIn;
     this.fsp.autoCheckIn = this.automaticCheckIn;
+    this.fsp.enableNotifications = this.enableNotifications;
     this.fsp.timeFromArrivalToCheckIn = this.timeFromArrivalToCheckIn;
     if(this.number != "" && this.address !=""){
       this.getPolygon(this.address,this.number);
@@ -111,7 +115,7 @@ toast(message,cssClass){
       }
       else {
       }
-      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number);
+      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number, this.fsp.enableNotifications);
       this.toast('Innstillinger endret','toast-success');
     }
   }

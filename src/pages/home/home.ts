@@ -73,6 +73,7 @@ export class HomePage {
   private earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
   private numberOfSecondsFromOnLocationToCheckIn = 10;
   private activateAutomaticCheckInOut = true;
+  private enableNotifications = true;
 
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public fsp : FirebaseServiceProvider, public notifications: NotificationsProvider) {
@@ -134,6 +135,7 @@ export class HomePage {
     var endDate = new Date(this.fsp.planNext[0]['Slutt']);
 
     this.activateAutomaticCheckInOut = this.fsp.autoCheckIn;
+    this.enableNotifications = this.fsp.enableNotifications;
 
     /* Automatic Check-in */
     var now = new Date();
@@ -363,7 +365,7 @@ export class HomePage {
     else if(this.forlotTid == null){
       return;
     }
-    else if(now.getTime() - this.forlotTid.getTime() > 5000 && bufferTime < endDate.getTime() && this.paJobb == false && this.checkedIn && !this.doneOnce){
+    else if(now.getTime() - this.forlotTid.getTime() > 5000 && bufferTime < endDate.getTime() && this.paJobb == false && this.checkedIn && !this.doneOnce && this.enableNotifications){
       this.notifications.sendNotification('leftEarly', endDate);
       this.doneOnce = true;
     }
@@ -378,7 +380,7 @@ export class HomePage {
       this.checkInOut(this.forlotTid);
     }
     //Må også sende notification første gang man registrerer at man forlater jobb. 
-    else if(now.getTime() >= endDate.getTime() && this.paJobb == false && this.checkedIn && this.forlotTid != null){
+    else if(now.getTime() >= endDate.getTime() && this.paJobb == false && this.checkedIn && this.forlotTid != null && this.enableNotifications){
       this.notifications.sendNotification('check_out', this.forlotTid);
     }
   }

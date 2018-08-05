@@ -30,6 +30,7 @@ interface Items {
 }
 
 interface Settings {
+  enableNotifications: boolean;
   autoCheckIn: boolean;
   earlyCheckInMinutes: number;
   timeFromArrivalToCheckIn: number;
@@ -67,6 +68,7 @@ export class FirebaseServiceProvider {
 
   //* SETTINGS *//
   public earlyCheckInMinutes;
+  public enableNotifications;
   public autoCheckIn;
   public timeFromArrivalToCheckIn;
   public address;
@@ -254,7 +256,9 @@ export class FirebaseServiceProvider {
     //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
     if (workStart.getTime() - arrivedAtWork.getTime() > buffer){
       this.addCheckInOutTime(workStart);
-      this.notifications.sendNotification('arrive_early', workStart);
+      if(this.enableNotifications){
+        this.notifications.sendNotification('arrive_early', workStart);
+      }
       return workStart;
     }
 
@@ -263,28 +267,31 @@ export class FirebaseServiceProvider {
       var checkInTime = arrivedAtWork.getTime() + buffer;
       checkInTime = new Date(checkInTime);
       this.addCheckInOutTime(checkInTime)
-      this.notifications.sendNotification('arrive_late', checkInTime);
+      if (this.enableNotifications){
+        this.notifications.sendNotification('arrive_late', checkInTime);
+      }
       return checkInTime;
     } 
 
   }
 
-  updateSettingsHandler(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number) {
+  updateSettingsHandler(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
     console.log("updateSettingshNdler");
-    if(this.updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number)){
+    if(this.updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications)){
       console.log("RETURNERTE TRUE");
       this.toast('Innstillinger lagret',2000,"toast-success");
     }
   }
 
-  updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number){
+  updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications){
     this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
       "earlyCheckInMinutes" : earlyCheckInMinutes,
       "automaticCheckIn" : automaticCheckIn,
       "timeFromArrivalToCheckIn" : timeFromArrivalToCheckIn,
       "polygon" : this.polygon,
       "address" : address,
-      "postalCode" : number
+      "postalCode" : number,
+      "enableNotifications" : enableNotifications
     })
     .then(function() {
       console.log("earlyCheckMinutes successfully written");
@@ -321,6 +328,7 @@ export class FirebaseServiceProvider {
   setSettings2(data){
     this.settingsData = data;
     this.earlyCheckInMinutes = this.settingsData["earlyCheckInMinutes"];
+    this.enableNotifications = this.settingsData['enableNotifications'];
     this.autoCheckIn = this.settingsData["automaticCheckIn"];
     this.timeFromArrivalToCheckIn = this.settingsData["timeFromArrivalToCheckIn"];
     this.polygon = this.settingsData["polygon"];

@@ -17,6 +17,10 @@
 
   <ion-list style="padding:5px;margin:0">
     <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">
+      <ion-label style="padding-left:15px">Send varslinger</ion-label>
+      <ion-toggle [(ngModel)]="enableNotifications"></ion-toggle>
+    </ion-item>
+    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">
       <ion-label style="padding-left:15px">Automatisk stempling</ion-label>
       <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>
     </ion-item>
