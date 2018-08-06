@@ -87,6 +87,5 @@
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
     <plugin name="de.appplant.cordova.plugin.local-notification" spec="^0.8.5" />
-    <plugin name="com.pylonproducts.wifiwizard" spec="~0.2.11" />
     <engine name="ios" spec="4.5.4" />
 </widget>

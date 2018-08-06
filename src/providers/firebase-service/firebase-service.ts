@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
+
 import 'rxjs/add/operator/map';
-import firebase from 'firebase';
+
 import 'firebase/firestore';
 import { AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
-import { Observable } from 'rxjs/Observable';
+
 import { NotificationsProvider } from '../notifications/notifications';
-import { getScrollData } from '../../../node_modules/ionic-angular/umd/components/input/input';
+
 import { ToastController } from 'ionic-angular';
 
 /*
@@ -88,7 +88,7 @@ export class FirebaseServiceProvider {
   }
 
   inTheFuture(data){
-    console.log(data);
+    //console.log(data);
     this.resetArrays();
     var currentDate = new Date();
     this.allRecords = data;
@@ -100,7 +100,7 @@ export class FirebaseServiceProvider {
       if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
         /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
         this.upcoming.push(this.allRecords[x]);
-        console.log(this.allRecords[x]);
+        //console.log(this.allRecords[x]);
         /* Adding information about the week number to the week number array. */
         if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)){
           this.weeknumbers.push("Denne uken");
@@ -127,7 +127,9 @@ export class FirebaseServiceProvider {
 
     /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
     this.uniqueWeeknumbers.push(this.weeknumbers[0]);
-  
+    console.log("Ukenummer");
+    //console.log(this.weeknumbers);
+
     /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */ 
     var temp = [];
     //console.log(this.upcoming);
@@ -170,6 +172,19 @@ export class FirebaseServiceProvider {
     var newTimestamps = [];
     
     newTimestamps = this.upcoming[0]["Stempletider"];
+
+
+    //Skal gå gjennom hvert Date-element og sjekke om tiden allerede er registrert 
+    var i;
+    for (i = 0; i < newTimestamps.length; i++){
+      var time = new Date(newTimestamps[i]);
+      console.log('time: ', time);
+      if (timestamp.getDate() == time.getDate() && timestamp.getDay() == time.getDay() && timestamp.getFullYear() == time.getFullYear() && timestamp.getMonth() == time.getMonth()){
+        console.log('slår til her');
+        return;
+      }
+    }
+
     newTimestamps.push(timestamp);
       
     this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
@@ -210,8 +225,8 @@ export class FirebaseServiceProvider {
 
   byttOkt(array1Index, array2Index) {
     console.log("BYTT OKT");
-    console.log(array1Index);
-    console.log(array2Index);
+    //console.log(array1Index);
+    //console.log(array2Index);
     var bytte;
     if(this.upcoming2[array1Index][array2Index]['byttes'] == undefined){
       console.log("FØRSTE IF");
@@ -230,7 +245,7 @@ export class FirebaseServiceProvider {
         this.upcoming2[array1Index][array2Index]['byttes'] = false;
       }
     }
-    console.log(this.upcoming2);
+    //console.log(this.upcoming2);
 
     this.afd.collection('arbeidsokter').doc(this.upcoming2[array1Index][array2Index]['ID']).update({
       'byttes' : bytte,
@@ -249,12 +264,16 @@ export class FirebaseServiceProvider {
 
   getCheckedIn(){
     console.log("GETCHECKED IN");
-    console.log(this.upcoming);
+    //console.log(this.upcoming);
     this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID'])
       .valueChanges()
       .subscribe(data => {
         this.checkedIn =  data['checkedIn'];
       });
+  }
+
+  getArrivedAtWork(){
+    return this.upcoming[0]["Stempletider"].length > 0;
   }
 
   writeArrivalTime(timestamp){
@@ -302,6 +321,7 @@ export class FirebaseServiceProvider {
 
     //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
     if (workStart.getTime() - arrivedAtWork.getTime() > buffer){
+      
       this.addCheckInOutTime(workStart);
       if(this.enableNotifications){
         this.notifications.sendNotification('arrive_early', workStart);
@@ -313,6 +333,7 @@ export class FirebaseServiceProvider {
     else if(workStart.getTime() - arrivedAtWork.getTime() < buffer){
       var checkInTime = arrivedAtWork.getTime() + buffer;
       checkInTime = new Date(checkInTime);
+      console.log('skal skrive inn stempletid');
       this.addCheckInOutTime(checkInTime)
       if (this.enableNotifications){
         this.notifications.sendNotification('arrive_late', checkInTime);

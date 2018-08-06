@@ -195,9 +195,10 @@ var NotificationsProvider = /** @class */ (function () {
     };
     NotificationsProvider = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["A" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_common_http__["a" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_local_notifications__["a" /* LocalNotifications */], __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["h" /* Platform */], __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* AlertController */]])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_common_http__["a" /* HttpClient */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_common_http__["a" /* HttpClient */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_local_notifications__["a" /* LocalNotifications */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_local_notifications__["a" /* LocalNotifications */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["h" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["h" /* Platform */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* AlertController */]) === "function" && _d || Object])
     ], NotificationsProvider);
     return NotificationsProvider;
+    var _a, _b, _c, _d;
 }());
 
 //# sourceMappingURL=notifications.js.map
@@ -423,9 +424,10 @@ var ContactPage = /** @class */ (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'page-contact',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/contact/contact.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Detaljer\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n  <h1 style="color:black; text-align:center;padding-top:20px">{{timestampToDate2(item.Start)}}</h1>\n  <h3 style="color:black; text-align:center;padding:0">{{fromTimestampToHHMM2(item.Start)}} - {{fromTimestampToHHMM2(item.Slutt)}}</h3>\n  \n <ion-card class="ionCard" *ngIf="!inTheFuture()"> \n    <ion-card-header class="ionCardHeader">Stempletider<ion-icon style="float: right;" name="build" (click)="toggleStemple()"></ion-icon></ion-card-header>\n    \n    <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">\n      <div *ngIf="item.Stempletider.length==1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>\n      <div *ngIf="item.Stempletider.length!=1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>\n      <div *ngIf="item.Stempletider.length==1 && item.ID != firebaseService.upcoming[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>\n      <div *ngIf="item.Stempletider.length!=1 && item.ID != firebaseService.upcoming[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>\n    </div>\n\n    <div *ngIf="!toggleStempletider && item.ID != firebaseService.upcoming[0][\'ID\']" class="loadingBox" style="height:10px" >\n        <div class="loadingBoxInner" *ngIf="lateWidth!=\'0%\'" style="width:0px;margin-left:-4px">\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div *ngIf="lateWidth!=\'0%\'" style="height:10px; margin-right:-4px" class="loadingBoxInner" [ngStyle]="{\'width\' : lateWidth}" >\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div style="margin-top:-40px; height:10px" *ngFor="let x of segmentWidth, let j = index" class="loadingBoxInner" [ngStyle]="{\'width\' : x}">\n          <div style="height:10px;width:100%;margin-top:-40px"></div>\n        </div>\n        <div class="loadingBoxInner">\n        </div>\n    </div>\n\n    <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">\n      <ion-item style="padding:0;height:30px" *ngFor="let x of sendingStempletider, let j = index">\n        <div class="checkInOutInfoBox" style="display:table-cell; width:30px;padding-top:20px;padding-bottom:20px" [ngStyle]="{\'background\' : selectBackground(j)}">\n          <h2 *ngIf="j%2==0" style="text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:5px">INN</h2>\n          <h2 *ngIf="j%2!=0" style="color:white; text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:8.5px">UT</h2>\n        </div>          \n        <div style="display:table-cell;padding:15px;vertical-align:middle"> {{fromTimestampToHHMM(x)}}</div>\n        <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>\n      </ion-item>\n      <button ion-button full outline style="border-top:0;background-color: #f8f8f8" (click)="picker.open()">\n        <ion-datetime #picker cancelText="Tilbake" doneText="Ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>\n        <ion-icon style="font-size: 30px;" name="add-circle"></ion-icon>\n      </button>\n     \n      <ion-item>\n        <ion-label stacked style="padding:5px">Årsak til endring: </ion-label>\n        <ion-textarea style="padding:5px" [(ngModel)]="msg"></ion-textarea>\n      </ion-item>\n      <button ion-button full (click)="sendChangesHandler()">Lagre endringer</button>\n    </ion-list> \n  </ion-card>\n\n<ion-card class="ionCard" >\n  <ion-card-header class="ionCardHeader">På jobb denne dagen</ion-card-header>\n  <ion-list style="padding:0">\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KÅ</div>\n      </ion-avatar>\n      <h2>Karianne Åsen</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Svendsen</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Stiggerud</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">JM</div>\n      </ion-avatar>\n      <h2>Johanna Mølbakken</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n  </ion-list>\n</ion-card>\n</ion-content>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/contact/contact.html"*/
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__["a" /* AngularFirestore */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__["a" /* AngularFirestore */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__["a" /* AngularFirestore */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]) === "function" && _e || Object])
     ], ContactPage);
     return ContactPage;
+    var _a, _b, _c, _d, _e;
 }());
 
 //# sourceMappingURL=contact.js.map
@@ -651,7 +653,7 @@ var HomePage = /** @class */ (function () {
         //Variables meant to be changed by the admin user
         this.numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
         this.earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
-        this.numberOfSecondsFromOnLocationToCheckIn = 10;
+        //private numberOfSecondsFromOnLocationToCheckIn = 10;
         this.activateAutomaticCheckInOut = true;
         this.enableNotifications = true;
         this.start();
@@ -702,7 +704,10 @@ var HomePage = /** @class */ (function () {
         /* Automatic Check-in */
         var now = new Date();
         if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && !this.waitingToCheckIn && this.activateAutomaticCheckInOut) {
-            this.fsp.writeArrivalTime(now);
+            //Første gang man kommer på jobb en dag, skrives arrivedAtWork
+            if (!this.fsp.getArrivedAtWork()) {
+                this.fsp.writeArrivalTime(now);
+            }
             this.checkInTime = new Date(this.fsp.decideCheckInTime(now));
             console.log(this.checkInTime);
             this.waitingToCheckIn = true;
@@ -1074,9 +1079,10 @@ var LocationTracker = /** @class */ (function () {
     };
     LocationTracker = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */], __WEBPACK_IMPORTED_MODULE_1__ionic_native_background_geolocation__["a" /* BackgroundGeolocation */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__["a" /* Geolocation */], __WEBPACK_IMPORTED_MODULE_6__notifications_notifications__["a" /* NotificationsProvider */], __WEBPACK_IMPORTED_MODULE_7__firebase_service_firebase_service__["a" /* FirebaseServiceProvider */]])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__ionic_native_background_geolocation__["a" /* BackgroundGeolocation */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__ionic_native_background_geolocation__["a" /* BackgroundGeolocation */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__["a" /* Geolocation */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__["a" /* Geolocation */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_6__notifications_notifications__["a" /* NotificationsProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__notifications_notifications__["a" /* NotificationsProvider */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_7__firebase_service_firebase_service__["a" /* FirebaseServiceProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__firebase_service_firebase_service__["a" /* FirebaseServiceProvider */]) === "function" && _e || Object])
     ], LocationTracker);
     return LocationTracker;
+    var _a, _b, _c, _d, _e;
 }());
 
 //# sourceMappingURL=location-tracker.js.map
@@ -1321,7 +1327,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.setSettings();
     }
     FirebaseServiceProvider.prototype.inTheFuture = function (data) {
-        console.log(data);
+        //console.log(data);
         this.resetArrays();
         var currentDate = new Date();
         this.allRecords = data;
@@ -1333,7 +1339,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
             if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
                 /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
                 this.upcoming.push(this.allRecords[x]);
-                console.log(this.allRecords[x]);
+                //console.log(this.allRecords[x]);
                 /* Adding information about the week number to the week number array. */
                 if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)) {
                     this.weeknumbers.push("Denne uken");
@@ -1355,6 +1361,8 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.previous.reverse();
         /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
         this.uniqueWeeknumbers.push(this.weeknumbers[0]);
+        console.log("Ukenummer");
+        //console.log(this.weeknumbers);
         /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */
         var temp = [];
         //console.log(this.upcoming);
@@ -1392,6 +1400,16 @@ var FirebaseServiceProvider = /** @class */ (function () {
         var oldTimestamps = [];
         var newTimestamps = [];
         newTimestamps = this.upcoming[0]["Stempletider"];
+        //Skal gå gjennom hvert Date-element og sjekke om tiden allerede er registrert 
+        var i;
+        for (i = 0; i < newTimestamps.length; i++) {
+            var time = new Date(newTimestamps[i]);
+            console.log('time: ', time);
+            if (timestamp.getDate() == time.getDate() && timestamp.getDay() == time.getDay() && timestamp.getFullYear() == time.getFullYear() && timestamp.getMonth() == time.getMonth()) {
+                console.log('slår til her');
+                return;
+            }
+        }
         newTimestamps.push(timestamp);
         this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
             "Stempletider": newTimestamps
@@ -1428,8 +1446,8 @@ var FirebaseServiceProvider = /** @class */ (function () {
     };
     FirebaseServiceProvider.prototype.byttOkt = function (array1Index, array2Index) {
         console.log("BYTT OKT");
-        console.log(array1Index);
-        console.log(array2Index);
+        //console.log(array1Index);
+        //console.log(array2Index);
         var bytte;
         if (this.upcoming2[array1Index][array2Index]['byttes'] == undefined) {
             console.log("FØRSTE IF");
@@ -1448,7 +1466,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
                 this.upcoming2[array1Index][array2Index]['byttes'] = false;
             }
         }
-        console.log(this.upcoming2);
+        //console.log(this.upcoming2);
         this.afd.collection('arbeidsokter').doc(this.upcoming2[array1Index][array2Index]['ID']).update({
             'byttes': bytte,
             'Start': this.upcoming2[array1Index][array2Index]['Start'],
@@ -1466,12 +1484,15 @@ var FirebaseServiceProvider = /** @class */ (function () {
     FirebaseServiceProvider.prototype.getCheckedIn = function () {
         var _this = this;
         console.log("GETCHECKED IN");
-        console.log(this.upcoming);
+        //console.log(this.upcoming);
         this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID'])
             .valueChanges()
             .subscribe(function (data) {
             _this.checkedIn = data['checkedIn'];
         });
+    };
+    FirebaseServiceProvider.prototype.getArrivedAtWork = function () {
+        return this.upcoming[0]["Stempletider"].length > 0;
     };
     FirebaseServiceProvider.prototype.writeArrivalTime = function (timestamp) {
         this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
@@ -1518,6 +1539,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         else if (workStart.getTime() - arrivedAtWork.getTime() < buffer) {
             var checkInTime = arrivedAtWork.getTime() + buffer;
             checkInTime = new Date(checkInTime);
+            console.log('skal skrive inn stempletid');
             this.addCheckInOutTime(checkInTime);
             if (this.enableNotifications) {
                 this.notifications.sendNotification('arrive_late', checkInTime);

@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-import { NavController, AlertController, Platform } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 import { LocationTracker } from '../../providers/location-tracker/location-tracker';
 
-import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
-import turf from 'turf';
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Rx';
 
@@ -15,11 +12,9 @@ import { Observable } from 'rxjs/Rx';
 import { ContactPage } from '../contact/contact';
 import { SettingsPage } from '../settings/settings';
 
-import { getLocaleTimeFormat } from '@angular/common';
 
 import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
 import { NotificationsProvider } from '../../providers/notifications/notifications';
-import { NotExpr } from '../../../node_modules/@angular/compiler';
 
 
 
@@ -75,7 +70,7 @@ export class HomePage {
   //Variables meant to be changed by the admin user
   private numberOfHoursRegardedAsNew = 72; //For how many hours are records marked as "new"? 
   private earlyCheckInHours = 0.25; //How many hour before scheduled start up are employees allowed to check in?
-  private numberOfSecondsFromOnLocationToCheckIn = 10;
+  //private numberOfSecondsFromOnLocationToCheckIn = 10;
   private activateAutomaticCheckInOut = true;
   private enableNotifications = true;
 
@@ -145,7 +140,11 @@ export class HomePage {
     var now = new Date();
     if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && !this.waitingToCheckIn && this.activateAutomaticCheckInOut){
       
-      this.fsp.writeArrivalTime(now);
+      //Første gang man kommer på jobb en dag, skrives arrivedAtWork
+      if (!this.fsp.getArrivedAtWork()){
+        this.fsp.writeArrivalTime(now);
+      }
+
       this.checkInTime = new Date(this.fsp.decideCheckInTime(now));
       console.log(this.checkInTime);
 
@@ -355,7 +354,6 @@ export class HomePage {
       this.paJobb = this.locationTracker.paJobb;
 
     }
-
     //Må hente ut når man slutter for dagen og sjekke om man går for tidlig. Gir da en notifikasjon på når man slutter og at man kan melde sykdom i appen. 
     //Sjekker om man går fra jobb før man er ferdig
     var now = new Date();

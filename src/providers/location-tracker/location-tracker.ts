@@ -5,7 +5,6 @@ import 'rxjs/add/operator/filter';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import turf from 'turf'; 
 import { NotificationsProvider } from '../notifications/notifications';
-import { Observable } from 'rxjs';
 import { FirebaseServiceProvider } from '../firebase-service/firebase-service';
 
 

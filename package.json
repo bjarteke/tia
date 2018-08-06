@@ -48,7 +48,6 @@
     "rxjs-compat": "^6.2.2",
     "sw-toolbox": "3.6.0",
     "turf": "^3.0.14",
-    "wifiwizard": "^0.2.11",
     "zone.js": "0.8.26"
   },
   "devDependencies": {
@@ -67,8 +66,7 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "de.appplant.cordova.plugin.local-notification": {},
-      "com.pylonproducts.wifiwizard": {}
+      "de.appplant.cordova.plugin.local-notification": {}
     },
     "platforms": [
       "ios"
