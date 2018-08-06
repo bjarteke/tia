@@ -19,18 +19,18 @@
 
 <ion-slides>
   <ion-slide>
-  <div class="record" *ngFor="let x of fsp.planNext, let i=index" >
-    <div class="topBox" (click)="itemSelected(fsp.planNext[0],segmentWidth)">
+  <div class="record" *ngFor="let x of fsp.upcoming | slice:0:1, let i=index" >
+    <div class="topBox" (click)="itemSelected(fsp.upcoming[0],segmentWidth)">
       <ion-icon name="pin" class="pinIcon" [ngStyle]="{'color': (locationTracker.paJobb ? '#7CFC00' : '#a00b0b')}"></ion-icon>      
-      <h1>{{ fromTimestampToTextIdagImorgen(timestampToDate(fsp.planNext[i]['Start']),fsp.planNext[i]['Start']) }} </h1>
-      <h3>{{fromTimestampToHHMM(fsp.planNext[i]["Start"])}} - {{fromTimestampToHHMM(fsp.planNext[i]["Slutt"])}}</h3>
+      <h1>{{ fromTimestampToTextIdagImorgen(timestampToDate(fsp.upcoming[i]['Start']),fsp.upcoming[i]['Start']) }} </h1>
+      <h3>{{fromTimestampToHHMM(fsp.upcoming[i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming[i]["Slutt"])}}</h3>
     </div>
     <div class="infoField">
       <div *ngIf="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px;margin-left:-4px"></div>
       <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{'width' : x}"></div>
       <div class="loadingBar" id="currentlyLoading" [ngStyle] = "{'width' : currentWidth}"></div>
     </div>
-    <button [disabled]="((!locationTracker.paJobb && !fsp.checkedIn) || !correctTime(fsp.planNext[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>
+    <button [disabled]="((!locationTracker.paJobb && !fsp.checkedIn) || !correctTime(fsp.upcoming[i]['Start']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>
   </div>
   </ion-slide>
   <ion-slide>
@@ -86,12 +86,13 @@
             <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> 
           </div>
           <div class="futureInfo">
+      <ion-icon class="bytteIcon" *ngIf="fsp.upcoming2[j][i]['byttes']" name="git-compare"></ion-icon>
             <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>
             <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>
           </div> 
       </ion-item>
       <ion-item-options>
-        <button ion-button color="secondary">
+        <button (click)="fsp.byttOkt(j,i)" ion-button color="secondary">
           <ion-icon name="git-compare"></ion-icon>
           Bytt
         </button>
@@ -99,8 +100,35 @@
     </ion-item-sliding>
     </div>
 
+    <!-- Ledig -->
+    <div style="margin-top:30px"  >
+    <div *ngFor="let x of fsp.uniqueWeeknumbers, let j=index">
+    
+    <!--<h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="'ledig'" >{{fsp.uniqueWeeknumbers[j]}}</h1> -->
+
+    <ion-item-sliding *ngFor="let x of fsp.upcoming2[j], let i=index">
+      <ion-item *ngSwitchCase="'ledig'">
+          <div class="futureDate" *ngIf="fsp.upcoming2[j][i]['byttes']">
+            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>
+            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> 
+          </div>
+          <div class="futureInfo" *ngIf="fsp.upcoming2[j][i]['byttes']">
+            <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>
+            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>
+          </div> 
+      </ion-item>
+      <ion-item-options *ngIf="fsp.upcoming2[j][i]['byttes']">
+        <button (click)="fsp.byttOkt(j,i)" ion-button color="secondary">
+          <ion-icon name="git-compare"></ion-icon>
+          Ta økt
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+    </div>
+    </div>
+
     <!-- Previous -->
-    <div style="margin-top:30px">
+    <div >
     <ion-item-sliding *ngFor="let x of fsp.previous | slice:0:3, let i=index" >
       <ion-item *ngSwitchCase="'fullfort'" (click)="itemSelected(x)">
           <div class="futureDate">
@@ -112,12 +140,6 @@
             <h3>{{fromTimestampToHHMM(fsp.previous[i]["Start"])}} - {{fromTimestampToHHMM(fsp.previous[i]["Slutt"])}}</h3>
           </div> 
       </ion-item>
-      <ion-item-options>
-        <button ion-button color="secondary">
-          <ion-icon name="git-compare"></ion-icon>
-          Bytt
-        </button>
-      </ion-item-options>
     </ion-item-sliding>
     </div>
 

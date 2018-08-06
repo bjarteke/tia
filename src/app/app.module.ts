@@ -28,6 +28,12 @@ import { HttpModule } from '@angular/http';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
+<<<<<<< HEAD
+
+=======
+import { ToastController } from 'ionic-angular';
+>>>>>>> eeffdf4a3f4ad44dfeb2038fc76a9145e2fa452d
+
 
 
 

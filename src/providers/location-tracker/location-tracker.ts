@@ -119,7 +119,7 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
         [59.920544214017035,10.678955353796484],
         [59.92064638252022,10.67635897547007],
       [59.92129099886785,10.676581263542177]
-      ]]); 
+      ]]);
           
     
 
@@ -130,6 +130,7 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
       if(this.paJobb == false){
         this.sentNotification = false;
       }
+    console.log(poly);
   }
 
 }

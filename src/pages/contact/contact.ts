@@ -31,12 +31,6 @@ export class ContactPage {
   totalWidthSoFar = 0;
   totalWidthSoFarPlan = 0;
 
-
-   marginWidthTop = [];
-  marginWidthBottom = [];
-  stempletiderTop = [];
-  stempletiderBottom = [];
-
   newStempletider = new Array(); //used for loading bar
   sendingStempletider = new Array(); //used for editing
   msg = "";
@@ -56,7 +50,6 @@ export class ContactPage {
 
     this.sendingStempletider = this.item.Stempletider.sort();
     this.init();
-    console.log(this.navCtrl.getActive().name);
     
   }
 

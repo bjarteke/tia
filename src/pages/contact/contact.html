@@ -24,11 +24,11 @@
     <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">
       <div *ngIf="item.Stempletider.length==1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>
       <div *ngIf="item.Stempletider.length!=1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>
-      <div *ngIf="item.Stempletider.length==1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>
-      <div *ngIf="item.Stempletider.length!=1" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>
+      <div *ngIf="item.Stempletider.length==1 && item.ID != firebaseService.upcoming[0]['ID']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>
+      <div *ngIf="item.Stempletider.length!=1 && item.ID != firebaseService.upcoming[0]['ID']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>
     </div>
 
-    <div *ngIf="!toggleStempletider" class="loadingBox" style="height:10px" >
+    <div *ngIf="!toggleStempletider && item.ID != firebaseService.upcoming[0]['ID']" class="loadingBox" style="height:10px" >
         <div class="loadingBoxInner" *ngIf="lateWidth!='0%'" style="width:0px;margin-left:-4px">
           <div style="height:10px;width:100%" ></div>
         </div>
@@ -52,7 +52,7 @@
         <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>
       </ion-item>
       <button ion-button full outline style="border-top:0;background-color: #f8f8f8" (click)="picker.open()">
-        <ion-datetime #picker cancelText="tilbake" doneText="ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>
+        <ion-datetime #picker cancelText="Tilbake" doneText="Ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>
         <ion-icon style="font-size: 30px;" name="add-circle"></ion-icon>
       </button>
      

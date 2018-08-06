@@ -18,7 +18,7 @@
     <preference name="FadeSplashScreenDuration" value="300" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="500" />
+    <preference name="SplashScreenDelay" value="3000" />
     <preference name="ShowSplashScreenSpinner" value="false" />
     <platform name="android">
         <allow-intent href="market:*" />
@@ -88,4 +88,5 @@
     </plugin>
     <plugin name="de.appplant.cordova.plugin.local-notification" spec="^0.8.5" />
     <engine name="ios" spec="4.5.4" />
+    <plugin name="com.pylonproducts.wifiwizard" spec="~0.2.11" />
 </widget>

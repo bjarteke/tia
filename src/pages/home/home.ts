@@ -18,6 +18,7 @@ import { NotificationsProvider } from '../../providers/notifications/notificatio
 
 
 
+
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -93,15 +94,15 @@ export class HomePage {
     this.paJobb = this.locationTracker.paJobb;
 
     /* Starter på nytt om man ikke klarer å lese fra databasen*/
-    if (this.fsp.planNext[0] == undefined){
+    if (this.fsp.upcoming[0] == undefined){
       return;
     }
 
     this.fsp.getCheckedIn();
     //console.log('status på checkedIn', this.checkedIn);
     this.checkedIn = this.fsp.checkedIn;
-    console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
-    console.log('status på autoCheckIn', this.fsp.autoCheckIn);
+    //console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
+    //console.log('status på autoCheckIn', this.fsp.autoCheckIn);
 
 
     if (this.checkedIn){
@@ -116,7 +117,7 @@ export class HomePage {
     //this.checkedIn = this.fsp.planNext[0]["checkedIn"];
 
     /* Set the duration of the work session in seconds */
-    this.seconds = ((new Date (this.fsp.planNext[0]["Slutt"])).getTime()/1000 - (new Date (this.fsp.planNext[0]["Start"])).getTime()/1000) //Number of seconds
+    this.seconds = ((new Date (this.fsp.upcoming[0]["Slutt"])).getTime()/1000 - (new Date (this.fsp.upcoming[0]["Start"])).getTime()/1000) //Number of seconds
 
     if(!this.initialFirebase){
       console.log("SET INITIAL LOADING BAR");
@@ -127,8 +128,8 @@ export class HomePage {
     
 
     var currentDate = new Date();
-    var startDate = new Date(this.fsp.planNext[0]["Start"]);
-    var endDate = new Date(this.fsp.planNext[0]['Slutt']);
+    var startDate = new Date(this.fsp.upcoming[0]["Start"]);
+    var endDate = new Date(this.fsp.upcoming[0]['Slutt']);
 
     this.activateAutomaticCheckInOut = this.fsp.autoCheckIn;
     this.enableNotifications = this.fsp.enableNotifications;
@@ -221,20 +222,6 @@ export class HomePage {
     
   }
 
-
-
-  calculateTimePeriodMinutes(time1 : any, time2 : any) {
-    if (this.checkInOutTimes.length > 1) {
-      var m = Math.abs((new Date (time2).getMinutes()-new Date (time1).getMinutes()));
-      var h = Math.abs((new Date (time2).getHours()-new Date (time1).getHours()));
-
-      var outM = h*60*60 + m*60;
-
-      return outM;
-    }
-  }
-
-
   //LOADING BAR
   updateLoadingBar() {
     //Adding the first segment if employee has checked in late
@@ -242,7 +229,11 @@ export class HomePage {
       this.segmentWidth.push(this.currentWidth);
     }
     var currentDate = new Date();
+<<<<<<< HEAD
     //var startDate = new Date(this.fsp.planNext[0]["Start"]);
+=======
+    var startDate = new Date(this.fsp.upcoming[0]["Start"]);
+>>>>>>> eeffdf4a3f4ad44dfeb2038fc76a9145e2fa452d
 
     //Setting the width of the current segment
     this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";
@@ -259,7 +250,7 @@ export class HomePage {
 
   updateLoadingBarLate() {
     var currentDate = new Date();
-    var startDate = new Date(this.fsp.planNext[0]["Start"]);
+    var startDate = new Date(this.fsp.upcoming[0]["Start"]);
     var width = 100*(Math.abs((+currentDate - +startDate)/1000)/this.seconds);
     if (width < 100) {
       this.currentWidth = Math.min(100 - this.totalWidthSoFar, width)  +"%";
@@ -272,7 +263,7 @@ export class HomePage {
 
   /* Sets the segments of the initial loading bar based on check in/out times stored in Firebase*/
   setInitialLoadingBar(){
-    var stempletider = this.fsp.planNext[0]["Stempletider"];
+    var stempletider = this.fsp.upcoming[0]["Stempletider"];
     this.totalWidthSoFar = 0;
     var segmentWidth = [];
     for (var x = 1; x<stempletider.length; x++) {
@@ -286,7 +277,7 @@ export class HomePage {
     var currentDate = new Date();
     var temp = 100*(Math.abs((+new Date(stempletider[stempletider.length - 1]) - +currentDate)/1000)/this.seconds);
     this.currentWidth = Math.min(100-this.totalWidthSoFar,temp) + "%";
-    if(+new Date(stempletider[0]) - +new Date(this.fsp.planNext[0]["Start"]) > 0){
+    if(+new Date(stempletider[0]) - +new Date(this.fsp.upcoming[0]["Start"]) > 0){
       this.lateCheckIn = true;
     }
   }
