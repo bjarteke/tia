@@ -138,7 +138,11 @@ export class HomePage {
     var now = new Date();
     if (this.paJobb && this.fsp.isWorking(now) && !this.checkedIn && !this.waitingToCheckIn && this.activateAutomaticCheckInOut){
       
-      this.fsp.writeArrivalTime(now);
+      //Første gang man kommer på jobb en dag, skrives arrivedAtWork
+      if (!this.fsp.getArrivedAtWork()){
+        this.fsp.writeArrivalTime(now);
+      }
+
       this.checkInTime = new Date(this.fsp.decideCheckInTime(now));
       console.log(this.checkInTime);
 
@@ -336,7 +340,6 @@ export class HomePage {
       this.paJobb = this.locationTracker.paJobb;
 
     }
-
     //Må hente ut når man slutter for dagen og sjekke om man går for tidlig. Gir da en notifikasjon på når man slutter og at man kan melde sykdom i appen. 
     //Sjekker om man går fra jobb før man er ferdig
     var now = new Date();
