@@ -33,6 +33,7 @@ interface Settings {
   enableNotifications: boolean;
   autoCheckIn: boolean;
   earlyCheckInMinutes: number;
+  enableAutoDelayCalc: boolean;
   timeFromArrivalToCheckIn: number;
   address : string;
   number : string;
@@ -63,6 +64,7 @@ export class FirebaseServiceProvider {
 
   public settingsData = [];
 
+  public timeFromArrivalToCheckInCalculated;
 
   //* SETTINGS *//
   public earlyCheckInMinutes;
@@ -72,6 +74,7 @@ export class FirebaseServiceProvider {
   public address;
   public number;
   public polygon;
+  public enableAutoDelayCalc;
 
   constructor(public afd: AngularFirestore, public notifications: NotificationsProvider, public toastCtrl: ToastController) {
     /* Retrieving data from Firestore */
@@ -113,17 +116,15 @@ export class FirebaseServiceProvider {
       }
     }
 
-    console.log("DATA");
-    console.log(this.upcoming);
+    this.timeFromArrivalToCheckInCalculated = this.calculateDelay()/(60*1000);
+    console.log(this.timeFromArrivalToCheckInCalculated);
 
     /* Reverst the array of previous records, such that the newest comes first */
     this.previous.reverse();
 
     /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
     this.uniqueWeeknumbers.push(this.weeknumbers[0]);
-    console.log("Ukenummer");
-    console.log(this.weeknumbers);
-
+  
     /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */ 
     var temp = [];
     //console.log(this.upcoming);
@@ -309,13 +310,13 @@ export class FirebaseServiceProvider {
 
   /* SETTINGS */
 
-  updateSettingsHandler(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
-    if(this.updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications)){
+  updateSettingsHandler(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc) {
+    if(this.updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc)){
       this.toast('Innstillinger lagret',2000,"toast-success");
     }
   }
 
-  updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications){
+  updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc){
     this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
       "earlyCheckInMinutes" : earlyCheckInMinutes,
       "automaticCheckIn" : automaticCheckIn,
@@ -323,7 +324,8 @@ export class FirebaseServiceProvider {
       "polygon" : this.polygon,
       "address" : address,
       "postalCode" : number,
-      "enableNotifications" : enableNotifications
+      "enableNotifications" : enableNotifications,
+      "enableAutoDelayCalc" : enableAutoDelayCalc
     })
     .then(function() {
       console.log("earlyCheckMinutes successfully written");
@@ -366,14 +368,19 @@ export class FirebaseServiceProvider {
     this.polygon = this.settingsData["polygon"];
     this.number = this.settingsData["postalCode"];
     this.address = this.settingsData["address"];
+    this.enableAutoDelayCalc = this.settingsData["enableAutoDelayCalc"];
   }
 
-  /*calculateDelay(){
+  calculateDelay(){
     var delaySeconds = 0;
+    var counter = 0;
     for (var x = 0; x<this.previous.length; x++){
-      delaySeconds += +new Date(this.previous.Stempletider[0]) - +(new Date(this.previous.arrivedAtWork));
+      if(this.previous[x]["arrivedAtWork"] != undefined && this.previous[x]["Stempletider"][0] != undefined) {
+        delaySeconds += +new Date(this.previous[x]["Stempletider"][0]).getTime() - +(new Date(this.previous[x]["arrivedAtWork"]).getTime());
+        counter += 1; 
+      }
     }
-    delaySeconds = delaySeconds/this.previous.length;
-  }*/
+    return delaySeconds/counter;
+  }
 
 }

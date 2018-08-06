@@ -41,6 +41,7 @@ var SettingsPage = /** @class */ (function () {
         this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
         this.automaticCheckIn = this.fsp.autoCheckIn;
         this.enableNotifications = this.fsp.enableNotifications;
+        this.enableAutoDelayCalc = this.fsp.enableAutoDelayCalc;
         this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
     }
     SettingsPage.prototype.ionViewDidLoad = function () {
@@ -48,12 +49,14 @@ var SettingsPage = /** @class */ (function () {
         this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
         this.automaticCheckIn = this.fsp.autoCheckIn;
         this.enableNotifications = this.fsp.enableNotifications;
+        this.enableAutoDelayCalc = this.fsp.enableAutoDelayCalc;
         this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
     };
     SettingsPage.prototype.ionChanges = function () {
         this.fsp.earlyCheckInMinutes = this.earlyCheckIn;
         this.fsp.autoCheckIn = this.automaticCheckIn;
         this.fsp.enableNotifications = this.enableNotifications;
+        this.fsp.enableAutoDelayCalc = this.enableAutoDelayCalc;
         this.fsp.timeFromArrivalToCheckIn = this.timeFromArrivalToCheckIn;
         if (this.number != "" && this.address != "") {
             this.getPolygon(this.address, this.number);
@@ -116,15 +119,13 @@ var SettingsPage = /** @class */ (function () {
             }
             else {
             }
-            this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number, this.enableNotifications);
-            console.log("ENABLE NOTIFICATIONS:");
-            console.log(this.enableNotifications);
+            this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number, this.enableNotifications, this.enableAutoDelayCalc);
             this.toast('Innstillinger endret', 'toast-success');
         }
     };
     SettingsPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-settings',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/settings/settings.html"*/'<!--\n  Generated template for the SettingsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>Innstillinger</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item style="padding:0">\n      <ion-label style="padding-left:15px">Send varslinger</ion-label>\n      <ion-toggle [(ngModel)]="enableNotifications"></ion-toggle>\n    </ion-item>\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>\n      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn">\n    <ion-label>\n      <ion-label style="padding-top:5px;" >\n        Tid fra ankomst til stempling\n      </ion-label>\n    </ion-label>\n      <ion-range debounce="1000" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>60 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>\n      <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>\n      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n    <ion-label style="padding-top:5px;" >\n      Tidlig innstempling \n    </ion-label>\n      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>120 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-footer no-shadow>\n	<ion-toolbar position="bottom">\n        <button (click)="ionChanges()" full ion-button>Lagre</button>\n	</ion-toolbar>\n</ion-footer>\n\n\n\n  \n\n</ion-content>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/settings/settings.html"*/,
+            selector: 'page-settings',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/settings/settings.html"*/'<!--\n  Generated template for the SettingsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>Innstillinger</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item style="padding:0">\n      <ion-label style="padding-left:15px">Send varslinger</ion-label>\n      <ion-toggle [(ngModel)]="enableNotifications"></ion-toggle>\n    </ion-item>\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>\n      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn" style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Smart oppstart <br> \n        <span style="font-size:13px;font-style:italic;"> ({{fsp.timeFromArrivalToCheckInCalculated | number : \'1.2-2\'}} min etter ankomst)\n         </span> \n        </ion-label>\n      <ion-toggle [(ngModel)]="enableAutoDelayCalc"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn && !enableAutoDelayCalc">\n      <ion-label>Angi intervall:</ion-label>\n      <ion-range debounce="1000" min="0" max="60" step ="0.5" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>60 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>\n      <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>\n      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n    <ion-label style="padding-top:5px;" >\n      Tidlig innstempling \n    </ion-label>\n      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>120 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-footer no-shadow>\n	<ion-toolbar position="bottom">\n        <button (click)="ionChanges()" full ion-button>Lagre</button>\n	</ion-toolbar>\n</ion-footer>\n\n\n\n  \n\n</ion-content>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/settings/settings.html"*/,
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]])
     ], SettingsPage);
@@ -564,7 +565,7 @@ var AboutPage = /** @class */ (function () {
     };
     AboutPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-about',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/about/about.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Statistikk\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content padding>\n  <ion-card class="flexitid">\n    Tilgjengelig flexitid: 24,4 timer\n  </ion-card>\n\n\n  <ion-card class="ionCard" >\n  <ion-card-header class="ionCardHeader">21. juni - \n    <ion-icon  class="documentIcon" name="document"></ion-icon>\n  </ion-card-header>\n  <ion-grid>\n    <ion-row>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            Ordinært:\n          </ion-item>\n          <ion-item>\n            Overtid:\n          </ion-item>\n          <ion-item class="finalSum">\n            Sum\n          </ion-item>\n        </ion-list>\n      </ion-col>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            24,6 timer\n          </ion-item>\n          <ion-item>\n            10,2 timer\n          </ion-item>\n          <ion-item class="finalSum">\n          34,8 timer\n          </ion-item>\n        </ion-list>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col>\n        <ion-item class="sum">\n          Opptjent: 10.203,-\n        </ion-item>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n  </ion-card>\n\n  <ion-card class="ionCard" >\n  <ion-card-header (click)="toggle()" class="ionCardHeader">21. mai - 20. juni\n    <ion-icon class="documentIcon" name="document"></ion-icon>\n  </ion-card-header>\n  <ion-grid *ngIf="toggle1">\n    <ion-row>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            Ordinært:\n          </ion-item>\n          <ion-item>\n            Overtid:\n          </ion-item>\n          <ion-item class="finalSum">\n            Sum\n          </ion-item>\n        </ion-list>\n      </ion-col>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            24,6 timer\n          </ion-item>\n          <ion-item>\n            10,2 timer\n          </ion-item>\n          <ion-item class="finalSum">\n          34,8 timer\n          </ion-item>\n        </ion-list>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col>\n        <ion-item class="sum">\n          Opptjent: 10.203,-\n        </ion-item>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n  </ion-card>\n\n  <ion-card class="ionCard" >\n  <ion-card-header (click)="toggle21()" class="ionCardHeader">21. april - 20. mai\n    <ion-icon class="documentIcon" name="document"></ion-icon>\n  </ion-card-header>\n  <ion-grid *ngIf="toggle2">\n    <ion-row>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            Ordinært:\n          </ion-item>\n          <ion-item>\n            Overtid:\n          </ion-item>\n          <ion-item class="finalSum">\n            Sum\n          </ion-item>\n        </ion-list>\n      </ion-col>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            24,6 timer\n          </ion-item>\n          <ion-item>\n            10,2 timer\n          </ion-item>\n          <ion-item class="finalSum">\n          34,8 timer\n          </ion-item>\n        </ion-list>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col>\n        <ion-item class="sum">\n          Opptjent: 10.203,-\n        </ion-item>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n  </ion-card>\n\n  \n</ion-content>>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/about/about.html"*/
+            selector: 'page-about',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/about/about.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Statistikk\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content padding>\n  <ion-card class="flexitid">\n  <h1 style="margin-left:10px;color:black;padding:0;font-weight:500" >Tilgjengelig flexitid: </h1>\n    24,4 timer\n  </ion-card>\n\n  <ion-card>\n    <h1 class="statisticsTitle">Sammendrag: </h1>\n    <ion-card class="ionCard" >\n    <ion-card-header (click)="toggle()" class="ionCardHeader">21. mai - 20. juni\n      <ion-icon class="documentIcon" name="document"></ion-icon>\n    </ion-card-header>\n    <ion-grid *ngIf="toggle1">\n      <ion-row>\n        <ion-col>\n          <ion-list style="padding:0">\n            <ion-item>\n              Ordinært:\n            </ion-item>\n            <ion-item>\n              Overtid:\n            </ion-item>\n            <ion-item class="finalSum">\n              Sum\n            </ion-item>\n          </ion-list>\n        </ion-col>\n        <ion-col>\n          <ion-list style="padding:0">\n            <ion-item>\n              24,6 timer\n            </ion-item>\n            <ion-item>\n              10,2 timer\n            </ion-item>\n            <ion-item class="finalSum">\n            34,8 timer\n            </ion-item>\n          </ion-list>\n        </ion-col>\n      </ion-row>\n      <ion-row>\n        <ion-col>\n          <ion-item class="sum">\n            Opptjent: 10.203,-\n          </ion-item>\n        </ion-col>\n      </ion-row>\n    </ion-grid>\n    </ion-card>\n\n  <ion-card class="ionCard" >\n  <ion-card-header (click)="toggle21()" class="ionCardHeader">21. april - 20. mai\n    <ion-icon class="documentIcon" name="document"></ion-icon>\n  </ion-card-header>\n  <ion-grid *ngIf="toggle2">\n    <ion-row>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            Ordinært:\n          </ion-item>\n          <ion-item>\n            Overtid:\n          </ion-item>\n          <ion-item class="finalSum">\n            Sum\n          </ion-item>\n        </ion-list>\n      </ion-col>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            24,6 timer\n          </ion-item>\n          <ion-item>\n            10,2 timer\n          </ion-item>\n          <ion-item class="finalSum">\n          34,8 timer\n          </ion-item>\n        </ion-list>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col>\n        <ion-item class="sum">\n          Opptjent: 10.203,-\n        </ion-item>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n  </ion-card>\n    </ion-card>\n\n\n  \n</ion-content>>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/about/about.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]])
     ], AboutPage);
@@ -1334,14 +1335,12 @@ var FirebaseServiceProvider = /** @class */ (function () {
                 this.previous.push(this.allRecords[x]);
             }
         }
-        console.log("DATA");
-        console.log(this.upcoming);
+        this.timeFromArrivalToCheckInCalculated = this.calculateDelay() / (60 * 1000);
+        console.log(this.timeFromArrivalToCheckInCalculated);
         /* Reverst the array of previous records, such that the newest comes first */
         this.previous.reverse();
         /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
         this.uniqueWeeknumbers.push(this.weeknumbers[0]);
-        console.log("Ukenummer");
-        console.log(this.weeknumbers);
         /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */
         var temp = [];
         //console.log(this.upcoming);
@@ -1502,12 +1501,12 @@ var FirebaseServiceProvider = /** @class */ (function () {
         }
     };
     /* SETTINGS */
-    FirebaseServiceProvider.prototype.updateSettingsHandler = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
-        if (this.updateSettings(earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications)) {
+    FirebaseServiceProvider.prototype.updateSettingsHandler = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc) {
+        if (this.updateSettings(earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc)) {
             this.toast('Innstillinger lagret', 2000, "toast-success");
         }
     };
-    FirebaseServiceProvider.prototype.updateSettings = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
+    FirebaseServiceProvider.prototype.updateSettings = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc) {
         this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
             "earlyCheckInMinutes": earlyCheckInMinutes,
             "automaticCheckIn": automaticCheckIn,
@@ -1515,7 +1514,8 @@ var FirebaseServiceProvider = /** @class */ (function () {
             "polygon": this.polygon,
             "address": address,
             "postalCode": number,
-            "enableNotifications": enableNotifications
+            "enableNotifications": enableNotifications,
+            "enableAutoDelayCalc": enableAutoDelayCalc
         })
             .then(function () {
             console.log("earlyCheckMinutes successfully written");
@@ -1555,13 +1555,24 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.polygon = this.settingsData["polygon"];
         this.number = this.settingsData["postalCode"];
         this.address = this.settingsData["address"];
+        this.enableAutoDelayCalc = this.settingsData["enableAutoDelayCalc"];
+    };
+    FirebaseServiceProvider.prototype.calculateDelay = function () {
+        var delaySeconds = 0;
+        var counter = 0;
+        for (var x = 0; x < this.previous.length; x++) {
+            if (this.previous[x]["arrivedAtWork"] != undefined && this.previous[x]["Stempletider"][0] != undefined) {
+                delaySeconds += +new Date(this.previous[x]["Stempletider"][0]).getTime() - +(new Date(this.previous[x]["arrivedAtWork"]).getTime());
+                counter += 1;
+            }
+        }
+        return delaySeconds / counter;
     };
     FirebaseServiceProvider = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */]) === "function" && _c || Object])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */], __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */], __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */]])
     ], FirebaseServiceProvider);
     return FirebaseServiceProvider;
-    var _a, _b, _c;
 }());
 
 //# sourceMappingURL=firebase-service.js.map

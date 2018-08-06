@@ -23,6 +23,7 @@ export class SettingsPage {
   public earlyCheckIn;
   public automaticCheckIn;
   public enableNotifications;
+  public enableAutoDelayCalc;
   public timeFromArrivalToCheckIn;
   public address = "";
   public number = "";
@@ -33,6 +34,7 @@ export class SettingsPage {
     this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
     this.automaticCheckIn = this.fsp.autoCheckIn;
     this.enableNotifications = this.fsp.enableNotifications;
+    this.enableAutoDelayCalc = this.fsp.enableAutoDelayCalc;
     this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
   }
 
@@ -41,6 +43,7 @@ export class SettingsPage {
     this.earlyCheckIn = this.fsp.earlyCheckInMinutes;
     this.automaticCheckIn = this.fsp.autoCheckIn;
     this.enableNotifications = this.fsp.enableNotifications;
+    this.enableAutoDelayCalc = this.fsp.enableAutoDelayCalc;
     this.timeFromArrivalToCheckIn = this.fsp.timeFromArrivalToCheckIn;
   }
 
@@ -48,6 +51,7 @@ export class SettingsPage {
     this.fsp.earlyCheckInMinutes = this.earlyCheckIn;
     this.fsp.autoCheckIn = this.automaticCheckIn;
     this.fsp.enableNotifications = this.enableNotifications;
+    this.fsp.enableAutoDelayCalc = this.enableAutoDelayCalc;
     this.fsp.timeFromArrivalToCheckIn = this.timeFromArrivalToCheckIn;
     if(this.number != "" && this.address !=""){
       this.getPolygon(this.address,this.number);
@@ -115,9 +119,7 @@ toast(message,cssClass){
       }
       else {
       }
-      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number, this.enableNotifications);
-      console.log("ENABLE NOTIFICATIONS:");
-      console.log(this.enableNotifications);
+      this.fsp.updateSettingsHandler(this.earlyCheckIn, this.automaticCheckIn, this.timeFromArrivalToCheckIn, this.fsp.address, this.fsp.number, this.enableNotifications, this.enableAutoDelayCalc);
       this.toast('Innstillinger endret','toast-success');
     }
   }

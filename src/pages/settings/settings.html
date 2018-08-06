@@ -24,13 +24,16 @@
       <ion-label style="padding-left:15px">Automatisk stempling</ion-label>
       <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>
     </ion-item>
-    <ion-item *ngIf="automaticCheckIn">
-    <ion-label>
-      <ion-label style="padding-top:5px;" >
-        Tid fra ankomst til stempling
-      </ion-label>
-    </ion-label>
-      <ion-range debounce="1000" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">
+    <ion-item *ngIf="automaticCheckIn" style="padding:0;border-bottom:5px solid #4D4D4D">
+      <ion-label style="padding-left:15px">Smart oppstart <br> 
+        <span style="font-size:13px;font-style:italic;"> ({{fsp.timeFromArrivalToCheckInCalculated | number : '1.2-2'}} min etter ankomst)
+         </span> 
+        </ion-label>
+      <ion-toggle [(ngModel)]="enableAutoDelayCalc"></ion-toggle>
+    </ion-item>
+    <ion-item *ngIf="automaticCheckIn && !enableAutoDelayCalc">
+      <ion-label>Angi intervall:</ion-label>
+      <ion-range debounce="1000" min="0" max="60" step ="0.5" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">
         <ion-label range-left>0 min</ion-label>
         <ion-label range-right>60 min</ion-label>
       </ion-range>

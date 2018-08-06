@@ -9,7 +9,7 @@ import { SettingsPage } from '../settings/settings';
 })
 export class AboutPage {
 
-  public toggle1 = false;
+  public toggle1 = true;
   public toggle2 = false;
   
 

@@ -25731,7 +25731,17 @@ ion-navbar.toolbar {
 
 .flexitid {
   padding: 15px;
-  font-size: 14px;
+  font-size: 20px;
+  text-align: center;
+  background-color: #F0F0F0;
+}
+
+.statisticsTitle {
+  margin-left: 10px;
+  color: black;
+  padding: 5px;
+  text-align: center;
+  font-weight: 500;
 }
 
 h6 {
