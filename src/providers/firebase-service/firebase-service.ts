@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
+
 import 'rxjs/add/operator/map';
-import firebase from 'firebase';
+
 import 'firebase/firestore';
 import { AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
-import { Observable } from 'rxjs/Observable';
+
 import { NotificationsProvider } from '../notifications/notifications';
-import { getScrollData } from '../../../node_modules/ionic-angular/umd/components/input/input';
+
 import { ToastController } from 'ionic-angular';
 
 /*

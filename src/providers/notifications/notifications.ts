@@ -2,8 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AlertController, Platform } from 'ionic-angular';
-import { FirebaseServiceProvider } from '../firebase-service/firebase-service';
-import { retry } from 'rxjs/operators';
 
 
 /*
