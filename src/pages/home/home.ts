@@ -38,6 +38,8 @@ export class HomePage {
   //Variables used to change the text and color of the "stemple inn"-button.
   public stempleButton : string = "Stemple inn";
   public checkInOutVar : string = "checkInOut";
+  public stempleButtonOffline : string = "Stemple inn";
+  public checkInOutVarOffline : string = "checkInOut";
 
   public sluttid;
 
@@ -225,6 +227,18 @@ export class HomePage {
       this.fsp.writeCheckedIn(this.checkedIn);
     }
     
+  }
+
+  offlineCheckInOut() {
+     if (this.stempleButtonOffline == "Stemple inn"){
+      this.stempleButtonOffline = "Stemple ut";
+      this.checkInOutVarOffline = "checkInOut2";
+    }
+    else{
+      this.stempleButtonOffline = "Stemple inn";
+      this.checkInOutVarOffline = "checkInOut";
+    }
+    this.fsp.addOfflineDocument(new Date());
   }
 
   //LOADING BAR

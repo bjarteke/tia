@@ -76,6 +76,9 @@ export class FirebaseServiceProvider {
   public polygon;
   public enableAutoDelayCalc;
 
+  //* OFFLINE CHECKIN *//
+  public offlineCheckIn;
+
   constructor(public afd: AngularFirestore, public notifications: NotificationsProvider, public toastCtrl: ToastController) {
     /* Retrieving data from Firestore */
     this.afd.collection<Items>('arbeidsokter', ref => ref.orderBy('Start'))
@@ -181,6 +184,17 @@ export class FirebaseServiceProvider {
     this.counter = this.counter + 1;
 
   }
+/*
+  addOfflineDocument(timestamp){
+    var id = this.afd.createId();
+
+    if (!this.offlineCheckIn){
+      this.afd.collection('offlineArbeidsokt').add({
+        checkIn : timestamp,
+        ID : 
+      });
+    }
+  }*/
 
   writeCheckedIn(checkedIn){
     this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID']).update({
@@ -369,6 +383,7 @@ export class FirebaseServiceProvider {
     this.number = this.settingsData["postalCode"];
     this.address = this.settingsData["address"];
     this.enableAutoDelayCalc = this.settingsData["enableAutoDelayCalc"];
+    this.offlineCheckIn = this.settingsData["offlineCheckIn"];
   }
 
   calculateDelay(){
