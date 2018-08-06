@@ -39,8 +39,6 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.upcoming = [];
         this.upcoming2 = []; //One list for each week number 
         this.previous = [];
-        this.planNext = [];
-        this.currentID = "testID";
         this.counter = 0;
         this.weeknumbers = [];
         this.uniqueWeeknumbers = [];
@@ -54,6 +52,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.setSettings();
     }
     FirebaseServiceProvider.prototype.inTheFuture = function (data) {
+        console.log(data);
         this.resetArrays();
         var currentDate = new Date();
         this.allRecords = data;
@@ -63,39 +62,36 @@ var FirebaseServiceProvider = /** @class */ (function () {
             var dateEnd = new Date(this.allRecords[x]["Slutt"]);
             /* A record has a start date in the future, or it is still not finished*/
             if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
-                /* The first future record is added to the planNext in order to be shown in the top panel on the home page*/
-                if (this.planNext.length == 0) {
-                    this.planNext.push(this.allRecords[x]);
+                /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
+                this.upcoming.push(this.allRecords[x]);
+                console.log(this.allRecords[x]);
+                /* Adding information about the week number to the week number array. */
+                if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)) {
+                    this.weeknumbers.push("Denne uken");
+                }
+                else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1) {
+                    this.weeknumbers.push("Neste uke");
                 }
                 else {
-                    /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
-                    if (this.planNext[0]["ID"] != this.allRecords[x]["ID"]) {
-                        this.upcoming.push(this.allRecords[x]);
-                        /* Adding information about the week number to the week number array. */
-                        if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)) {
-                            this.weeknumbers.push("Denne uken");
-                        }
-                        else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1) {
-                            this.weeknumbers.push("Neste uke");
-                        }
-                        else {
-                            this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
-                        }
-                    }
+                    this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
                 }
             }
             else {
                 this.previous.push(this.allRecords[x]);
             }
         }
+        console.log("DATA");
+        console.log(this.upcoming);
         /* Reverst the array of previous records, such that the newest comes first */
         this.previous.reverse();
         /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
         this.uniqueWeeknumbers.push(this.weeknumbers[0]);
+        console.log("Ukenummer");
+        console.log(this.weeknumbers);
         /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */
         var temp = [];
         //console.log(this.upcoming);
-        for (var i = 0; i < this.weeknumbers.length; i++) {
+        for (var i = 1; i < this.weeknumbers.length; i++) {
             if (this.weeknumbers[i] == this.weeknumbers[i + 1]) {
                 temp.push(this.upcoming[i]);
             }
@@ -128,9 +124,9 @@ var FirebaseServiceProvider = /** @class */ (function () {
     FirebaseServiceProvider.prototype.addCheckInOutTime = function (timestamp) {
         var oldTimestamps = [];
         var newTimestamps = [];
-        newTimestamps = this.planNext[0]["Stempletider"];
+        newTimestamps = this.upcoming[0]["Stempletider"];
         newTimestamps.push(timestamp);
-        this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
+        this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
             "Stempletider": newTimestamps
         })
             .then(function () {
@@ -142,7 +138,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.counter = this.counter + 1;
     };
     FirebaseServiceProvider.prototype.writeCheckedIn = function (checkedIn) {
-        this.afd.collection('arbeidsokter').doc(this.planNext[0]['ID']).update({
+        this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID']).update({
             'checkedIn': checkedIn
         })
             .then(function () {
@@ -152,16 +148,55 @@ var FirebaseServiceProvider = /** @class */ (function () {
             console.error("Error when writing checkedIn-variable: ", error);
         });
     };
+    FirebaseServiceProvider.prototype.byttOkt = function (array1Index, array2Index) {
+        console.log("BYTT OKT");
+        console.log(array1Index);
+        console.log(array2Index);
+        var bytte;
+        if (this.upcoming2[array1Index][array2Index]['byttes'] == undefined) {
+            console.log("FØRSTE IF");
+            bytte = true;
+            this.upcoming2[array1Index][array2Index]['byttes'] = true;
+        }
+        else {
+            if (this.upcoming2[array1Index][array2Index]['byttes'] == false) {
+                console.log("ANDRE IF");
+                bytte = true;
+                this.upcoming2[array1Index][array2Index]['byttes'] = true;
+            }
+            else {
+                console.log("ELSE");
+                bytte = false;
+                this.upcoming2[array1Index][array2Index]['byttes'] = false;
+            }
+        }
+        console.log(this.upcoming2);
+        this.afd.collection('arbeidsokter').doc(this.upcoming2[array1Index][array2Index]['ID']).update({
+            'byttes': bytte,
+            'Start': this.upcoming2[array1Index][array2Index]['Start'],
+            'Slutt': this.upcoming2[array1Index][array2Index]['Slutt'],
+            'Added': this.upcoming2[array1Index][array2Index]['Added'],
+            'EndretMelding': this.upcoming2[array1Index][array2Index]['EndretMelding']
+        })
+            .then(function () {
+            console.log("bytte successfully written");
+        })
+            .catch(function (error) {
+            console.error("Error when writing bytte: ", error);
+        });
+    };
     FirebaseServiceProvider.prototype.getCheckedIn = function () {
         var _this = this;
-        this.afd.collection('arbeidsokter').doc(this.planNext[0]['ID'])
+        console.log("GETCHECKED IN");
+        console.log(this.upcoming);
+        this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID'])
             .valueChanges()
             .subscribe(function (data) {
             _this.checkedIn = data['checkedIn'];
         });
     };
     FirebaseServiceProvider.prototype.writeArrivalTime = function (timestamp) {
-        this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
+        this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
             "arrivedAtWork": timestamp
         })
             .then(function () {
@@ -179,18 +214,12 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.weeknumbers = [];
         this.uniqueWeeknumbers = [];
     };
-    FirebaseServiceProvider.prototype.getCurrentID = function () {
-        var _this = this;
-        var docID = (this.afd.collection("arbeidsokter", function (ref) { return ref.where("Start", "==", _this.planNext[0]["Start"]); }).valueChanges());
-        console.log("Hei");
-        console.log(docID);
-    };
     FirebaseServiceProvider.prototype.isWorking = function (timestamp) {
         //Will take in a timestamp and check if this matches a block that is scheduled for work. 
-        var nextStartTime = new Date(this.planNext[0]['Start']);
+        var nextStartTime = new Date(this.upcoming[0]['Start']);
         var now = new Date(timestamp);
         //Checks if it's the same date and if we are still in before the end of the workday. 
-        if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.planNext[0]['Slutt']).getTime()) < 0) {
+        if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.upcoming[0]['Slutt']).getTime()) < 0) {
             return true;
         }
         return false;
@@ -199,7 +228,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         //600000 ms er 10 minutter
         var buffer = 5000;
         arrivedAtWork = new Date(arrivedAtWork);
-        var workStart = new Date(this.planNext[0]['Start']);
+        var workStart = new Date(this.upcoming[0]['Start']);
         //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
         if (workStart.getTime() - arrivedAtWork.getTime() > buffer) {
             this.addCheckInOutTime(workStart);
@@ -218,10 +247,9 @@ var FirebaseServiceProvider = /** @class */ (function () {
             return checkInTime;
         }
     };
+    /* SETTINGS */
     FirebaseServiceProvider.prototype.updateSettingsHandler = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
-        console.log("updateSettingshNdler");
         if (this.updateSettings(earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications)) {
-            console.log("RETURNERTE TRUE");
             this.toast('Innstillinger lagret', 2000, "toast-success");
         }
     };
@@ -411,10 +439,9 @@ var SettingsPage = /** @class */ (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'page-settings',template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/pages/settings/settings.html"*/'<!--\n  Generated template for the SettingsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>Innstillinger</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item style="padding:0">\n      <ion-label style="padding-left:15px">Send varslinger</ion-label>\n      <ion-toggle [(ngModel)]="enableNotifications"></ion-toggle>\n    </ion-item>\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>\n      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn">\n    <ion-label>\n      <ion-label style="padding-top:5px;" >\n        Tid fra ankomst til stempling\n      </ion-label>\n    </ion-label>\n      <ion-range debounce="1000" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>60 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>\n      <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>\n      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n    <ion-label style="padding-top:5px;" >\n      Tidlig innstempling \n    </ion-label>\n      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>120 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-footer no-shadow>\n	<ion-toolbar position="bottom">\n        <button (click)="ionChanges()" full ion-button>Lagre</button>\n	</ion-toolbar>\n</ion-footer>\n\n\n\n  \n\n</ion-content>\n'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/pages/settings/settings.html"*/,
         }),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]) === "function" && _e || Object])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]])
     ], SettingsPage);
     return SettingsPage;
-    var _a, _b, _c, _d, _e;
 }());
 
 //# sourceMappingURL=settings.js.map
@@ -530,10 +557,6 @@ var ContactPage = /** @class */ (function () {
         this.lateWidth = "0%";
         this.totalWidthSoFar = 0;
         this.totalWidthSoFarPlan = 0;
-        this.marginWidthTop = [];
-        this.marginWidthBottom = [];
-        this.stempletiderTop = [];
-        this.stempletiderBottom = [];
         this.newStempletider = new Array(); //used for loading bar
         this.sendingStempletider = new Array(); //used for editing
         this.msg = "";
@@ -548,7 +571,6 @@ var ContactPage = /** @class */ (function () {
         this.newStempletider.sort();
         this.sendingStempletider = this.item.Stempletider.sort();
         this.init();
-        console.log(this.navCtrl.getActive().name);
     }
     ContactPage.prototype.init = function () {
         /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
@@ -958,14 +980,14 @@ var HomePage = /** @class */ (function () {
         }
         this.paJobb = this.locationTracker.paJobb;
         /* Starter på nytt om man ikke klarer å lese fra databasen*/
-        if (this.fsp.planNext[0] == undefined) {
+        if (this.fsp.upcoming[0] == undefined) {
             return;
         }
         this.fsp.getCheckedIn();
         //console.log('status på checkedIn', this.checkedIn);
         this.checkedIn = this.fsp.checkedIn;
-        console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
-        console.log('status på autoCheckIn', this.fsp.autoCheckIn);
+        //console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
+        //console.log('status på autoCheckIn', this.fsp.autoCheckIn);
         if (this.checkedIn) {
             this.stempleButton = 'Stemple ut';
             this.checkInOutVar = "checkInOut2";
@@ -976,15 +998,15 @@ var HomePage = /** @class */ (function () {
         }
         //this.checkedIn = this.fsp.planNext[0]["checkedIn"];
         /* Set the duration of the work session in seconds */
-        this.seconds = ((new Date(this.fsp.planNext[0]["Slutt"])).getTime() / 1000 - (new Date(this.fsp.planNext[0]["Start"])).getTime() / 1000); //Number of seconds
+        this.seconds = ((new Date(this.fsp.upcoming[0]["Slutt"])).getTime() / 1000 - (new Date(this.fsp.upcoming[0]["Start"])).getTime() / 1000); //Number of seconds
         if (!this.initialFirebase) {
             console.log("SET INITIAL LOADING BAR");
             this.setInitialLoadingBar();
             this.initialFirebase = true;
         }
         var currentDate = new Date();
-        var startDate = new Date(this.fsp.planNext[0]["Start"]);
-        var endDate = new Date(this.fsp.planNext[0]['Slutt']);
+        var startDate = new Date(this.fsp.upcoming[0]["Start"]);
+        var endDate = new Date(this.fsp.upcoming[0]['Slutt']);
         this.activateAutomaticCheckInOut = this.fsp.autoCheckIn;
         this.enableNotifications = this.fsp.enableNotifications;
         /* Automatic Check-in */
@@ -1057,14 +1079,6 @@ var HomePage = /** @class */ (function () {
             this.fsp.writeCheckedIn(this.checkedIn);
         }
     };
-    HomePage.prototype.calculateTimePeriodMinutes = function (time1, time2) {
-        if (this.checkInOutTimes.length > 1) {
-            var m = Math.abs((new Date(time2).getMinutes() - new Date(time1).getMinutes()));
-            var h = Math.abs((new Date(time2).getHours() - new Date(time1).getHours()));
-            var outM = h * 60 * 60 + m * 60;
-            return outM;
-        }
-    };
     //LOADING BAR
     HomePage.prototype.updateLoadingBar = function () {
         //Adding the first segment if employee has checked in late
@@ -1072,7 +1086,7 @@ var HomePage = /** @class */ (function () {
             this.segmentWidth.push(this.currentWidth);
         }
         var currentDate = new Date();
-        //var startDate = new Date(this.fsp.planNext[0]["Start"]);
+        var startDate = new Date(this.fsp.upcoming[0]["Start"]);
         //Setting the width of the current segment
         this.currentWidth = Math.min(100 - this.totalWidthSoFar, 100 * (Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length - 1]) / 1000) / this.seconds)) + "%";
         //Stopping loading bar when it has been filled.
@@ -1084,7 +1098,7 @@ var HomePage = /** @class */ (function () {
     };
     HomePage.prototype.updateLoadingBarLate = function () {
         var currentDate = new Date();
-        var startDate = new Date(this.fsp.planNext[0]["Start"]);
+        var startDate = new Date(this.fsp.upcoming[0]["Start"]);
         var width = 100 * (Math.abs((+currentDate - +startDate) / 1000) / this.seconds);
         if (width < 100) {
             this.currentWidth = Math.min(100 - this.totalWidthSoFar, width) + "%";
@@ -1095,7 +1109,7 @@ var HomePage = /** @class */ (function () {
     };
     /* Sets the segments of the initial loading bar based on check in/out times stored in Firebase*/
     HomePage.prototype.setInitialLoadingBar = function () {
-        var stempletider = this.fsp.planNext[0]["Stempletider"];
+        var stempletider = this.fsp.upcoming[0]["Stempletider"];
         this.totalWidthSoFar = 0;
         var segmentWidth = [];
         for (var x = 1; x < stempletider.length; x++) {
@@ -1109,7 +1123,7 @@ var HomePage = /** @class */ (function () {
         var currentDate = new Date();
         var temp = 100 * (Math.abs((+new Date(stempletider[stempletider.length - 1]) - +currentDate) / 1000) / this.seconds);
         this.currentWidth = Math.min(100 - this.totalWidthSoFar, temp) + "%";
-        if (+new Date(stempletider[0]) - +new Date(this.fsp.planNext[0]["Start"]) > 0) {
+        if (+new Date(stempletider[0]) - +new Date(this.fsp.upcoming[0]["Start"]) > 0) {
             this.lateCheckIn = true;
         }
     };
@@ -1354,6 +1368,7 @@ var LocationTracker = /** @class */ (function () {
         if (this.paJobb == false) {
             this.sentNotification = false;
         }
+        console.log(poly);
     };
     LocationTracker = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),

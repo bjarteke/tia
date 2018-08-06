@@ -229,11 +229,7 @@ export class HomePage {
       this.segmentWidth.push(this.currentWidth);
     }
     var currentDate = new Date();
-<<<<<<< HEAD
-    //var startDate = new Date(this.fsp.planNext[0]["Start"]);
-=======
     var startDate = new Date(this.fsp.upcoming[0]["Start"]);
->>>>>>> eeffdf4a3f4ad44dfeb2038fc76a9145e2fa452d
 
     //Setting the width of the current segment
     this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";
