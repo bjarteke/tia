@@ -219,6 +219,13 @@ ion-item-options .button:last-child {
     color :map-get($colors,primary);
 }
 
+.bytteIcon{
+    float: right; 
+    margin-top: -25px; 
+    padding: 5px; 
+    font-size: 18px;
+}
+
 .informationIcon {
     float: right;
     padding: 4px;
@@ -279,3 +286,22 @@ ion-item-options .button:last-child {
     margin-top:5px;
 }
 
+.item-block {
+    border-bottom: 0 !important;
+}
+
+.list-ios .item-block .item-inner {
+    border-bottom: 0 !important;
+}
+
+.list-ios.item-block .item-inner {
+    border-bottom: 0 !important;
+}
+
+.item-block {
+    border-bottom: 0 !important;
+}
+
+.list-ios ion-item-options {
+    border-bottom: 0 !important;
+}

@@ -67,7 +67,8 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "de.appplant.cordova.plugin.local-notification": {}
+      "de.appplant.cordova.plugin.local-notification": {},
+      "com.pylonproducts.wifiwizard": {}
     },
     "platforms": [
       "ios"

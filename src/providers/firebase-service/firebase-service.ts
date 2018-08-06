@@ -52,8 +52,6 @@ export class FirebaseServiceProvider {
   public upcoming2 = []; //One list for each week number 
   public previous = []; 
 
-  public planNext = [];
-  public currentID = "testID";
   public counter = 0;
 
   public weeknumbers = [];
@@ -84,6 +82,7 @@ export class FirebaseServiceProvider {
   }
 
   inTheFuture(data){
+    console.log(data);
     this.resetArrays();
     var currentDate = new Date();
     this.allRecords = data;
@@ -93,43 +92,42 @@ export class FirebaseServiceProvider {
       var dateEnd = new Date(this.allRecords[x]["Slutt"]);
       /* A record has a start date in the future, or it is still not finished*/
       if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
-        /* The first future record is added to the planNext in order to be shown in the top panel on the home page*/
-        if (this.planNext.length == 0) {
-          this.planNext.push(this.allRecords[x]);
+        /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
+        this.upcoming.push(this.allRecords[x]);
+        console.log(this.allRecords[x]);
+        /* Adding information about the week number to the week number array. */
+        if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)){
+          this.weeknumbers.push("Denne uken");
         }
-        /* All future records except the first one */
+        else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1){
+          this.weeknumbers.push("Neste uke");
+        }
         else {
-          /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
-          if(this.planNext[0]["ID"] != this.allRecords[x]["ID"]) {
-              this.upcoming.push(this.allRecords[x]);
-            /* Adding information about the week number to the week number array. */
-              if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)){
-                this.weeknumbers.push("Denne uken")
-              }
-              else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1){
-                this.weeknumbers.push("Neste uke")
-              }
-              else {
-                this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
-              }
-          }
+          this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
         }
       }
+      
       /* If not a future record, place it in the previous array */
       else {
         this.previous.push(this.allRecords[x]);
       }
     }
+
+    console.log("DATA");
+    console.log(this.upcoming);
+
     /* Reverst the array of previous records, such that the newest comes first */
     this.previous.reverse();
 
     /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
     this.uniqueWeeknumbers.push(this.weeknumbers[0]);
+    console.log("Ukenummer");
+    console.log(this.weeknumbers);
 
     /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */ 
     var temp = [];
     //console.log(this.upcoming);
-    for (var i = 0; i<this.weeknumbers.length; i++){
+    for (var i = 1; i<this.weeknumbers.length; i++){
       if (this.weeknumbers[i] == this.weeknumbers[i+1]) {
         temp.push(this.upcoming[i])
       }
@@ -167,10 +165,10 @@ export class FirebaseServiceProvider {
     var oldTimestamps:Array<any> = [];
     var newTimestamps = [];
     
-    newTimestamps = this.planNext[0]["Stempletider"];
+    newTimestamps = this.upcoming[0]["Stempletider"];
     newTimestamps.push(timestamp);
       
-    this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
+    this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
       "Stempletider" : newTimestamps
     })
     .then(function() {
@@ -184,7 +182,7 @@ export class FirebaseServiceProvider {
   }
 
   writeCheckedIn(checkedIn){
-    this.afd.collection('arbeidsokter').doc(this.planNext[0]['ID']).update({
+    this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID']).update({
       'checkedIn': checkedIn
     })
     .then(function() {
@@ -195,8 +193,49 @@ export class FirebaseServiceProvider {
     });
   }
 
+  byttOkt(array1Index, array2Index) {
+    console.log("BYTT OKT");
+    console.log(array1Index);
+    console.log(array2Index);
+    var bytte;
+    if(this.upcoming2[array1Index][array2Index]['byttes'] == undefined){
+      console.log("FØRSTE IF");
+      bytte = true;
+      this.upcoming2[array1Index][array2Index]['byttes'] = true;
+    }
+    else {
+      if (this.upcoming2[array1Index][array2Index]['byttes'] == false){
+        console.log("ANDRE IF");
+        bytte = true;
+        this.upcoming2[array1Index][array2Index]['byttes'] = true;
+      }
+      else {
+        console.log("ELSE");
+        bytte = false;
+        this.upcoming2[array1Index][array2Index]['byttes'] = false;
+      }
+    }
+    console.log(this.upcoming2);
+
+    this.afd.collection('arbeidsokter').doc(this.upcoming2[array1Index][array2Index]['ID']).update({
+      'byttes' : bytte,
+      'Start' : this.upcoming2[array1Index][array2Index]['Start'],
+      'Slutt' : this.upcoming2[array1Index][array2Index]['Slutt'],
+      'Added' : this.upcoming2[array1Index][array2Index]['Added'],
+      'EndretMelding' : this.upcoming2[array1Index][array2Index]['EndretMelding']
+    })
+    .then(function() {
+      console.log("bytte successfully written")
+    })
+    .catch(function(error){
+      console.error("Error when writing bytte: ", error)
+    });
+  }
+
   getCheckedIn(){
-    this.afd.collection('arbeidsokter').doc(this.planNext[0]['ID'])
+    console.log("GETCHECKED IN");
+    console.log(this.upcoming);
+    this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID'])
       .valueChanges()
       .subscribe(data => {
         this.checkedIn =  data['checkedIn'];
@@ -204,7 +243,7 @@ export class FirebaseServiceProvider {
   }
 
   writeArrivalTime(timestamp){
-    this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
+    this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
       "arrivedAtWork" : timestamp
     })
     .then(function() {
@@ -228,10 +267,10 @@ export class FirebaseServiceProvider {
 
   isWorking(timestamp) {
     //Will take in a timestamp and check if this matches a block that is scheduled for work. 
-    var nextStartTime = new Date(this.planNext[0]['Start']);
+    var nextStartTime = new Date(this.upcoming[0]['Start']);
     var now = new Date(timestamp);
     //Checks if it's the same date and if we are still in before the end of the workday. 
-    if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.planNext[0]['Slutt']).getTime()) < 0) {
+    if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.upcoming[0]['Slutt']).getTime()) < 0) {
       return true;
     }
     return false;
@@ -243,7 +282,7 @@ export class FirebaseServiceProvider {
     
     arrivedAtWork = new Date(arrivedAtWork);
 
-    var workStart = new Date(this.planNext[0]['Start']);
+    var workStart = new Date(this.upcoming[0]['Start']);
 
 
     //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
@@ -267,6 +306,8 @@ export class FirebaseServiceProvider {
     } 
 
   }
+
+  /* SETTINGS */
 
   updateSettingsHandler(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
     if(this.updateSettings(earlyCheckInMinutes,automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications)){
@@ -325,9 +366,14 @@ export class FirebaseServiceProvider {
     this.polygon = this.settingsData["polygon"];
     this.number = this.settingsData["postalCode"];
     this.address = this.settingsData["address"];
-
-    
-
   }
+
+  /*calculateDelay(){
+    var delaySeconds = 0;
+    for (var x = 0; x<this.previous.length; x++){
+      delaySeconds += +new Date(this.previous.Stempletider[0]) - +(new Date(this.previous.arrivedAtWork));
+    }
+    delaySeconds = delaySeconds/this.previous.length;
+  }*/
 
 }

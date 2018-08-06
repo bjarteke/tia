@@ -126,10 +126,9 @@ var SettingsPage = /** @class */ (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'page-settings',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/settings/settings.html"*/'<!--\n  Generated template for the SettingsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>Innstillinger</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item style="padding:0">\n      <ion-label style="padding-left:15px">Send varslinger</ion-label>\n      <ion-toggle [(ngModel)]="enableNotifications"></ion-toggle>\n    </ion-item>\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>\n      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn">\n    <ion-label>\n      <ion-label style="padding-top:5px;" >\n        Tid fra ankomst til stempling\n      </ion-label>\n    </ion-label>\n      <ion-range debounce="1000" min="0" max="60" step ="1" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>60 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>\n      <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>\n      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n    <ion-label style="padding-top:5px;" >\n      Tidlig innstempling \n    </ion-label>\n      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>120 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-footer no-shadow>\n	<ion-toolbar position="bottom">\n        <button (click)="ionChanges()" full ion-button>Lagre</button>\n	</ion-toolbar>\n</ion-footer>\n\n\n\n  \n\n</ion-content>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/settings/settings.html"*/,
         }),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]) === "function" && _e || Object])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]])
     ], SettingsPage);
     return SettingsPage;
-    var _a, _b, _c, _d, _e;
 }());
 
 //# sourceMappingURL=settings.js.map
@@ -259,7 +258,6 @@ var ContactPage = /** @class */ (function () {
         this.newStempletider.sort();
         this.sendingStempletider = this.item.Stempletider.sort();
         this.init();
-        console.log(this.navCtrl.getActive().name);
     }
     ContactPage.prototype.init = function () {
         /* Adding the end time to the "Stempletider" array (making sure that it is not already added) */
@@ -422,12 +420,11 @@ var ContactPage = /** @class */ (function () {
     };
     ContactPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-contact',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/contact/contact.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Detaljer\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n  <h1 style="color:black; text-align:center;padding-top:20px">{{timestampToDate2(item.Start)}}</h1>\n  <h3 style="color:black; text-align:center;padding:0">{{fromTimestampToHHMM2(item.Start)}} - {{fromTimestampToHHMM2(item.Slutt)}}</h3>\n  \n <ion-card class="ionCard" *ngIf="!inTheFuture()"> \n    <ion-card-header class="ionCardHeader">Stempletider<ion-icon style="float: right;" name="build" (click)="toggleStemple()"></ion-icon></ion-card-header>\n    \n    <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">\n      <div *ngIf="item.Stempletider.length==1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>\n      <div *ngIf="item.Stempletider.length!=1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>\n      <div *ngIf="item.Stempletider.length==1 && item.ID != firebaseService.planNext[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>\n      <div *ngIf="item.Stempletider.length!=1 && item.ID != firebaseService.planNext[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>\n    </div>\n\n    <div *ngIf="!toggleStempletider && item.ID != firebaseService.planNext[0][\'ID\']" class="loadingBox" style="height:10px" >\n        <div class="loadingBoxInner" *ngIf="lateWidth!=\'0%\'" style="width:0px;margin-left:-4px">\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div *ngIf="lateWidth!=\'0%\'" style="height:10px; margin-right:-4px" class="loadingBoxInner" [ngStyle]="{\'width\' : lateWidth}" >\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div style="margin-top:-40px; height:10px" *ngFor="let x of segmentWidth, let j = index" class="loadingBoxInner" [ngStyle]="{\'width\' : x}">\n          <div style="height:10px;width:100%;margin-top:-40px"></div>\n        </div>\n        <div class="loadingBoxInner">\n        </div>\n    </div>\n\n    <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">\n      <ion-item style="padding:0;height:30px" *ngFor="let x of sendingStempletider, let j = index">\n        <div class="checkInOutInfoBox" style="display:table-cell; width:30px;padding-top:20px;padding-bottom:20px" [ngStyle]="{\'background\' : selectBackground(j)}">\n          <h2 *ngIf="j%2==0" style="text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:5px">INN</h2>\n          <h2 *ngIf="j%2!=0" style="color:white; text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:8.5px">UT</h2>\n        </div>          \n        <div style="display:table-cell;padding:15px;vertical-align:middle"> {{fromTimestampToHHMM(x)}}</div>\n        <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>\n      </ion-item>\n      <button ion-button full outline style="border-top:0;background-color: #f8f8f8" (click)="picker.open()">\n        <ion-datetime #picker cancelText="Tilbake" doneText="Ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>\n        <ion-icon style="font-size: 30px;" name="add-circle"></ion-icon>\n      </button>\n     \n      <ion-item>\n        <ion-label stacked style="padding:5px">Årsak til endring: </ion-label>\n        <ion-textarea style="padding:5px" [(ngModel)]="msg"></ion-textarea>\n      </ion-item>\n      <button ion-button full (click)="sendChangesHandler()">Lagre endringer</button>\n    </ion-list> \n  </ion-card>\n\n<ion-card class="ionCard" >\n  <ion-card-header class="ionCardHeader">På jobb denne dagen</ion-card-header>\n  <ion-list style="padding:0">\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KÅ</div>\n      </ion-avatar>\n      <h2>Karianne Åsen</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Svendsen</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Stiggerud</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">JM</div>\n      </ion-avatar>\n      <h2>Johanna Mølbakken</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n  </ion-list>\n</ion-card>\n</ion-content>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/contact/contact.html"*/
+            selector: 'page-contact',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/contact/contact.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Detaljer\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n  <h1 style="color:black; text-align:center;padding-top:20px">{{timestampToDate2(item.Start)}}</h1>\n  <h3 style="color:black; text-align:center;padding:0">{{fromTimestampToHHMM2(item.Start)}} - {{fromTimestampToHHMM2(item.Slutt)}}</h3>\n  \n <ion-card class="ionCard" *ngIf="!inTheFuture()"> \n    <ion-card-header class="ionCardHeader">Stempletider<ion-icon style="float: right;" name="build" (click)="toggleStemple()"></ion-icon></ion-card-header>\n    \n    <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">\n      <div *ngIf="item.Stempletider.length==1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>\n      <div *ngIf="item.Stempletider.length!=1" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>\n      <div *ngIf="item.Stempletider.length==1 && item.ID != firebaseService.upcoming[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>\n      <div *ngIf="item.Stempletider.length!=1 && item.ID != firebaseService.upcoming[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>\n    </div>\n\n    <div *ngIf="!toggleStempletider && item.ID != firebaseService.upcoming[0][\'ID\']" class="loadingBox" style="height:10px" >\n        <div class="loadingBoxInner" *ngIf="lateWidth!=\'0%\'" style="width:0px;margin-left:-4px">\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div *ngIf="lateWidth!=\'0%\'" style="height:10px; margin-right:-4px" class="loadingBoxInner" [ngStyle]="{\'width\' : lateWidth}" >\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div style="margin-top:-40px; height:10px" *ngFor="let x of segmentWidth, let j = index" class="loadingBoxInner" [ngStyle]="{\'width\' : x}">\n          <div style="height:10px;width:100%;margin-top:-40px"></div>\n        </div>\n        <div class="loadingBoxInner">\n        </div>\n    </div>\n\n    <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">\n      <ion-item style="padding:0;height:30px" *ngFor="let x of sendingStempletider, let j = index">\n        <div class="checkInOutInfoBox" style="display:table-cell; width:30px;padding-top:20px;padding-bottom:20px" [ngStyle]="{\'background\' : selectBackground(j)}">\n          <h2 *ngIf="j%2==0" style="text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:5px">INN</h2>\n          <h2 *ngIf="j%2!=0" style="color:white; text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:8.5px">UT</h2>\n        </div>          \n        <div style="display:table-cell;padding:15px;vertical-align:middle"> {{fromTimestampToHHMM(x)}}</div>\n        <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>\n      </ion-item>\n      <button ion-button full outline style="border-top:0;background-color: #f8f8f8" (click)="picker.open()">\n        <ion-datetime #picker cancelText="Tilbake" doneText="Ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>\n        <ion-icon style="font-size: 30px;" name="add-circle"></ion-icon>\n      </button>\n     \n      <ion-item>\n        <ion-label stacked style="padding:5px">Årsak til endring: </ion-label>\n        <ion-textarea style="padding:5px" [(ngModel)]="msg"></ion-textarea>\n      </ion-item>\n      <button ion-button full (click)="sendChangesHandler()">Lagre endringer</button>\n    </ion-list> \n  </ion-card>\n\n<ion-card class="ionCard" >\n  <ion-card-header class="ionCardHeader">På jobb denne dagen</ion-card-header>\n  <ion-list style="padding:0">\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KÅ</div>\n      </ion-avatar>\n      <h2>Karianne Åsen</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Svendsen</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Stiggerud</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">JM</div>\n      </ion-avatar>\n      <h2>Johanna Mølbakken</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n  </ion-list>\n</ion-card>\n</ion-content>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/contact/contact.html"*/
         }),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__["a" /* AngularFirestore */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__["a" /* AngularFirestore */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]) === "function" && _e || Object])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__["a" /* AngularFirestore */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]])
     ], ContactPage);
     return ContactPage;
-    var _a, _b, _c, _d, _e;
 }());
 
 //# sourceMappingURL=contact.js.map
@@ -670,14 +667,14 @@ var HomePage = /** @class */ (function () {
         }
         this.paJobb = this.locationTracker.paJobb;
         /* Starter på nytt om man ikke klarer å lese fra databasen*/
-        if (this.fsp.planNext[0] == undefined) {
+        if (this.fsp.upcoming[0] == undefined) {
             return;
         }
         this.fsp.getCheckedIn();
         //console.log('status på checkedIn', this.checkedIn);
         this.checkedIn = this.fsp.checkedIn;
-        console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
-        console.log('status på autoCheckIn', this.fsp.autoCheckIn);
+        //console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
+        //console.log('status på autoCheckIn', this.fsp.autoCheckIn);
         if (this.checkedIn) {
             this.stempleButton = 'Stemple ut';
             this.checkInOutVar = "checkInOut2";
@@ -688,15 +685,15 @@ var HomePage = /** @class */ (function () {
         }
         //this.checkedIn = this.fsp.planNext[0]["checkedIn"];
         /* Set the duration of the work session in seconds */
-        this.seconds = ((new Date(this.fsp.planNext[0]["Slutt"])).getTime() / 1000 - (new Date(this.fsp.planNext[0]["Start"])).getTime() / 1000); //Number of seconds
+        this.seconds = ((new Date(this.fsp.upcoming[0]["Slutt"])).getTime() / 1000 - (new Date(this.fsp.upcoming[0]["Start"])).getTime() / 1000); //Number of seconds
         if (!this.initialFirebase) {
             console.log("SET INITIAL LOADING BAR");
             this.setInitialLoadingBar();
             this.initialFirebase = true;
         }
         var currentDate = new Date();
-        var startDate = new Date(this.fsp.planNext[0]["Start"]);
-        var endDate = new Date(this.fsp.planNext[0]['Slutt']);
+        var startDate = new Date(this.fsp.upcoming[0]["Start"]);
+        var endDate = new Date(this.fsp.upcoming[0]['Slutt']);
         this.activateAutomaticCheckInOut = this.fsp.autoCheckIn;
         this.enableNotifications = this.fsp.enableNotifications;
         /* Automatic Check-in */
@@ -769,14 +766,6 @@ var HomePage = /** @class */ (function () {
             this.fsp.writeCheckedIn(this.checkedIn);
         }
     };
-    HomePage.prototype.calculateTimePeriodMinutes = function (time1, time2) {
-        if (this.checkInOutTimes.length > 1) {
-            var m = Math.abs((new Date(time2).getMinutes() - new Date(time1).getMinutes()));
-            var h = Math.abs((new Date(time2).getHours() - new Date(time1).getHours()));
-            var outM = h * 60 * 60 + m * 60;
-            return outM;
-        }
-    };
     //LOADING BAR
     HomePage.prototype.updateLoadingBar = function () {
         //Adding the first segment if employee has checked in late
@@ -784,7 +773,7 @@ var HomePage = /** @class */ (function () {
             this.segmentWidth.push(this.currentWidth);
         }
         var currentDate = new Date();
-        var startDate = new Date(this.fsp.planNext[0]["Start"]);
+        var startDate = new Date(this.fsp.upcoming[0]["Start"]);
         //Setting the width of the current segment
         this.currentWidth = Math.min(100 - this.totalWidthSoFar, 100 * (Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length - 1]) / 1000) / this.seconds)) + "%";
         //Stopping loading bar when it has been filled.
@@ -796,7 +785,7 @@ var HomePage = /** @class */ (function () {
     };
     HomePage.prototype.updateLoadingBarLate = function () {
         var currentDate = new Date();
-        var startDate = new Date(this.fsp.planNext[0]["Start"]);
+        var startDate = new Date(this.fsp.upcoming[0]["Start"]);
         var width = 100 * (Math.abs((+currentDate - +startDate) / 1000) / this.seconds);
         if (width < 100) {
             this.currentWidth = Math.min(100 - this.totalWidthSoFar, width) + "%";
@@ -807,7 +796,7 @@ var HomePage = /** @class */ (function () {
     };
     /* Sets the segments of the initial loading bar based on check in/out times stored in Firebase*/
     HomePage.prototype.setInitialLoadingBar = function () {
-        var stempletider = this.fsp.planNext[0]["Stempletider"];
+        var stempletider = this.fsp.upcoming[0]["Stempletider"];
         this.totalWidthSoFar = 0;
         var segmentWidth = [];
         for (var x = 1; x < stempletider.length; x++) {
@@ -821,7 +810,7 @@ var HomePage = /** @class */ (function () {
         var currentDate = new Date();
         var temp = 100 * (Math.abs((+new Date(stempletider[stempletider.length - 1]) - +currentDate) / 1000) / this.seconds);
         this.currentWidth = Math.min(100 - this.totalWidthSoFar, temp) + "%";
-        if (+new Date(stempletider[0]) - +new Date(this.fsp.planNext[0]["Start"]) > 0) {
+        if (+new Date(stempletider[0]) - +new Date(this.fsp.upcoming[0]["Start"]) > 0) {
             this.lateCheckIn = true;
         }
     };
@@ -922,12 +911,11 @@ var HomePage = /** @class */ (function () {
     };
     HomePage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-home',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Min arbeidsplan\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n \n\n<ion-content>\n<div class="info">\n\n<!-- Next record, checking in/out -->\n\n<ion-slides>\n  <ion-slide>\n  <div class="record" *ngFor="let x of fsp.planNext, let i=index" >\n    <div class="topBox" (click)="itemSelected(fsp.planNext[0],segmentWidth)">\n      <ion-icon name="pin" class="pinIcon" [ngStyle]="{\'color\': (locationTracker.paJobb ? \'#7CFC00\' : \'#a00b0b\')}"></ion-icon>      \n      <h1>{{ fromTimestampToTextIdagImorgen(timestampToDate(fsp.planNext[i][\'Start\']),fsp.planNext[i][\'Start\']) }} </h1>\n      <h3>{{fromTimestampToHHMM(fsp.planNext[i]["Start"])}} - {{fromTimestampToHHMM(fsp.planNext[i]["Slutt"])}}</h3>\n    </div>\n    <div class="infoField">\n      <div *ngIf="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px;margin-left:-4px"></div>\n      <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{\'width\' : x}"></div>\n      <div class="loadingBar" id="currentlyLoading" [ngStyle] = "{\'width\' : currentWidth}"></div>\n    </div>\n    <button [disabled]="((!locationTracker.paJobb && !fsp.checkedIn) || !correctTime(fsp.planNext[i][\'Start\']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>\n  </div>\n  </ion-slide>\n  <ion-slide>\n  <div class="record">\n    <div class="topBox">\n      <h1>Ekstraregistrering</h1>\n      <h3>Uten dato/GPS</h3>\n    </div>\n    <div class="infoField">\n    </div>\n    <button ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>\n  </div>\n  </ion-slide>\n</ion-slides>\n\n<div *ngIf="!fsp.doneInitial" style="text-align:center">\n  <ion-spinner icon="bubbles"></ion-spinner>\n</div>\n\n<!-- Segment buttons-->\n<div *ngIf="fsp.doneInitial" class="records">\n  <div style="background-color: rgb(242, 242, 242); border-radius: 5px 5px 0px 0px; margin-bottom: -25px;">\n  <ion-segment [(ngModel)]="planner">\n    <ion-segment-button value="kommende">\n      Kommende\n    </ion-segment-button>\n    <ion-segment-button value="ledig">\n      Ledig\n    </ion-segment-button>\n    <ion-segment-button value="fullfort">\n      Fullført\n    </ion-segment-button>\n  </ion-segment>\n</div>\n\n<!-- Future records -->\n<ion-list style="background-color: rgb(242, 242, 242); border-radius: 0px 0px 5px 5px">\n\n  <div [ngSwitch]="planner" >\n\n    <!-- Upcoming -->\n    <div *ngFor="let x of fsp.uniqueWeeknumbers, let j=index">\n    \n    <h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="\'kommende\'" >{{fsp.uniqueWeeknumbers[j]}}</h1>\n\n    <ion-item-sliding *ngFor="let x of fsp.upcoming2[j], let i=index">\n      <ion-item *ngSwitchCase="\'kommende\'" (click)="itemSelected(x)" >\n          <div *ngIf="checkIfNew([fsp.upcoming2[j][i][\'Added\']])" class="ribbon">\n              <span>Ny vakt</span>\n          </div>\n          <div class="futureDate">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo">\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n      <ion-item-options>\n        <button ion-button color="secondary">\n          <ion-icon name="git-compare"></ion-icon>\n          Bytt\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n    </div>\n\n    <!-- Previous -->\n    <div style="margin-top:30px">\n    <ion-item-sliding *ngFor="let x of fsp.previous | slice:0:3, let i=index" >\n      <ion-item *ngSwitchCase="\'fullfort\'" (click)="itemSelected(x)">\n          <div class="futureDate">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.previous[i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.previous[i].Start) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo">\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.previous[i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.previous[i]["Start"])}} - {{fromTimestampToHHMM(fsp.previous[i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n      <ion-item-options>\n        <button ion-button color="secondary">\n          <ion-icon name="git-compare"></ion-icon>\n          Bytt\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n    </div>\n\n    </div>\n  </ion-list>\n      </div>\n\n</div>\n\n<div style="display:inline-block;text-align:center">\n  <img style="width:15%; border-right:2px solid #915AD5" src="../www/assets/imgs/logo.png">\n  <img style="width:30%" src="../www/assets/imgs/company_2-ny.png">\n\n</div>\n\n\n\n<br><br><br>\n\n<!--\n\n  <h3>Current Latitude: {{locationTracker.lat}}</h3>\n  <h3>Current Longitude: {{locationTracker.lng}}</h3>\n  <h3>På jobb? {{locationTracker.paJobb}}</h3> \n\n-->  \n\n  <!-- ACTIVATE IF YOU MANUALLY WANT TO START THE TRACKING. REMEBER TO CHANGE FROM NGONINIT() TO START() IN HOME.ts\n  \n    <button ion-button full primary (click)="start()">Start Tracking</button>\n     <button ion-button full primary (click)="scheduleNotification()">Send Notification</button> \n\n-->\n\n\n</ion-content>'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/home/home.html"*/
+            selector: 'page-home',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Min arbeidsplan\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n \n\n<ion-content>\n<div class="info">\n\n<!-- Next record, checking in/out -->\n\n<ion-slides>\n  <ion-slide>\n  <div class="record" *ngFor="let x of fsp.upcoming | slice:0:1, let i=index" >\n    <div class="topBox" (click)="itemSelected(fsp.upcoming[0],segmentWidth)">\n      <ion-icon name="pin" class="pinIcon" [ngStyle]="{\'color\': (locationTracker.paJobb ? \'#7CFC00\' : \'#a00b0b\')}"></ion-icon>      \n      <h1>{{ fromTimestampToTextIdagImorgen(timestampToDate(fsp.upcoming[i][\'Start\']),fsp.upcoming[i][\'Start\']) }} </h1>\n      <h3>{{fromTimestampToHHMM(fsp.upcoming[i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming[i]["Slutt"])}}</h3>\n    </div>\n    <div class="infoField">\n      <div *ngIf="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px;margin-left:-4px"></div>\n      <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{\'width\' : x}"></div>\n      <div class="loadingBar" id="currentlyLoading" [ngStyle] = "{\'width\' : currentWidth}"></div>\n    </div>\n    <button [disabled]="((!locationTracker.paJobb && !fsp.checkedIn) || !correctTime(fsp.upcoming[i][\'Start\']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>\n  </div>\n  </ion-slide>\n  <ion-slide>\n  <div class="record">\n    <div class="topBox">\n      <h1>Ekstraregistrering</h1>\n      <h3>Uten dato/GPS</h3>\n    </div>\n    <div class="infoField">\n    </div>\n    <button ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>\n  </div>\n  </ion-slide>\n</ion-slides>\n\n<div *ngIf="!fsp.doneInitial" style="text-align:center">\n  <ion-spinner icon="bubbles"></ion-spinner>\n</div>\n\n<!-- Segment buttons-->\n<div *ngIf="fsp.doneInitial" class="records">\n  <div style="background-color: rgb(242, 242, 242); border-radius: 5px 5px 0px 0px; margin-bottom: -25px;">\n  <ion-segment [(ngModel)]="planner">\n    <ion-segment-button value="kommende">\n      Kommende\n    </ion-segment-button>\n    <ion-segment-button value="ledig">\n      Ledig\n    </ion-segment-button>\n    <ion-segment-button value="fullfort">\n      Fullført\n    </ion-segment-button>\n  </ion-segment>\n</div>\n\n<!-- Future records -->\n<ion-list style="background-color: rgb(242, 242, 242); border-radius: 0px 0px 5px 5px">\n\n  <div [ngSwitch]="planner" >\n\n    <!-- Upcoming -->\n    <div *ngFor="let x of fsp.uniqueWeeknumbers, let j=index">\n    \n    <h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="\'kommende\'" >{{fsp.uniqueWeeknumbers[j]}}</h1>\n\n    <ion-item-sliding *ngFor="let x of fsp.upcoming2[j], let i=index">\n      <ion-item *ngSwitchCase="\'kommende\'" (click)="itemSelected(x)" >\n          <div *ngIf="checkIfNew([fsp.upcoming2[j][i][\'Added\']])" class="ribbon">\n              <span>Ny vakt</span>\n          </div>\n          <div class="futureDate">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo">\n      <ion-icon class="bytteIcon" *ngIf="fsp.upcoming2[j][i][\'byttes\']" name="git-compare"></ion-icon>\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n      <ion-item-options>\n        <button (click)="fsp.byttOkt(j,i)" ion-button color="secondary">\n          <ion-icon name="git-compare"></ion-icon>\n          Bytt\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n    </div>\n\n    <!-- Ledig -->\n    <div style="margin-top:30px"  >\n    <div *ngFor="let x of fsp.uniqueWeeknumbers, let j=index">\n    \n    <!--<h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="\'ledig\'" >{{fsp.uniqueWeeknumbers[j]}}</h1> -->\n\n    <ion-item-sliding *ngFor="let x of fsp.upcoming2[j], let i=index">\n      <ion-item *ngSwitchCase="\'ledig\'">\n          <div class="futureDate" *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo" *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n      <ion-item-options *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n        <button (click)="fsp.byttOkt(j,i)" ion-button color="secondary">\n          <ion-icon name="git-compare"></ion-icon>\n          Ta økt\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n    </div>\n    </div>\n\n    <!-- Previous -->\n    <div >\n    <ion-item-sliding *ngFor="let x of fsp.previous | slice:0:3, let i=index" >\n      <ion-item *ngSwitchCase="\'fullfort\'" (click)="itemSelected(x)">\n          <div class="futureDate">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.previous[i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.previous[i].Start) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo">\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.previous[i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.previous[i]["Start"])}} - {{fromTimestampToHHMM(fsp.previous[i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n    </ion-item-sliding>\n    </div>\n\n    </div>\n  </ion-list>\n      </div>\n\n</div>\n\n<div style="display:inline-block;text-align:center">\n  <img style="width:15%; border-right:2px solid #915AD5" src="../www/assets/imgs/logo.png">\n  <img style="width:30%" src="../www/assets/imgs/company_2-ny.png">\n\n</div>\n\n\n\n<br><br><br>\n\n<!--\n\n  <h3>Current Latitude: {{locationTracker.lat}}</h3>\n  <h3>Current Longitude: {{locationTracker.lng}}</h3>\n  <h3>På jobb? {{locationTracker.paJobb}}</h3> \n\n-->  \n\n  <!-- ACTIVATE IF YOU MANUALLY WANT TO START THE TRACKING. REMEBER TO CHANGE FROM NGONINIT() TO START() IN HOME.ts\n  \n    <button ion-button full primary (click)="start()">Start Tracking</button>\n     <button ion-button full primary (click)="scheduleNotification()">Send Notification</button> \n\n-->\n\n\n</ion-content>'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/home/home.html"*/
         }),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__providers_location_tracker_location_tracker__["a" /* LocationTracker */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__providers_location_tracker_location_tracker__["a" /* LocationTracker */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_8__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_8__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_9__providers_notifications_notifications__["a" /* NotificationsProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_9__providers_notifications_notifications__["a" /* NotificationsProvider */]) === "function" && _e || Object])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__providers_location_tracker_location_tracker__["a" /* LocationTracker */], __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_8__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_9__providers_notifications_notifications__["a" /* NotificationsProvider */]])
     ], HomePage);
     return HomePage;
-    var _a, _b, _c, _d, _e;
 }());
 
 //# sourceMappingURL=home.js.map
@@ -1305,8 +1293,6 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.upcoming = [];
         this.upcoming2 = []; //One list for each week number 
         this.previous = [];
-        this.planNext = [];
-        this.currentID = "testID";
         this.counter = 0;
         this.weeknumbers = [];
         this.uniqueWeeknumbers = [];
@@ -1320,6 +1306,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.setSettings();
     }
     FirebaseServiceProvider.prototype.inTheFuture = function (data) {
+        console.log(data);
         this.resetArrays();
         var currentDate = new Date();
         this.allRecords = data;
@@ -1329,39 +1316,36 @@ var FirebaseServiceProvider = /** @class */ (function () {
             var dateEnd = new Date(this.allRecords[x]["Slutt"]);
             /* A record has a start date in the future, or it is still not finished*/
             if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
-                /* The first future record is added to the planNext in order to be shown in the top panel on the home page*/
-                if (this.planNext.length == 0) {
-                    this.planNext.push(this.allRecords[x]);
+                /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
+                this.upcoming.push(this.allRecords[x]);
+                console.log(this.allRecords[x]);
+                /* Adding information about the week number to the week number array. */
+                if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)) {
+                    this.weeknumbers.push("Denne uken");
+                }
+                else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1) {
+                    this.weeknumbers.push("Neste uke");
                 }
                 else {
-                    /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
-                    if (this.planNext[0]["ID"] != this.allRecords[x]["ID"]) {
-                        this.upcoming.push(this.allRecords[x]);
-                        /* Adding information about the week number to the week number array. */
-                        if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)) {
-                            this.weeknumbers.push("Denne uken");
-                        }
-                        else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1) {
-                            this.weeknumbers.push("Neste uke");
-                        }
-                        else {
-                            this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
-                        }
-                    }
+                    this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
                 }
             }
             else {
                 this.previous.push(this.allRecords[x]);
             }
         }
+        console.log("DATA");
+        console.log(this.upcoming);
         /* Reverst the array of previous records, such that the newest comes first */
         this.previous.reverse();
         /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
         this.uniqueWeeknumbers.push(this.weeknumbers[0]);
+        console.log("Ukenummer");
+        console.log(this.weeknumbers);
         /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */
         var temp = [];
         //console.log(this.upcoming);
-        for (var i = 0; i < this.weeknumbers.length; i++) {
+        for (var i = 1; i < this.weeknumbers.length; i++) {
             if (this.weeknumbers[i] == this.weeknumbers[i + 1]) {
                 temp.push(this.upcoming[i]);
             }
@@ -1394,9 +1378,9 @@ var FirebaseServiceProvider = /** @class */ (function () {
     FirebaseServiceProvider.prototype.addCheckInOutTime = function (timestamp) {
         var oldTimestamps = [];
         var newTimestamps = [];
-        newTimestamps = this.planNext[0]["Stempletider"];
+        newTimestamps = this.upcoming[0]["Stempletider"];
         newTimestamps.push(timestamp);
-        this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
+        this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
             "Stempletider": newTimestamps
         })
             .then(function () {
@@ -1408,7 +1392,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.counter = this.counter + 1;
     };
     FirebaseServiceProvider.prototype.writeCheckedIn = function (checkedIn) {
-        this.afd.collection('arbeidsokter').doc(this.planNext[0]['ID']).update({
+        this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID']).update({
             'checkedIn': checkedIn
         })
             .then(function () {
@@ -1418,16 +1402,55 @@ var FirebaseServiceProvider = /** @class */ (function () {
             console.error("Error when writing checkedIn-variable: ", error);
         });
     };
+    FirebaseServiceProvider.prototype.byttOkt = function (array1Index, array2Index) {
+        console.log("BYTT OKT");
+        console.log(array1Index);
+        console.log(array2Index);
+        var bytte;
+        if (this.upcoming2[array1Index][array2Index]['byttes'] == undefined) {
+            console.log("FØRSTE IF");
+            bytte = true;
+            this.upcoming2[array1Index][array2Index]['byttes'] = true;
+        }
+        else {
+            if (this.upcoming2[array1Index][array2Index]['byttes'] == false) {
+                console.log("ANDRE IF");
+                bytte = true;
+                this.upcoming2[array1Index][array2Index]['byttes'] = true;
+            }
+            else {
+                console.log("ELSE");
+                bytte = false;
+                this.upcoming2[array1Index][array2Index]['byttes'] = false;
+            }
+        }
+        console.log(this.upcoming2);
+        this.afd.collection('arbeidsokter').doc(this.upcoming2[array1Index][array2Index]['ID']).update({
+            'byttes': bytte,
+            'Start': this.upcoming2[array1Index][array2Index]['Start'],
+            'Slutt': this.upcoming2[array1Index][array2Index]['Slutt'],
+            'Added': this.upcoming2[array1Index][array2Index]['Added'],
+            'EndretMelding': this.upcoming2[array1Index][array2Index]['EndretMelding']
+        })
+            .then(function () {
+            console.log("bytte successfully written");
+        })
+            .catch(function (error) {
+            console.error("Error when writing bytte: ", error);
+        });
+    };
     FirebaseServiceProvider.prototype.getCheckedIn = function () {
         var _this = this;
-        this.afd.collection('arbeidsokter').doc(this.planNext[0]['ID'])
+        console.log("GETCHECKED IN");
+        console.log(this.upcoming);
+        this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID'])
             .valueChanges()
             .subscribe(function (data) {
             _this.checkedIn = data['checkedIn'];
         });
     };
     FirebaseServiceProvider.prototype.writeArrivalTime = function (timestamp) {
-        this.afd.collection("arbeidsokter").doc(this.planNext[0]["ID"]).update({
+        this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
             "arrivedAtWork": timestamp
         })
             .then(function () {
@@ -1447,10 +1470,10 @@ var FirebaseServiceProvider = /** @class */ (function () {
     };
     FirebaseServiceProvider.prototype.isWorking = function (timestamp) {
         //Will take in a timestamp and check if this matches a block that is scheduled for work. 
-        var nextStartTime = new Date(this.planNext[0]['Start']);
+        var nextStartTime = new Date(this.upcoming[0]['Start']);
         var now = new Date(timestamp);
         //Checks if it's the same date and if we are still in before the end of the workday. 
-        if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.planNext[0]['Slutt']).getTime()) < 0) {
+        if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.upcoming[0]['Slutt']).getTime()) < 0) {
             return true;
         }
         return false;
@@ -1459,7 +1482,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         //600000 ms er 10 minutter
         var buffer = 5000;
         arrivedAtWork = new Date(arrivedAtWork);
-        var workStart = new Date(this.planNext[0]['Start']);
+        var workStart = new Date(this.upcoming[0]['Start']);
         //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
         if (workStart.getTime() - arrivedAtWork.getTime() > buffer) {
             this.addCheckInOutTime(workStart);
@@ -1478,6 +1501,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
             return checkInTime;
         }
     };
+    /* SETTINGS */
     FirebaseServiceProvider.prototype.updateSettingsHandler = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications) {
         if (this.updateSettings(earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications)) {
             this.toast('Innstillinger lagret', 2000, "toast-success");
