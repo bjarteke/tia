@@ -199,17 +199,17 @@ export class FirebaseServiceProvider {
     this.counter = this.counter + 1;
 
   }
-/*
-  addOfflineDocument(timestamp){
+
+  addOfflineDocument(timestamp) {
     var id = this.afd.createId();
 
     if (!this.offlineCheckIn){
-      this.afd.collection('offlineArbeidsokt').add({
+      this.afd.collection('offlineArbeidsokt').doc(id).set({
         checkIn : timestamp,
-        ID : 
+        ID : id
       });
     }
-  }*/
+  }
 
   writeCheckedIn(checkedIn){
     this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID']).update({
