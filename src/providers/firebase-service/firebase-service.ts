@@ -66,6 +66,8 @@ export class FirebaseServiceProvider {
 
   public timeFromArrivalToCheckInCalculated;
 
+  public keepCardTime = 2*60*60*1000;
+
   //* SETTINGS *//
   public earlyCheckInMinutes;
   public enableNotifications;
@@ -97,7 +99,7 @@ export class FirebaseServiceProvider {
       var dateStart = new Date(this.allRecords[x]["Start"]);
       var dateEnd = new Date(this.allRecords[x]["Slutt"]);
       /* A record has a start date in the future, or it is still not finished*/
-      if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
+      if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() + this.keepCardTime > currentDate.getTime()) {
         /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
         this.upcoming.push(this.allRecords[x]);
         //console.log(this.allRecords[x]);

@@ -397,7 +397,7 @@ export class HomePage {
       this.checkInOut(this.forlotTid);
     }
     //Må også sende notification første gang man registrerer at man forlater jobb. 
-    else if(now.getTime() >= endDate.getTime() && this.paJobb == false && this.checkedIn && this.forlotTid != null && this.enableNotifications){
+    else if(bufferTime >= endDate.getTime() && this.paJobb == false && this.checkedIn && this.forlotTid != null && this.enableNotifications){
       this.notifications.sendNotification('check_out', this.forlotTid);
     }
   }

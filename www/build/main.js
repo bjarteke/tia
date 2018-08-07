@@ -1328,6 +1328,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
         this.checkedIn = false;
         this.doneInitial = false;
         this.settingsData = [];
+        this.keepCardTime = 2 * 60 * 60 * 1000;
         /* Retrieving data from Firestore */
         this.afd.collection('arbeidsokter', function (ref) { return ref.orderBy('Start'); })
             .valueChanges()
@@ -1344,7 +1345,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
             var dateStart = new Date(this.allRecords[x]["Start"]);
             var dateEnd = new Date(this.allRecords[x]["Slutt"]);
             /* A record has a start date in the future, or it is still not finished*/
-            if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
+            if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() + this.keepCardTime > currentDate.getTime()) {
                 /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
                 this.upcoming.push(this.allRecords[x]);
                 //console.log(this.allRecords[x]);
@@ -1623,9 +1624,10 @@ var FirebaseServiceProvider = /** @class */ (function () {
     };
     FirebaseServiceProvider = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */], __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */], __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */]])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */]) === "function" && _c || Object])
     ], FirebaseServiceProvider);
     return FirebaseServiceProvider;
+    var _a, _b, _c;
 }());
 
 //# sourceMappingURL=firebase-service.js.map

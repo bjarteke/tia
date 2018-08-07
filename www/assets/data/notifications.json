@@ -11,7 +11,7 @@
     },
     "check_out": {
         "title": "Takk for i dag!",
-        "text_pre": "Vi stemplet deg ut klokka ",
+        "text_pre": "Registrerer utsjekk klokka ",
         "text_post": "."
     },
     "leftEarly": {
