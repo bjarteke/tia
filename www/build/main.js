@@ -1341,9 +1341,6 @@ var FirebaseServiceProvider = /** @class */ (function () {
             var dateStart = new Date(this.allRecords[x]["Start"]);
             var dateEnd = new Date(this.allRecords[x]["Slutt"]);
             /* A record has a start date in the future, or it is still not finished*/
-            console.log("CURRENT");
-            console.log(dateStart);
-            console.log(currentDate);
             if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
                 /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
                 this.upcoming.push(this.allRecords[x]);
