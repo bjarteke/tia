@@ -90,13 +90,16 @@ export class FirebaseServiceProvider {
   inTheFuture(data){
     //console.log(data);
     this.resetArrays();
-    var currentDate = new Date();
     this.allRecords = data;
     /* Iterating through all records within the plan, in order to separate them between previous and upcoming*/
     for (var x = 0; x< this.allRecords.length; x++) {
+      var currentDate = new Date();
       var dateStart = new Date(this.allRecords[x]["Start"]);
       var dateEnd = new Date(this.allRecords[x]["Slutt"]);
       /* A record has a start date in the future, or it is still not finished*/
+      console.log("CURRENT");
+      console.log(dateStart);
+      console.log(currentDate);
       if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
         /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
         this.upcoming.push(this.allRecords[x]);
