@@ -54,10 +54,10 @@ var FirebaseServiceProvider = /** @class */ (function () {
     FirebaseServiceProvider.prototype.inTheFuture = function (data) {
         //console.log(data);
         this.resetArrays();
-        var currentDate = new Date();
         this.allRecords = data;
         /* Iterating through all records within the plan, in order to separate them between previous and upcoming*/
         for (var x = 0; x < this.allRecords.length; x++) {
+            var currentDate = new Date();
             var dateStart = new Date(this.allRecords[x]["Start"]);
             var dateEnd = new Date(this.allRecords[x]["Slutt"]);
             /* A record has a start date in the future, or it is still not finished*/
@@ -248,7 +248,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
     };
     FirebaseServiceProvider.prototype.decideCheckInTime = function (arrivedAtWork) {
         //600000 ms er 10 minutter
-        var buffer = 5000;
+        var buffer = 300000;
         arrivedAtWork = new Date(arrivedAtWork);
         var workStart = new Date(this.upcoming[0]['Start']);
         //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
