@@ -88,13 +88,14 @@ export class HomePage {
     }
     
   continueslyChecked() {
-
+    
     this.contCheckCouter += 1;
     this.locationTracker.startTracking();
     if(!this.initialLocationSet){
       this.locationTracker.startTracking();      //Start tracking location
       this.initialLocationSet = true;
     }
+    
 
     this.paJobb = this.locationTracker.paJobb;
 
@@ -102,6 +103,7 @@ export class HomePage {
     if (this.fsp.upcoming[0] == undefined){
       return;
     }
+    
 
     this.fsp.getCheckedIn();
     //console.log('status på checkedIn', this.checkedIn);
@@ -117,6 +119,7 @@ export class HomePage {
       this.stempleButton = 'Stemple inn';
       this.checkInOutVar = 'checkInOut';
     }
+    
 
     //this.checkedIn = this.fsp.planNext[0]["checkedIn"];
 
@@ -129,6 +132,7 @@ export class HomePage {
         this.initialFirebase = true;
       } 
     }
+    
 
     
 
@@ -146,6 +150,7 @@ export class HomePage {
       this.initialCheckIn = true;
       this.checkInOutTimes = this.fsp.upcoming[0]['Stempletider'];
     }
+    
 
     /* Automatic Check-in */
     var now = new Date();
@@ -165,6 +170,7 @@ export class HomePage {
       this.checkInOut(this.checkInTime);
       this.waitingToCheckIn = false;
     }
+    
 
     /* Updating the loadingBar */
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
@@ -172,6 +178,7 @@ export class HomePage {
       if(this.currentWidth == "0%"){
         this.updateLoadingBarLate();
         this.lateCheckIn = true;
+        
       }
       else{
 
@@ -180,15 +187,19 @@ export class HomePage {
     else if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == true && this.stop == false){
       //If already checked in.
             
-
+      console.log("SJEKKES NÅ7.2")
+      console.log(this.segmentWidth[this.segmentWidth.length-1]);
       
       
       this.updateLoadingBar();
+      console.log("SJEKKES NÅ7.3")
+      console.log(this.segmentWidth[this.segmentWidth.length-1]);
       
     }
     else {
       //If not not too late, and not checked in
     }
+    
 
     
 
@@ -215,9 +226,11 @@ export class HomePage {
     this.checkInOutTimes.push(new Date(checkInTime));   //register the checkInTime
     //this.fsp.addCheckInOutTime(new Date());
     if (this.checkInOutTimes.length > 1 && parseFloat(this.currentWidth.slice(0,-1)) + this.totalWidthSoFar < 100 && this.stop == false){
-        this.segmentWidth.push(this.currentWidth);
-        this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
-        this.currentWidth = "0%"; //Making sure that the new loadingBar starts at 0%
+      console.log("IF2");
+      this.segmentWidth.push(this.currentWidth);
+      this.totalWidthSoFar += parseFloat(this.currentWidth.slice(0,-1));
+      console.log(this.totalWidthSoFar);
+      this.currentWidth = "0%"; //Making sure that the new loadingBar starts at 0%
     }
 
 
@@ -265,7 +278,13 @@ export class HomePage {
 
     //Stopping loading bar when it has been filled.
     if (this.currentWidth == 100-this.totalWidthSoFar + "%" && this.stop == false){
-      this.segmentWidth.push(this.currentWidth);
+      console.log(7.21);
+      console.log(this.segmentWidth);
+      //this.segmentWidth.push(this.currentWidth);
+            console.log(7.22);
+
+      console.log(this.segmentWidth);
+
       this.stop = true; //Making sure that no additional segments are added to the loading bar.
       this.currentWidth = "0%";
     }
