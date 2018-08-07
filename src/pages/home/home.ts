@@ -100,6 +100,9 @@ export class HomePage {
       return;
     }
 
+    console.log("Current Width0");
+    console.log(this.currentWidth);
+
     this.fsp.getCheckedIn();
     //console.log('status på checkedIn', this.checkedIn);
     this.checkedIn = this.fsp.checkedIn;
@@ -122,10 +125,13 @@ export class HomePage {
     this.seconds = ((new Date (this.fsp.upcoming[0]["Slutt"])).getTime()/1000 - (new Date (this.fsp.upcoming[0]["Start"])).getTime()/1000) //Number of seconds
 
     if(!this.initialFirebase){
-      console.log("SET INITIAL LOADING BAR");
-      this.setInitialLoadingBar();
-      this.initialFirebase = true;
+      if(new Date().getTime() - new Date(this.fsp.upcoming[0]["Start"]).getTime() > 0 ){
+        this.setInitialLoadingBar();
+        this.initialFirebase = true;
+      } 
     }
+
+    
 
     
 
@@ -280,6 +286,13 @@ export class HomePage {
     var stempletider = this.fsp.upcoming[0]["Stempletider"];
     this.totalWidthSoFar = 0;
     var segmentWidth = [];
+    if(stempletider.length == 1){
+      var date1 = new Date(stempletider[0]);
+      var date0 = new Date(this.fsp.upcoming[0]['Start']);
+      var temp = 100*(Math.abs((+date1 - +date0)/1000)/this.seconds);
+      segmentWidth.push(Math.min(100-this.totalWidthSoFar,temp) + "%");
+    }
+
     for (var x = 1; x<stempletider.length; x++) {
       var date1 = new Date(stempletider[x]);
       var date0 = new Date(stempletider[x-1]);

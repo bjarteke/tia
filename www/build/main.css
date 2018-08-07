@@ -25707,6 +25707,11 @@ ion-navbar.toolbar {
   color: #ffffff;
 }
 
+page-about .card {
+  border-bottom: 0.55px solid #c8c7cc;
+  background-color: #F0F0F0;
+}
+
 .finalSum {
   font-weight: 800;
 }
@@ -25717,10 +25722,6 @@ ion-navbar.toolbar {
 
 .col {
   padding: 0 !important;
-}
-
-.item-block {
-  border-bottom: 0.55px solid #c8c7cc;
 }
 
 .sum {
@@ -25737,11 +25738,11 @@ ion-navbar.toolbar {
 }
 
 .statisticsTitle {
-  margin-left: 10px;
   color: black;
   padding: 5px;
   text-align: center;
-  font-weight: 500;
+  font-weight: 500 !important;
+  padding: 10px 10px 0px 10px;
 }
 
 h6 {
@@ -26195,6 +26196,12 @@ ion-item-options .button:last-child {
 
 .list-ios ion-item-options {
   border-bottom: 0 !important;
+}
+
+page-settings ion-card {
+  padding: 10px;
+  width: 95%;
+  background-color: #F0F0F0 !important;
 }
 
 .range-md .range-knob-handle .range-pin {
