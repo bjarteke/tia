@@ -128,7 +128,7 @@ export class FirebaseServiceProvider {
     /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
     this.uniqueWeeknumbers.push(this.weeknumbers[0]);
     console.log("Ukenummer");
-    //console.log(this.weeknumbers);
+    console.log(this.uniqueWeeknumbers);
 
     /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */ 
     var temp = [];

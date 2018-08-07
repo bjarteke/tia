@@ -1,5 +1,8 @@
 page-about {
-
+    .card {
+    border-bottom: 0.55px solid #c8c7cc;
+    background-color: map-get($colors,light);
+}
 }
 
 .finalSum {
@@ -14,9 +17,7 @@ page-about {
     padding:0 !important;
 }
 
-.item-block {
-    border-bottom: 0.55px solid #c8c7cc;
-}
+
 
 .sum{
     font-size: 20px;
@@ -32,9 +33,9 @@ page-about {
 }
 
 .statisticsTitle {
-    margin-left:10px;
     color:black;
     padding:5px;
     text-align:center;
-    font-weight:500;
+    font-weight:500 !important;
+    padding: 10px 10px 0px 10px
 }

@@ -1,5 +1,9 @@
 page-settings {
-
+ ion-card {
+   padding:10px;
+   width:95%;
+   background-color: map-get($colors,light)!important;
+ }
 }
 
 .range-md .range-knob-handle .range-pin {
