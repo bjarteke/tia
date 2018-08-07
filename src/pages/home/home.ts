@@ -88,6 +88,7 @@ export class HomePage {
     }
     
   continueslyChecked() {
+
     this.contCheckCouter += 1;
     this.locationTracker.startTracking();
     if(!this.initialLocationSet){
@@ -107,7 +108,6 @@ export class HomePage {
     this.checkedIn = this.fsp.checkedIn;
     //console.log('status på activateAutomaticCheckInOut', this.activateAutomaticCheckInOut);
     //console.log('status på autoCheckIn', this.fsp.autoCheckIn);
-
 
     if (this.checkedIn){
       this.stempleButton = 'Stemple ut';
@@ -135,11 +135,17 @@ export class HomePage {
     
 
     var currentDate = new Date();
+
     var startDate = new Date(this.fsp.upcoming[0]["Start"]);
     var endDate = new Date(this.fsp.upcoming[0]['Slutt']);
 
     this.activateAutomaticCheckInOut = this.fsp.autoCheckIn;
     this.enableNotifications = this.fsp.enableNotifications;
+
+    if(this.fsp.upcoming[0]['Stempletider'].length >0){
+      this.initialCheckIn = true;
+      this.checkInOutTimes = this.fsp.upcoming[0]['Stempletider'];
+    }
 
     /* Automatic Check-in */
     var now = new Date();
@@ -160,8 +166,6 @@ export class HomePage {
       this.waitingToCheckIn = false;
     }
 
-    
-
     /* Updating the loadingBar */
     if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == false) {
       //If too late, and not checked in.
@@ -170,10 +174,13 @@ export class HomePage {
         this.lateCheckIn = true;
       }
       else{
+
       }
     }
     else if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == true && this.stop == false){
       //If already checked in.
+            
+
       
       
       this.updateLoadingBar();
@@ -213,6 +220,7 @@ export class HomePage {
         this.currentWidth = "0%"; //Making sure that the new loadingBar starts at 0%
     }
 
+
     /* Changing the text of the "Stemple inn/ut" box, changing the color of the pin. */
     if (this.stempleButton == "Stemple inn"){
       this.stempleButton = "Stemple ut";
@@ -220,12 +228,14 @@ export class HomePage {
       this.checkedIn = true;
       this.fsp.writeCheckedIn(this.checkedIn);
     }
+
     else{
       this.stempleButton = "Stemple inn";
       this.checkInOutVar = "checkInOut";
       this.checkedIn = false;
       this.fsp.writeCheckedIn(this.checkedIn);
     }
+
     
   }
 
@@ -252,7 +262,6 @@ export class HomePage {
 
     //Setting the width of the current segment
     this.currentWidth = Math.min(100-this.totalWidthSoFar,100*(Math.abs((+currentDate - +this.checkInOutTimes[this.checkInOutTimes.length-1])/1000)/this.seconds)) + "%";
-    
 
     //Stopping loading bar when it has been filled.
     if (this.currentWidth == 100-this.totalWidthSoFar + "%" && this.stop == false){
@@ -286,6 +295,7 @@ export class HomePage {
       var date0 = new Date(this.fsp.upcoming[0]['Start']);
       var temp = 100*(Math.abs((+date1 - +date0)/1000)/this.seconds);
       segmentWidth.push(Math.min(100-this.totalWidthSoFar,temp) + "%");
+      this.totalWidthSoFar += Math.min(100-this.totalWidthSoFar,temp);
     }
 
     for (var x = 1; x<stempletider.length; x++) {
@@ -350,7 +360,6 @@ export class HomePage {
 
   // Called when the used click on one of the work sessions in order to open the detailed page
   itemSelected(item,segmentWidth) {
-    console.log(item);
      this.navCtrl.push(ContactPage, {
        item: item,
        segmentwidth : segmentWidth
