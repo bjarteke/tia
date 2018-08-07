@@ -1525,7 +1525,7 @@ var FirebaseServiceProvider = /** @class */ (function () {
     };
     FirebaseServiceProvider.prototype.decideCheckInTime = function (arrivedAtWork) {
         //600000 ms er 10 minutter
-        var buffer = 5000;
+        var buffer = 300000;
         arrivedAtWork = new Date(arrivedAtWork);
         var workStart = new Date(this.upcoming[0]['Start']);
         //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
@@ -1618,9 +1618,10 @@ var FirebaseServiceProvider = /** @class */ (function () {
     };
     FirebaseServiceProvider = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */], __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */], __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */]])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */]) === "function" && _c || Object])
     ], FirebaseServiceProvider);
     return FirebaseServiceProvider;
+    var _a, _b, _c;
 }());
 
 //# sourceMappingURL=firebase-service.js.map

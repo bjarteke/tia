@@ -1,6 +1,6 @@
 {
     "arrive_early": {
-        "title": "Velkommen på jobb morgenfugl!",
+        "title": "Velkommen på jobb!",
         "text_pre": "Vi stempler deg inn automatisk ved oppstart klokka ",
         "text_post": ", men din tidlige ankomst er logget."
     },
