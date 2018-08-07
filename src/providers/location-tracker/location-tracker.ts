@@ -22,6 +22,8 @@ export class LocationTracker {
   public onLocationTime;
   public initialRun = false;
  
+  public counter = 0;
+
   constructor(public zone: NgZone, public backgroundGeolocation: BackgroundGeolocation, private geolocation : Geolocation, public notifications: NotificationsProvider, public fsp: FirebaseServiceProvider) {
  
   }
@@ -46,6 +48,7 @@ export class LocationTracker {
       this.lat = location.latitude;
       this.lng = location.longitude;
       this.lastTimestamp = location.time;
+      this.counter +=1;
       this.insidePolygonCheck(this.lat, this.lng);
     });
  
@@ -60,7 +63,7 @@ export class LocationTracker {
   
   // Foreground Tracking
 let options = {
-  frequency: 3000,
+  frequency: 1000,
   enableHighAccuracy: true
 };
  
@@ -72,6 +75,7 @@ this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code =
   this.zone.run(() => {
     this.lat = position.coords.latitude;
     this.lng = position.coords.longitude;
+    this.counter +=1;
     this.insidePolygonCheck(this.lat, this.lng);
     /*var now = new Date();
     if (this.paJobb && this.fsp.isWorking(now)){

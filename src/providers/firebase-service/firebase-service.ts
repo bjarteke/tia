@@ -263,7 +263,6 @@ export class FirebaseServiceProvider {
   }
 
   getCheckedIn(){
-    console.log("GETCHECKED IN");
     //console.log(this.upcoming);
     this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID'])
       .valueChanges()

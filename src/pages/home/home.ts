@@ -74,6 +74,8 @@ export class HomePage {
   private activateAutomaticCheckInOut = true;
   private enableNotifications = true;
 
+  public contCheckCouter = 0
+
   //CONSTRUCTOR
   constructor(public navCtrl: NavController, public locationTracker: LocationTracker, public http: HttpClient, public fsp : FirebaseServiceProvider, public notifications: NotificationsProvider) {
     this.start();
@@ -86,8 +88,8 @@ export class HomePage {
     }
     
   continueslyChecked() {
-    console.log("LATECHECKIN2");
-    console.log(this.lateCheckIn);
+    this.contCheckCouter += 1;
+    this.locationTracker.startTracking();
     if(!this.initialLocationSet){
       this.locationTracker.startTracking();      //Start tracking location
       this.initialLocationSet = true;
@@ -99,9 +101,6 @@ export class HomePage {
     if (this.fsp.upcoming[0] == undefined){
       return;
     }
-
-    console.log("Current Width0");
-    console.log(this.currentWidth);
 
     this.fsp.getCheckedIn();
     //console.log('status på checkedIn', this.checkedIn);
@@ -152,10 +151,8 @@ export class HomePage {
       }
 
       this.checkInTime = new Date(this.fsp.decideCheckInTime(now));
-      console.log(this.checkInTime);
 
       this.waitingToCheckIn = true;
-      console.log('time to check in');
     }
 
     else if(this.checkInTime != null && this.waitingToCheckIn && new Date().getTime() > this.checkInTime.getTime() && !this.checkedIn && this.activateAutomaticCheckInOut){
@@ -173,8 +170,6 @@ export class HomePage {
         this.lateCheckIn = true;
       }
       else{
-        console.log("LATECHECKIN1");
-        console.log(this.lateCheckIn);
       }
     }
     else if (currentDate.getTime() - startDate.getTime() >= 0 && this.initialCheckIn == true && this.stop == false){
