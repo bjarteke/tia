@@ -1,14 +1,363 @@
 webpackJsonp([2],{
 
-/***/ 109:
+/***/ 107:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FirebaseServiceProvider; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_map__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_firebase_firestore__ = __webpack_require__(82);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_firebase_firestore___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_firebase_firestore__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__ = __webpack_require__(217);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ionic_angular__ = __webpack_require__(49);
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+
+var FirebaseServiceProvider = /** @class */ (function () {
+    function FirebaseServiceProvider(afd, notifications, toastCtrl) {
+        var _this = this;
+        this.afd = afd;
+        this.notifications = notifications;
+        this.toastCtrl = toastCtrl;
+        this.testList = [];
+        this.allRecords = [];
+        this.upcoming = [];
+        this.upcoming2 = []; //One list for each week number 
+        this.previous = [];
+        this.counter = 0;
+        this.weeknumbers = [];
+        this.uniqueWeeknumbers = [];
+        this.checkedIn = false;
+        this.doneInitial = false;
+        this.settingsData = [];
+        /* Retrieving data from Firestore */
+        this.afd.collection('arbeidsokter', function (ref) { return ref.orderBy('Start'); })
+            .valueChanges()
+            .subscribe(function (data) { return _this.inTheFuture(data); });
+        this.setSettings();
+    }
+    FirebaseServiceProvider.prototype.inTheFuture = function (data) {
+        //console.log(data);
+        this.resetArrays();
+        this.allRecords = data;
+        /* Iterating through all records within the plan, in order to separate them between previous and upcoming*/
+        for (var x = 0; x < this.allRecords.length; x++) {
+            var currentDate = new Date();
+            var dateStart = new Date(this.allRecords[x]["Start"]);
+            var dateEnd = new Date(this.allRecords[x]["Slutt"]);
+            /* A record has a start date in the future, or it is still not finished*/
+            if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
+                /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
+                this.upcoming.push(this.allRecords[x]);
+                //console.log(this.allRecords[x]);
+                /* Adding information about the week number to the week number array. */
+                if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)) {
+                    this.weeknumbers.push("Denne uken");
+                }
+                else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1) {
+                    this.weeknumbers.push("Neste uke");
+                }
+                else {
+                    this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
+                }
+            }
+            else {
+                this.previous.push(this.allRecords[x]);
+            }
+        }
+        this.timeFromArrivalToCheckInCalculated = this.calculateDelay() / (60 * 1000);
+        console.log(this.timeFromArrivalToCheckInCalculated);
+        /* Reverst the array of previous records, such that the newest comes first */
+        this.previous.reverse();
+        /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
+        this.uniqueWeeknumbers.push(this.weeknumbers[0]);
+        console.log("Ukenummer");
+        console.log(this.uniqueWeeknumbers);
+        /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */
+        var temp = [];
+        //console.log(this.upcoming);
+        for (var i = 1; i < this.weeknumbers.length; i++) {
+            if (this.weeknumbers[i] == this.weeknumbers[i + 1]) {
+                temp.push(this.upcoming[i]);
+            }
+            else {
+                temp.push(this.upcoming[i]);
+                this.upcoming2.push(temp);
+                temp = [];
+            }
+        }
+        /* Adding all unique week numbers to the array */
+        for (var y = 1; y < this.weeknumbers.length; y++) {
+            if (this.weeknumbers[y] != this.weeknumbers[y - 1]) {
+                this.uniqueWeeknumbers.push(this.weeknumbers[y]);
+            }
+        }
+        this.doneInitial = true;
+    };
+    /* Calculating the week number of a date object given as a parameter */
+    FirebaseServiceProvider.prototype.getWeekNumber = function (date) {
+        date.setHours(0, 0, 0, 0);
+        // Thursday in current week decides the year.
+        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+        // January 4 is always in week 1.
+        var week1 = new Date(date.getFullYear(), 0, 4);
+        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+        return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+            - 3 + (week1.getDay() + 6) % 7) / 7);
+    };
+    /* Sending a check in or check out time to the Firestore */
+    FirebaseServiceProvider.prototype.addCheckInOutTime = function (timestamp) {
+        var oldTimestamps = [];
+        var newTimestamps = [];
+        newTimestamps = this.upcoming[0]["Stempletider"];
+        //Skal gå gjennom hvert Date-element og sjekke om tiden allerede er registrert 
+        var i;
+        for (i = 0; i < newTimestamps.length; i++) {
+            var time = new Date(newTimestamps[i]);
+            console.log('time: ', time);
+            if (timestamp.getDate() == time.getDate() && timestamp.getDay() == time.getDay() && timestamp.getFullYear() == time.getFullYear() && timestamp.getMonth() == time.getMonth()) {
+                console.log('slår til her');
+                return;
+            }
+        }
+        newTimestamps.push(timestamp);
+        this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
+            "Stempletider": newTimestamps
+        })
+            .then(function () {
+            console.log("CheckInOut successfully written");
+        })
+            .catch(function (error) {
+            console.error("Error when writing CheckInOut: ", error);
+        });
+        this.counter = this.counter + 1;
+    };
+    FirebaseServiceProvider.prototype.addOfflineDocument = function (timestamp) {
+        var id = this.afd.createId();
+        if (!this.offlineCheckIn) {
+            this.afd.collection('offlineArbeidsokt').doc(id).set({
+                checkIn: timestamp,
+                ID: id
+            });
+        }
+    };
+    FirebaseServiceProvider.prototype.writeCheckedIn = function (checkedIn) {
+        this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID']).update({
+            'checkedIn': checkedIn
+        })
+            .then(function () {
+            console.log("checkedIn-variable successfully written");
+        })
+            .catch(function (error) {
+            console.error("Error when writing checkedIn-variable: ", error);
+        });
+    };
+    FirebaseServiceProvider.prototype.byttOkt = function (array1Index, array2Index) {
+        console.log("BYTT OKT");
+        //console.log(array1Index);
+        //console.log(array2Index);
+        var bytte;
+        if (this.upcoming2[array1Index][array2Index]['byttes'] == undefined) {
+            console.log("FØRSTE IF");
+            bytte = true;
+            this.upcoming2[array1Index][array2Index]['byttes'] = true;
+        }
+        else {
+            if (this.upcoming2[array1Index][array2Index]['byttes'] == false) {
+                console.log("ANDRE IF");
+                bytte = true;
+                this.upcoming2[array1Index][array2Index]['byttes'] = true;
+            }
+            else {
+                console.log("ELSE");
+                bytte = false;
+                this.upcoming2[array1Index][array2Index]['byttes'] = false;
+            }
+        }
+        //console.log(this.upcoming2);
+        this.afd.collection('arbeidsokter').doc(this.upcoming2[array1Index][array2Index]['ID']).update({
+            'byttes': bytte,
+            'Start': this.upcoming2[array1Index][array2Index]['Start'],
+            'Slutt': this.upcoming2[array1Index][array2Index]['Slutt'],
+            'Added': this.upcoming2[array1Index][array2Index]['Added'],
+            'EndretMelding': this.upcoming2[array1Index][array2Index]['EndretMelding']
+        })
+            .then(function () {
+            console.log("bytte successfully written");
+        })
+            .catch(function (error) {
+            console.error("Error when writing bytte: ", error);
+        });
+    };
+    FirebaseServiceProvider.prototype.getCheckedIn = function () {
+        var _this = this;
+        //console.log(this.upcoming);
+        this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID'])
+            .valueChanges()
+            .subscribe(function (data) {
+            _this.checkedIn = data['checkedIn'];
+        });
+    };
+    FirebaseServiceProvider.prototype.getArrivedAtWork = function () {
+        return this.upcoming[0]["Stempletider"].length > 0;
+    };
+    FirebaseServiceProvider.prototype.writeArrivalTime = function (timestamp) {
+        this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
+            "arrivedAtWork": timestamp
+        })
+            .then(function () {
+            console.log("arrivedAtWork successfully written");
+        })
+            .catch(function (error) {
+            console.error("Error when writing arrivedAtWork: ", error);
+        });
+    };
+    /* Reseting all arrays */
+    FirebaseServiceProvider.prototype.resetArrays = function () {
+        this.upcoming = [];
+        this.upcoming2 = [];
+        this.previous = [];
+        this.weeknumbers = [];
+        this.uniqueWeeknumbers = [];
+    };
+    FirebaseServiceProvider.prototype.isWorking = function (timestamp) {
+        //Will take in a timestamp and check if this matches a block that is scheduled for work. 
+        var nextStartTime = new Date(this.upcoming[0]['Start']);
+        var now = new Date(timestamp);
+        //Checks if it's the same date and if we are still in before the end of the workday. 
+        if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.upcoming[0]['Slutt']).getTime()) < 0) {
+            return true;
+        }
+        return false;
+    };
+    FirebaseServiceProvider.prototype.decideCheckInTime = function (arrivedAtWork) {
+        //600000 ms er 10 minutter
+        var buffer = 300000;
+        arrivedAtWork = new Date(arrivedAtWork);
+        var workStart = new Date(this.upcoming[0]['Start']);
+        //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
+        if (workStart.getTime() - arrivedAtWork.getTime() > buffer) {
+            this.addCheckInOutTime(workStart);
+            if (this.enableNotifications) {
+                this.notifications.sendNotification('arrive_early', workStart);
+            }
+            return workStart;
+        }
+        else if (workStart.getTime() - arrivedAtWork.getTime() < buffer) {
+            var checkInTime = arrivedAtWork.getTime() + buffer;
+            checkInTime = new Date(checkInTime);
+            console.log('skal skrive inn stempletid');
+            this.addCheckInOutTime(checkInTime);
+            if (this.enableNotifications) {
+                this.notifications.sendNotification('arrive_late', checkInTime);
+            }
+            return checkInTime;
+        }
+    };
+    /* SETTINGS */
+    FirebaseServiceProvider.prototype.updateSettingsHandler = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc) {
+        if (this.updateSettings(earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc)) {
+            this.toast('Innstillinger lagret', 2000, "toast-success");
+        }
+    };
+    FirebaseServiceProvider.prototype.updateSettings = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc) {
+        this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
+            "earlyCheckInMinutes": earlyCheckInMinutes,
+            "automaticCheckIn": automaticCheckIn,
+            "timeFromArrivalToCheckIn": timeFromArrivalToCheckIn,
+            "polygon": this.polygon,
+            "address": address,
+            "postalCode": number,
+            "enableNotifications": enableNotifications,
+            "enableAutoDelayCalc": enableAutoDelayCalc
+        })
+            .then(function () {
+            console.log("earlyCheckMinutes successfully written");
+            return true;
+        })
+            .catch(function (error) {
+            console.error("Error when writing earlyCheckMinutes: ", error);
+            return false;
+        });
+    };
+    FirebaseServiceProvider.prototype.updateAutomaticSetting = function (value) {
+        this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
+            'automaticCheckIn': value
+        });
+    };
+    FirebaseServiceProvider.prototype.toast = function (text, duration, css) {
+        var toast = this.toastCtrl.create({
+            message: text,
+            duration: duration,
+            position: 'top',
+            cssClass: css
+        });
+        toast.present();
+    };
+    FirebaseServiceProvider.prototype.setSettings = function () {
+        var _this = this;
+        var settings = [];
+        this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").valueChanges()
+            .subscribe(function (data) { return _this.setSettings2(data); });
+    };
+    FirebaseServiceProvider.prototype.setSettings2 = function (data) {
+        this.settingsData = data;
+        this.earlyCheckInMinutes = this.settingsData["earlyCheckInMinutes"];
+        this.enableNotifications = this.settingsData['enableNotifications'];
+        this.autoCheckIn = this.settingsData["automaticCheckIn"];
+        this.timeFromArrivalToCheckIn = this.settingsData["timeFromArrivalToCheckIn"];
+        this.polygon = this.settingsData["polygon"];
+        this.number = this.settingsData["postalCode"];
+        this.address = this.settingsData["address"];
+        this.enableAutoDelayCalc = this.settingsData["enableAutoDelayCalc"];
+        this.offlineCheckIn = this.settingsData["offlineCheckIn"];
+    };
+    FirebaseServiceProvider.prototype.calculateDelay = function () {
+        var delaySeconds = 0;
+        var counter = 0;
+        for (var x = 0; x < this.previous.length; x++) {
+            if (this.previous[x]["arrivedAtWork"] != undefined && this.previous[x]["Stempletider"][0] != undefined) {
+                delaySeconds += +new Date(this.previous[x]["Stempletider"][0]).getTime() - +(new Date(this.previous[x]["arrivedAtWork"]).getTime());
+                counter += 1;
+            }
+        }
+        return delaySeconds / counter;
+    };
+    FirebaseServiceProvider = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */], __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */], __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */]])
+    ], FirebaseServiceProvider);
+    return FirebaseServiceProvider;
+}());
+
+//# sourceMappingURL=firebase-service.js.map
+
+/***/ }),
+
+/***/ 118:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SettingsPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__ = __webpack_require__(90);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_common_http__ = __webpack_require__(75);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_common_http__ = __webpack_require__(87);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -125,7 +474,7 @@ var SettingsPage = /** @class */ (function () {
     };
     SettingsPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-settings',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/settings/settings.html"*/'<!--\n  Generated template for the SettingsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>Innstillinger</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n  <ion-card>\n    <ion-icon left name="information-circle"></ion-icon> \n    <h2 style="display: inline">Din lokasjon deles aldri</h2>\n    <h4>All data som omhandler din geografiske posisjon sendes aldri fra telefonen. Dataen benyttes kun til å aktivere muligheten for å stemple inn og ut.</h4>\n  </ion-card>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item style="padding:0">\n      <ion-label style="padding-left:15px">Send varslinger</ion-label>\n      <ion-toggle [(ngModel)]="enableNotifications"></ion-toggle>\n    </ion-item>\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>\n      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn" style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Smart oppstart <br> \n        <span style="font-size:13px;font-style:italic;"> ({{fsp.timeFromArrivalToCheckInCalculated | number : \'1.2-2\'}} min etter ankomst)\n         </span> \n        </ion-label>\n      <ion-toggle [(ngModel)]="enableAutoDelayCalc"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn && !enableAutoDelayCalc">\n      <ion-label>Angi intervall:</ion-label>\n      <ion-range debounce="1000" min="0" max="60" step ="0.5" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>60 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>\n      <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>\n      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n    <ion-label style="padding-top:5px;" >\n      Tidlig innstempling \n    </ion-label>\n      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>120 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-footer no-shadow>\n	<ion-toolbar position="bottom">\n        <button (click)="ionChanges()" full ion-button>Lagre</button>\n	</ion-toolbar>\n</ion-footer>\n\n\n\n  \n\n</ion-content>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/settings/settings.html"*/,
+            selector: 'page-settings',template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/pages/settings/settings.html"*/'<!--\n  Generated template for the SettingsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>Innstillinger</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n  <ion-card>\n    <ion-icon left name="information-circle"></ion-icon> \n    <h2 style="display: inline">Din lokasjon deles aldri</h2>\n    <h4>All data som omhandler din geografiske posisjon sendes aldri fra telefonen. Dataen benyttes kun til å aktivere muligheten for å stemple inn og ut.</h4>\n  </ion-card>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item style="padding:0">\n      <ion-label style="padding-left:15px">Send varslinger</ion-label>\n      <ion-toggle [(ngModel)]="enableNotifications"></ion-toggle>\n    </ion-item>\n    <ion-item style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Automatisk stempling</ion-label>\n      <ion-toggle [(ngModel)]="automaticCheckIn"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn" style="padding:0;border-bottom:5px solid #4D4D4D">\n      <ion-label style="padding-left:15px">Smart oppstart <br> \n        <span style="font-size:13px;font-style:italic;"> ({{fsp.timeFromArrivalToCheckInCalculated | number : \'1.2-2\'}} min etter ankomst)\n         </span> \n        </ion-label>\n      <ion-toggle [(ngModel)]="enableAutoDelayCalc"></ion-toggle>\n    </ion-item>\n    <ion-item *ngIf="automaticCheckIn && !enableAutoDelayCalc">\n      <ion-label>Angi intervall:</ion-label>\n      <ion-range debounce="1000" min="0" max="60" step ="0.5" pin="true" [(ngModel)]="timeFromArrivalToCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>60 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n      <ion-label style="padding-top:5px;" color="primary" stacked><span style="font-weight: 900">Lagret adresse:</span> {{fsp.address}}</ion-label>\n      <ion-input [(ngModel)]="address" placeholder="Endre adresse ..."></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-label style="padding-top:5px" color="primary" stacked><span style="font-weight: 900">Lagret postnummer:</span> {{fsp.number}}</ion-label>\n      <ion-input type="number" [(ngModel)]="number" placeholder="Endre postnummer ..."></ion-input>\n    </ion-item>\n  </ion-list>\n\n  <ion-list style="padding:5px;margin:0">\n    <ion-item>\n    <ion-label style="padding-top:5px;" >\n      Tidlig innstempling \n    </ion-label>\n      <ion-range debounce="1000" min="0" max="120" step ="1" pin="true" [(ngModel)]="earlyCheckIn" color="secondary">\n        <ion-label range-left>0 min</ion-label>\n        <ion-label range-right>120 min</ion-label>\n      </ion-range>\n    </ion-item>\n  </ion-list>\n\n  <ion-footer no-shadow>\n	<ion-toolbar position="bottom">\n        <button (click)="ionChanges()" full ion-button>Lagre</button>\n	</ion-toolbar>\n</ion-footer>\n\n\n\n  \n\n</ion-content>\n'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/pages/settings/settings.html"*/,
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]])
     ], SettingsPage);
@@ -136,15 +485,15 @@ var SettingsPage = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 128:
+/***/ 140:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return NotificationsProvider; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_common_http__ = __webpack_require__(75);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_common_http__ = __webpack_require__(87);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_local_notifications__ = __webpack_require__(321);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ionic_angular__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_local_notifications__ = __webpack_require__(357);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ionic_angular__ = __webpack_require__(49);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -204,18 +553,18 @@ var NotificationsProvider = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 226:
+/***/ 244:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ContactPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__ = __webpack_require__(90);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__settings_settings__ = __webpack_require__(109);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_firebase_firestore__ = __webpack_require__(70);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__settings_settings__ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_firebase_firestore__ = __webpack_require__(82);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_firebase_firestore___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_firebase_firestore__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__ = __webpack_require__(217);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -421,7 +770,7 @@ var ContactPage = /** @class */ (function () {
     };
     ContactPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-contact',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/contact/contact.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Detaljer\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n  <h1 style="color:black; text-align:center;padding-top:20px">{{timestampToDate2(item.Start)}}</h1>\n  <h3 style="color:black; text-align:center;padding:0">{{fromTimestampToHHMM2(item.Start)}} - {{fromTimestampToHHMM2(item.Slutt)}}</h3>\n  \n <ion-card class="ionCard" *ngIf="!inTheFuture()"> \n    <ion-card-header class="ionCardHeader">Stempletider<ion-icon style="float: right;" name="build" (click)="toggleStemple()"></ion-icon></ion-card-header>\n    \n    <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">\n      <div *ngIf="item.Stempletider.length==0" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>\n      <div *ngIf="item.Stempletider.length!=0" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>\n      <div *ngIf="item.Stempletider.length==1 && item.ID != firebaseService.upcoming[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>\n      <div *ngIf="item.Stempletider.length!=1 && item.ID != firebaseService.upcoming[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>\n    </div>\n\n    <div *ngIf="!toggleStempletider && item.ID != firebaseService.upcoming[0][\'ID\']" class="loadingBox" style="height:10px" >\n        <div class="loadingBoxInner" *ngIf="lateWidth!=\'0%\'" style="width:0px;margin-left:-4px">\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div *ngIf="lateWidth!=\'0%\'" style="height:10px; margin-right:-4px" class="loadingBoxInner" [ngStyle]="{\'width\' : lateWidth}" >\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div style="margin-top:-40px; height:10px" *ngFor="let x of segmentWidth, let j = index" class="loadingBoxInner" [ngStyle]="{\'width\' : x}">\n          <div style="height:10px;width:100%;margin-top:-40px"></div>\n        </div>\n        <div class="loadingBoxInner">\n        </div>\n    </div>\n\n    <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">\n      <ion-item style="padding:0;height:30px" *ngFor="let x of sendingStempletider, let j = index">\n        <div class="checkInOutInfoBox" style="display:table-cell; width:30px;padding-top:20px;padding-bottom:20px" [ngStyle]="{\'background\' : selectBackground(j)}">\n          <h2 *ngIf="j%2==0" style="text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:5px">INN</h2>\n          <h2 *ngIf="j%2!=0" style="color:white; text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:8.5px">UT</h2>\n        </div>          \n        <div style="display:table-cell;padding:15px;vertical-align:middle"> {{fromTimestampToHHMM(x)}}</div>\n        <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>\n      </ion-item>\n      <button ion-button full outline style="border-top:0;background-color: #f8f8f8" (click)="picker.open()">\n        <ion-datetime #picker cancelText="Tilbake" doneText="Ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>\n        <ion-icon style="font-size: 30px;" name="add-circle"></ion-icon>\n      </button>\n     \n      <ion-item>\n        <ion-label stacked style="padding:5px">Årsak til endring: </ion-label>\n        <ion-textarea style="padding:5px" [(ngModel)]="msg"></ion-textarea>\n      </ion-item>\n      <button ion-button full (click)="sendChangesHandler()">Lagre endringer</button>\n    </ion-list> \n  </ion-card>\n\n<ion-card class="ionCard" >\n  <ion-card-header class="ionCardHeader">På jobb denne dagen</ion-card-header>\n  <ion-list style="padding:0">\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KÅ</div>\n      </ion-avatar>\n      <h2>Karianne Åsen</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Svendsen</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Stiggerud</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">JM</div>\n      </ion-avatar>\n      <h2>Johanna Mølbakken</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n  </ion-list>\n</ion-card>\n</ion-content>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/contact/contact.html"*/
+            selector: 'page-contact',template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/pages/contact/contact.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Detaljer\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n  <h1 style="color:black; text-align:center;padding-top:20px">{{timestampToDate2(item.Start)}}</h1>\n  <h3 style="color:black; text-align:center;padding:0">{{fromTimestampToHHMM2(item.Start)}} - {{fromTimestampToHHMM2(item.Slutt)}}</h3>\n  \n <ion-card class="ionCard" *ngIf="!inTheFuture()"> \n    <ion-card-header class="ionCardHeader">Stempletider<ion-icon style="float: right;" name="build" (click)="toggleStemple()"></ion-icon></ion-card-header>\n    \n    <div *ngIf="!toggleStempletider" style="width:75%;margin-left:auto;margin-right:auto;margin-top:5px;height:40px">\n      <div *ngIf="item.Stempletider.length==0" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">–</span></h5></div>\n      <div *ngIf="item.Stempletider.length!=0" style="float:left; color:black; text-align:center"> <h5>Stemplet inn: <br> <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[0])}} </span></h5></div>\n      <div *ngIf="item.Stempletider.length==1 && item.ID != firebaseService.upcoming[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">–</span> </h5></div>\n      <div *ngIf="item.Stempletider.length!=1 && item.ID != firebaseService.upcoming[0][\'ID\']" style="float:right; color:black; text-align:center"> <h5>Stemplet ut: <br>  <span style="font-weight:300">{{fromTimestampToHHMM(item.Stempletider[item.Stempletider.length -1 ])}} </span> </h5></div>\n    </div>\n\n    <div *ngIf="!toggleStempletider && item.ID != firebaseService.upcoming[0][\'ID\']" class="loadingBox" style="height:10px" >\n        <div class="loadingBoxInner" *ngIf="lateWidth!=\'0%\'" style="width:0px;margin-left:-4px">\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div *ngIf="lateWidth!=\'0%\'" style="height:10px; margin-right:-4px" class="loadingBoxInner" [ngStyle]="{\'width\' : lateWidth}" >\n          <div style="height:10px;width:100%" ></div>\n        </div>\n        <div style="margin-top:-40px; height:10px" *ngFor="let x of segmentWidth, let j = index" class="loadingBoxInner" [ngStyle]="{\'width\' : x}">\n          <div style="height:10px;width:100%;margin-top:-40px"></div>\n        </div>\n        <div class="loadingBoxInner">\n        </div>\n    </div>\n\n    <ion-list style="border-radius:0" *ngIf="toggleStempletider" inset style="margin:0;padding:0">\n      <ion-item style="padding:0;height:30px" *ngFor="let x of sendingStempletider, let j = index">\n        <div class="checkInOutInfoBox" style="display:table-cell; width:30px;padding-top:20px;padding-bottom:20px" [ngStyle]="{\'background\' : selectBackground(j)}">\n          <h2 *ngIf="j%2==0" style="text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:5px">INN</h2>\n          <h2 *ngIf="j%2!=0" style="color:white; text-transform:uppercase; text-align:center; font-size: 20px; font-weight:200;padding:8.5px">UT</h2>\n        </div>          \n        <div style="display:table-cell;padding:15px;vertical-align:middle"> {{fromTimestampToHHMM(x)}}</div>\n        <ion-icon class="trashIcon" (click)="deleteTimestamp(j)" name="trash" item-end></ion-icon>\n      </ion-item>\n      <button ion-button full outline style="border-top:0;background-color: #f8f8f8" (click)="picker.open()">\n        <ion-datetime #picker cancelText="Tilbake" doneText="Ferdig" pickerFormat="HH:mm" [(ngModel)]="timeStarts" (ionChange)="addTimestamp()"></ion-datetime>\n        <ion-icon style="font-size: 30px;" name="add-circle"></ion-icon>\n      </button>\n     \n      <ion-item>\n        <ion-label stacked style="padding:5px">Årsak til endring: </ion-label>\n        <ion-textarea style="padding:5px" [(ngModel)]="msg"></ion-textarea>\n      </ion-item>\n      <button ion-button full (click)="sendChangesHandler()">Lagre endringer</button>\n    </ion-list> \n  </ion-card>\n\n<ion-card class="ionCard" >\n  <ion-card-header class="ionCardHeader">På jobb denne dagen</ion-card-header>\n  <ion-list style="padding:0">\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KÅ</div>\n      </ion-avatar>\n      <h2>Karianne Åsen</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Svendsen</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">KS</div>\n      </ion-avatar>\n      <h2>Karl Stiggerud</h2>\n      <p>08:00 - 16:00</p>\n    </ion-item>\n\n    <ion-item>\n      <ion-avatar item-start>\n        <div class="avatar">JM</div>\n      </ion-avatar>\n      <h2>Johanna Mølbakken</h2>\n      <p>10:00 - 18:00</p>\n    </ion-item>\n  </ion-list>\n</ion-card>\n</ion-content>\n'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/pages/contact/contact.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_5_angularfire2_firestore__["a" /* AngularFirestore */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */]])
     ], ContactPage);
@@ -432,7 +781,7 @@ var ContactPage = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 258:
+/***/ 288:
 /***/ (function(module, exports) {
 
 function webpackEmptyAsyncContext(req) {
@@ -445,20 +794,20 @@ function webpackEmptyAsyncContext(req) {
 webpackEmptyAsyncContext.keys = function() { return []; };
 webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
 module.exports = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = 258;
+webpackEmptyAsyncContext.id = 288;
 
 /***/ }),
 
-/***/ 302:
+/***/ 332:
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
 	"../pages/settings/settings.module": [
-		980,
+		1013,
 		1
 	],
 	"../pages/test/test.module": [
-		981,
+		1014,
 		0
 	]
 };
@@ -473,20 +822,20 @@ function webpackAsyncContext(req) {
 webpackAsyncContext.keys = function webpackAsyncContextKeys() {
 	return Object.keys(map);
 };
-webpackAsyncContext.id = 302;
+webpackAsyncContext.id = 332;
 module.exports = webpackAsyncContext;
 
 /***/ }),
 
-/***/ 366:
+/***/ 400:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TabsPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__about_about__ = __webpack_require__(367);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__contact_contact__ = __webpack_require__(226);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__home_home__ = __webpack_require__(368);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__about_about__ = __webpack_require__(401);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__contact_contact__ = __webpack_require__(244);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__home_home__ = __webpack_require__(402);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -507,7 +856,7 @@ var TabsPage = /** @class */ (function () {
         this.tab3Root = __WEBPACK_IMPORTED_MODULE_2__contact_contact__["a" /* ContactPage */];
     }
     TabsPage = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/tabs/tabs.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" tabTitle="Min arbeidsplan" tabIcon="home"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="Statistikk" tabIcon="stats"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/tabs/tabs.html"*/
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/pages/tabs/tabs.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" tabTitle="Min arbeidsplan" tabIcon="home"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="Statistikk" tabIcon="stats"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/pages/tabs/tabs.html"*/
         }),
         __metadata("design:paramtypes", [])
     ], TabsPage);
@@ -518,14 +867,14 @@ var TabsPage = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 367:
+/***/ 401:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AboutPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__settings_settings__ = __webpack_require__(109);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__settings_settings__ = __webpack_require__(118);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -565,7 +914,7 @@ var AboutPage = /** @class */ (function () {
     };
     AboutPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-about',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/about/about.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Statistikk\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content padding>\n  <ion-card class="flexitid">\n  <h1 style="margin-left:10px;color:black;padding:0;font-weight:500" >Tilgjengelig flexitid </h1>\n    24,4 timer\n  </ion-card>\n\n  <ion-card>\n    <h1 class="statisticsTitle">Sammendrag </h1>\n    <ion-card class="ionCard" >\n    <ion-card-header (click)="toggle()" class="ionCardHeader">21. mai - 20. juni\n      <ion-icon class="documentIcon" name="document"></ion-icon>\n    </ion-card-header>\n    <ion-grid *ngIf="toggle1">\n      <ion-row>\n        <ion-col>\n          <ion-list style="padding:0">\n            <ion-item>\n              Ordinært:\n            </ion-item>\n            <ion-item>\n              Overtid:\n            </ion-item>\n            <ion-item class="finalSum">\n              Sum\n            </ion-item>\n          </ion-list>\n        </ion-col>\n        <ion-col>\n          <ion-list style="padding:0">\n            <ion-item>\n              24,6 timer\n            </ion-item>\n            <ion-item>\n              10,2 timer\n            </ion-item>\n            <ion-item class="finalSum">\n            34,8 timer\n            </ion-item>\n          </ion-list>\n        </ion-col>\n      </ion-row>\n      <ion-row>\n        <ion-col>\n          <ion-item class="sum">\n            Opptjent: 10.203,-\n          </ion-item>\n        </ion-col>\n      </ion-row>\n    </ion-grid>\n    </ion-card>\n\n  <ion-card class="ionCard" >\n  <ion-card-header (click)="toggle21()" class="ionCardHeader">21. april - 20. mai\n    <ion-icon class="documentIcon" name="document"></ion-icon>\n  </ion-card-header>\n  <ion-grid *ngIf="toggle2">\n    <ion-row>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            Ordinært:\n          </ion-item>\n          <ion-item>\n            Overtid:\n          </ion-item>\n          <ion-item class="finalSum">\n            Sum\n          </ion-item>\n        </ion-list>\n      </ion-col>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            24,6 timer\n          </ion-item>\n          <ion-item>\n            10,2 timer\n          </ion-item>\n          <ion-item class="finalSum">\n          34,8 timer\n          </ion-item>\n        </ion-list>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col>\n        <ion-item class="sum">\n          Opptjent: 10.203,-\n        </ion-item>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n  </ion-card>\n    </ion-card>\n\n\n  \n</ion-content>>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/about/about.html"*/
+            selector: 'page-about',template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/pages/about/about.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>\n      Statistikk\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content padding>\n  <ion-card class="flexitid">\n  <h1 style="margin-left:10px;color:black;padding:0;font-weight:500" >Tilgjengelig flexitid </h1>\n    24,4 timer\n  </ion-card>\n\n  <ion-card>\n    <h1 class="statisticsTitle">Sammendrag </h1>\n    <ion-card class="ionCard" >\n    <ion-card-header (click)="toggle()" class="ionCardHeader">21. mai - 20. juni\n      <ion-icon class="documentIcon" name="document"></ion-icon>\n    </ion-card-header>\n    <ion-grid *ngIf="toggle1">\n      <ion-row>\n        <ion-col>\n          <ion-list style="padding:0">\n            <ion-item>\n              Ordinært:\n            </ion-item>\n            <ion-item>\n              Overtid:\n            </ion-item>\n            <ion-item class="finalSum">\n              Sum\n            </ion-item>\n          </ion-list>\n        </ion-col>\n        <ion-col>\n          <ion-list style="padding:0">\n            <ion-item>\n              24,6 timer\n            </ion-item>\n            <ion-item>\n              10,2 timer\n            </ion-item>\n            <ion-item class="finalSum">\n            34,8 timer\n            </ion-item>\n          </ion-list>\n        </ion-col>\n      </ion-row>\n      <ion-row>\n        <ion-col>\n          <ion-item class="sum">\n            Opptjent: 10.203,-\n          </ion-item>\n        </ion-col>\n      </ion-row>\n    </ion-grid>\n    </ion-card>\n\n  <ion-card class="ionCard" >\n  <ion-card-header (click)="toggle21()" class="ionCardHeader">21. april - 20. mai\n    <ion-icon class="documentIcon" name="document"></ion-icon>\n  </ion-card-header>\n  <ion-grid *ngIf="toggle2">\n    <ion-row>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            Ordinært:\n          </ion-item>\n          <ion-item>\n            Overtid:\n          </ion-item>\n          <ion-item class="finalSum">\n            Sum\n          </ion-item>\n        </ion-list>\n      </ion-col>\n      <ion-col>\n        <ion-list style="padding:0">\n          <ion-item>\n            24,6 timer\n          </ion-item>\n          <ion-item>\n            10,2 timer\n          </ion-item>\n          <ion-item class="finalSum">\n          34,8 timer\n          </ion-item>\n        </ion-list>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col>\n        <ion-item class="sum">\n          Opptjent: 10.203,-\n        </ion-item>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n  </ion-card>\n    </ion-card>\n\n\n  \n</ion-content>>\n'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/pages/about/about.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]])
     ], AboutPage);
@@ -576,23 +925,23 @@ var AboutPage = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 368:
+/***/ 402:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HomePage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_location_tracker_location_tracker__ = __webpack_require__(369);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_common_http__ = __webpack_require__(75);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_map__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_location_tracker_location_tracker__ = __webpack_require__(403);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_common_http__ = __webpack_require__(87);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_map__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_Rx__ = __webpack_require__(677);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_Rx__ = __webpack_require__(747);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_Rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_rxjs_Rx__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__contact_contact__ = __webpack_require__(226);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__settings_settings__ = __webpack_require__(109);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__providers_firebase_service_firebase_service__ = __webpack_require__(90);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__providers_notifications_notifications__ = __webpack_require__(128);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__contact_contact__ = __webpack_require__(244);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__settings_settings__ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__providers_firebase_service_firebase_service__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__providers_notifications_notifications__ = __webpack_require__(140);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -932,7 +1281,7 @@ var HomePage = /** @class */ (function () {
     };
     HomePage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-home',template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Min arbeidsplan\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n \n<ion-content>\n<div class="info">\n\n<!-- Next record, checking in/out -->\n\n<ion-slides>\n  <ion-slide>\n  <div class="record" *ngFor="let x of fsp.upcoming | slice:0:1, let i=index" >\n    <div class="topBox" (click)="itemSelected(fsp.upcoming[0],segmentWidth)">\n      <ion-icon name="pin" class="pinIcon" [ngStyle]="{\'color\': (locationTracker.paJobb ? \'#7CFC00\' : \'#a00b0b\')}"></ion-icon>      \n      <h1>{{ fromTimestampToTextIdagImorgen(timestampToDate(fsp.upcoming[i][\'Start\']),fsp.upcoming[i][\'Start\']) }} </h1>\n      <h3>{{fromTimestampToHHMM(fsp.upcoming[i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming[i]["Slutt"])}}</h3>\n    </div>\n    <div class="infoField">\n      <div *ngIf="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px;margin-left:-4px"></div>\n      <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{\'width\' : x}"></div>\n      <div class="loadingBar" id="currentlyLoading" [ngStyle] = "{\'width\' : currentWidth}"></div>\n    </div>\n    <button [disabled]="((!locationTracker.paJobb && !fsp.checkedIn) || !correctTime(fsp.upcoming[i][\'Start\']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>\n  </div>\n  </ion-slide>\n  <ion-slide>\n  <div class="record">\n    <div class="topBox">\n      <h1>Ekstraregistrering</h1>\n      <h3>Uten dato/GPS</h3>\n    </div>\n    <div class="infoField">\n    </div>\n    <button ion-button full primary class="{{checkInOutVarOffline}} button button-md button-default button-default-md button-full button-full-md" (click)="offlineCheckInOut()">{{stempleButtonOffline}}</button>\n  </div>\n  </ion-slide>\n</ion-slides>\n\n<div *ngIf="!fsp.doneInitial" style="text-align:center">\n  <ion-spinner icon="bubbles"></ion-spinner>\n</div>\n\n<!-- Segment buttons-->\n<div *ngIf="fsp.doneInitial" class="records">\n  <div style="background-color: rgb(242, 242, 242); border-radius: 5px 5px 0px 0px; margin-bottom: -25px;">\n  <ion-segment [(ngModel)]="planner">\n    <ion-segment-button value="kommende">\n      Kommende\n    </ion-segment-button>\n    <ion-segment-button value="ledig">\n      Ledig\n    </ion-segment-button>\n    <ion-segment-button value="fullfort">\n      Fullført\n    </ion-segment-button>\n  </ion-segment>\n</div>\n\n<!-- Future records -->\n<ion-list style="background-color: rgb(242, 242, 242); border-radius: 0px 0px 5px 5px">\n\n  <div [ngSwitch]="planner" >\n\n    <!-- Upcoming -->\n    <div *ngFor="let x of fsp.uniqueWeeknumbers, let j=index">\n    \n    <h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="\'kommende\'" >{{fsp.uniqueWeeknumbers[j]}}</h1>\n\n    <ion-item-sliding *ngFor="let x of fsp.upcoming2[j], let i=index">\n      <ion-item *ngSwitchCase="\'kommende\'" (click)="itemSelected(x)" >\n          <div *ngIf="checkIfNew([fsp.upcoming2[j][i][\'Added\']])" class="ribbon">\n              <span>Ny vakt</span>\n          </div>\n          <div class="futureDate">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo">\n      <ion-icon class="bytteIcon" *ngIf="fsp.upcoming2[j][i][\'byttes\']" name="git-compare"></ion-icon>\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n      <ion-item-options>\n        <button (click)="fsp.byttOkt(j,i)" ion-button color="secondary">\n          <ion-icon name="git-compare"></ion-icon>\n          Bytt\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n    </div>\n\n    <!-- Ledig -->\n    <div style="margin-top:30px"  >\n    <div *ngFor="let x of fsp.uniqueWeeknumbers, let j=index">\n    \n    <!--<h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="\'ledig\'" >{{fsp.uniqueWeeknumbers[j]}}</h1> -->\n\n    <ion-item-sliding *ngFor="let x of fsp.upcoming2[j], let i=index">\n      <ion-item *ngSwitchCase="\'ledig\'">\n          <div class="futureDate" *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo" *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n      <ion-item-options *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n        <button (click)="fsp.byttOkt(j,i)" ion-button color="secondary">\n          <ion-icon name="git-compare"></ion-icon>\n          Ta økt\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n    </div>\n    </div>\n\n    <!-- Previous -->\n    <div >\n    <ion-item-sliding *ngFor="let x of fsp.previous | slice:0:3, let i=index" >\n      <ion-item *ngSwitchCase="\'fullfort\'" (click)="itemSelected(x)">\n          <div class="futureDate">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.previous[i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.previous[i].Start) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo">\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.previous[i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.previous[i]["Start"])}} - {{fromTimestampToHHMM(fsp.previous[i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n    </ion-item-sliding>\n    </div>\n\n    </div>\n  </ion-list>\n      </div>\n\n</div>\n\n<div style="display:inline-block;text-align:center">\n  <img style="width:15%; border-right:2px solid #915AD5" src="../www/assets/imgs/logo.png">\n  <img style="width:30%" src="../www/assets/imgs/company_2-ny.png">\n\n</div>\n\n\n\n<br><br><br>\n\n\n\n  <h3>Current Latitude: {{locationTracker.lat}}</h3>\n  <h3>Current Longitude: {{locationTracker.lng}}</h3>\n  <h3>På jobb? {{locationTracker.paJobb}}</h3> \n  <h3>{{contCheckCouter}}</h3>\n    <h3>Current Longitude: {{locationTracker.counter}}</h3>\n\n\n\n\n  <!-- ACTIVATE IF YOU MANUALLY WANT TO START THE TRACKING. REMEBER TO CHANGE FROM NGONINIT() TO START() IN HOME.ts\n  \n    <button ion-button full primary (click)="start()">Start Tracking</button>\n     <button ion-button full primary (click)="scheduleNotification()">Send Notification</button> \n\n-->\n\n\n</ion-content>'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/pages/home/home.html"*/
+            selector: 'page-home',template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Min arbeidsplan\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button icon-only (click)="selectSettings()">\n        <ion-icon name="settings"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n \n<ion-content>\n<div class="info">\n\n<!-- Next record, checking in/out -->\n\n<ion-slides>\n  <ion-slide>\n  <div class="record" *ngFor="let x of fsp.upcoming | slice:0:1, let i=index" >\n    <div class="topBox" (click)="itemSelected(fsp.upcoming[0],segmentWidth)">\n      <ion-icon name="pin" class="pinIcon" [ngStyle]="{\'color\': (locationTracker.paJobb ? \'#7CFC00\' : \'#a00b0b\')}"></ion-icon>      \n      <h1>{{ fromTimestampToTextIdagImorgen(timestampToDate(fsp.upcoming[i][\'Start\']),fsp.upcoming[i][\'Start\']) }} </h1>\n      <h3>{{fromTimestampToHHMM(fsp.upcoming[i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming[i]["Slutt"])}}</h3>\n    </div>\n    <div class="infoField">\n      <div *ngIf="lateCheckIn" class="loadingBar" style="width:0;margin-right:-4px;margin-left:-4px"></div>\n      <div *ngFor="let x of segmentWidth" class="loadingBar" [ngStyle]="{\'width\' : x}"></div>\n      <div class="loadingBar" id="currentlyLoading" [ngStyle] = "{\'width\' : currentWidth}"></div>\n    </div>\n    <button [disabled]="((!locationTracker.paJobb && !fsp.checkedIn) || !correctTime(fsp.upcoming[i][\'Start\']))" ion-button full primary class="{{checkInOutVar}} button button-md button-default button-default-md button-full button-full-md" (click)="manuallyCheckInOut()">{{stempleButton}}</button>\n  </div>\n  </ion-slide>\n  <ion-slide>\n  <div class="record">\n    <div class="topBox">\n      <h1>Ekstraregistrering</h1>\n      <h3>Uten dato/GPS</h3>\n    </div>\n    <div class="infoField">\n    </div>\n    <button ion-button full primary class="{{checkInOutVarOffline}} button button-md button-default button-default-md button-full button-full-md" (click)="offlineCheckInOut()">{{stempleButtonOffline}}</button>\n  </div>\n  </ion-slide>\n</ion-slides>\n\n<div *ngIf="!fsp.doneInitial" style="text-align:center">\n  <ion-spinner icon="bubbles"></ion-spinner>\n</div>\n\n<!-- Segment buttons-->\n<div *ngIf="fsp.doneInitial" class="records">\n  <div style="background-color: rgb(242, 242, 242); border-radius: 5px 5px 0px 0px; margin-bottom: -25px;">\n  <ion-segment [(ngModel)]="planner">\n    <ion-segment-button value="kommende">\n      Kommende\n    </ion-segment-button>\n    <ion-segment-button value="ledig">\n      Ledig\n    </ion-segment-button>\n    <ion-segment-button value="fullfort">\n      Fullført\n    </ion-segment-button>\n  </ion-segment>\n</div>\n\n<!-- Future records -->\n<ion-list style="background-color: rgb(242, 242, 242); border-radius: 0px 0px 5px 5px">\n\n  <div [ngSwitch]="planner" >\n\n    <!-- Upcoming -->\n    <div *ngFor="let x of fsp.uniqueWeeknumbers, let j=index">\n    \n    <h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="\'kommende\'" >{{fsp.uniqueWeeknumbers[j]}}</h1>\n\n    <ion-item-sliding *ngFor="let x of fsp.upcoming2[j], let i=index">\n      <ion-item *ngSwitchCase="\'kommende\'" (click)="itemSelected(x)" >\n          <div *ngIf="checkIfNew([fsp.upcoming2[j][i][\'Added\']])" class="ribbon">\n              <span>Ny vakt</span>\n          </div>\n          <div class="futureDate">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo">\n      <ion-icon class="bytteIcon" *ngIf="fsp.upcoming2[j][i][\'byttes\']" name="git-compare"></ion-icon>\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n      <ion-item-options>\n        <button (click)="fsp.byttOkt(j,i)" ion-button color="secondary">\n          <ion-icon name="git-compare"></ion-icon>\n          Bytt\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n    </div>\n\n    <!-- Ledig -->\n    <div style="margin-top:30px"  >\n    <div *ngFor="let x of fsp.uniqueWeeknumbers, let j=index">\n    \n    <!--<h1 style="padding-top: 10px; padding-left: 0px; color:black; font-size: 17px;" *ngSwitchCase="\'ledig\'" >{{fsp.uniqueWeeknumbers[j]}}</h1> -->\n\n    <ion-item-sliding *ngFor="let x of fsp.upcoming2[j], let i=index">\n      <ion-item *ngSwitchCase="\'ledig\'">\n          <div class="futureDate" *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.upcoming2[j][i]["Start"]) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo" *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.upcoming2[j][i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.upcoming2[j][i]["Start"])}} - {{fromTimestampToHHMM(fsp.upcoming2[j][i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n      <ion-item-options *ngIf="fsp.upcoming2[j][i][\'byttes\']">\n        <button (click)="fsp.byttOkt(j,i)" ion-button color="secondary">\n          <ion-icon name="git-compare"></ion-icon>\n          Ta økt\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n    </div>\n    </div>\n\n    <!-- Previous -->\n    <div >\n    <ion-item-sliding *ngFor="let x of fsp.previous | slice:0:3, let i=index" >\n      <ion-item *ngSwitchCase="\'fullfort\'" (click)="itemSelected(x)">\n          <div class="futureDate">\n            <span style="font-size: 25px; font-weight: 900; color:#ffffff">{{timestampToDate(fsp.previous[i]["Start"]) | slice:0:2}}</span><br>\n            <span style="font-size: 21px; font-weight: 300; margin-top:0.5px;color:#ffffff">{{timestampToDate(fsp.previous[i].Start) | slice:3:6}}</span> \n          </div>\n          <div class="futureInfo">\n            <h3 style="font-weight: 800">{{getWeekdayName(fsp.previous[i]["Start"])}}</h3>\n            <h3>{{fromTimestampToHHMM(fsp.previous[i]["Start"])}} - {{fromTimestampToHHMM(fsp.previous[i]["Slutt"])}}</h3>\n          </div> \n      </ion-item>\n    </ion-item-sliding>\n    </div>\n\n    </div>\n  </ion-list>\n      </div>\n\n</div>\n\n<div style="display:inline-block;text-align:center">\n  <img style="width:15%; border-right:2px solid #915AD5" src="../www/assets/imgs/logo.png">\n  <img style="width:30%" src="../www/assets/imgs/company_2-ny.png">\n\n</div>\n\n\n\n<br><br><br>\n\n\n\n  <h3>Current Latitude: {{locationTracker.lat}}</h3>\n  <h3>Current Longitude: {{locationTracker.lng}}</h3>\n  <h3>På jobb? {{locationTracker.paJobb}}</h3> \n  <h3>{{contCheckCouter}}</h3>\n    <h3>Current Longitude: {{locationTracker.counter}}</h3>\n\n\n\n\n  <!-- ACTIVATE IF YOU MANUALLY WANT TO START THE TRACKING. REMEBER TO CHANGE FROM NGONINIT() TO START() IN HOME.ts\n  \n    <button ion-button full primary (click)="start()">Start Tracking</button>\n     <button ion-button full primary (click)="scheduleNotification()">Send Notification</button> \n\n-->\n\n\n</ion-content>'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/pages/home/home.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__providers_location_tracker_location_tracker__["a" /* LocationTracker */], __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["a" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_8__providers_firebase_service_firebase_service__["a" /* FirebaseServiceProvider */], __WEBPACK_IMPORTED_MODULE_9__providers_notifications_notifications__["a" /* NotificationsProvider */]])
     ], HomePage);
@@ -943,22 +1292,22 @@ var HomePage = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 369:
+/***/ 403:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LocationTracker; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ionic_native_background_geolocation__ = __webpack_require__(370);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__ = __webpack_require__(371);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_filter__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ionic_native_background_geolocation__ = __webpack_require__(404);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__ = __webpack_require__(405);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_filter__ = __webpack_require__(139);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_filter___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_filter__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__turf_boolean_point_in_polygon__ = __webpack_require__(619);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__turf_boolean_point_in_polygon__ = __webpack_require__(689);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__turf_boolean_point_in_polygon___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__turf_boolean_point_in_polygon__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_turf__ = __webpack_require__(622);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_turf__ = __webpack_require__(692);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_turf___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_turf__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__notifications_notifications__ = __webpack_require__(128);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__firebase_service_firebase_service__ = __webpack_require__(90);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__notifications_notifications__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__firebase_service_firebase_service__ = __webpack_require__(107);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1092,13 +1441,13 @@ var LocationTracker = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 503:
+/***/ 461:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(504);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(508);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(462);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(570);
 
 
 Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_1__app_module__["a" /* AppModule */]);
@@ -1106,34 +1455,34 @@ Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* pl
 
 /***/ }),
 
-/***/ 508:
+/***/ 570:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__ = __webpack_require__(60);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_component__ = __webpack_require__(618);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_about_about__ = __webpack_require__(367);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_contact_contact__ = __webpack_require__(226);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_home_home__ = __webpack_require__(368);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_tabs_tabs__ = __webpack_require__(366);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__pages_settings_settings__ = __webpack_require__(109);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__ionic_native_status_bar__ = __webpack_require__(364);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__ionic_native_splash_screen__ = __webpack_require__(365);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__providers_location_tracker_location_tracker__ = __webpack_require__(369);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__ionic_native_background_geolocation__ = __webpack_require__(370);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__ionic_native_geolocation__ = __webpack_require__(371);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__providers_json_json__ = __webpack_require__(937);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__angular_common_http__ = __webpack_require__(75);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__ionic_native_local_notifications__ = __webpack_require__(321);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__providers_notifications_notifications__ = __webpack_require__(128);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__providers_firebase_service_firebase_service__ = __webpack_require__(90);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__angular_http__ = __webpack_require__(938);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20_angularfire2_database__ = __webpack_require__(939);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21_angularfire2__ = __webpack_require__(65);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22_angularfire2_firestore__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_component__ = __webpack_require__(688);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_about_about__ = __webpack_require__(401);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_contact_contact__ = __webpack_require__(244);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_home_home__ = __webpack_require__(402);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_tabs_tabs__ = __webpack_require__(400);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__pages_settings_settings__ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__ionic_native_status_bar__ = __webpack_require__(398);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__ionic_native_splash_screen__ = __webpack_require__(399);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__providers_location_tracker_location_tracker__ = __webpack_require__(403);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__ionic_native_background_geolocation__ = __webpack_require__(404);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__ionic_native_geolocation__ = __webpack_require__(405);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__providers_json_json__ = __webpack_require__(965);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__angular_common_http__ = __webpack_require__(87);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__ionic_native_local_notifications__ = __webpack_require__(357);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__providers_notifications_notifications__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__providers_firebase_service_firebase_service__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__angular_http__ = __webpack_require__(966);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20_angularfire2_database__ = __webpack_require__(967);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21_angularfire2__ = __webpack_require__(71);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22_angularfire2_firestore__ = __webpack_require__(217);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1232,16 +1581,16 @@ var AppModule = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 618:
+/***/ 688:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MyApp; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__ = __webpack_require__(364);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__ = __webpack_require__(365);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_tabs_tabs__ = __webpack_require__(366);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__ = __webpack_require__(398);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__ = __webpack_require__(399);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_tabs_tabs__ = __webpack_require__(400);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1267,7 +1616,7 @@ var MyApp = /** @class */ (function () {
         });
     }
     MyApp = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/bjarteespedokken/Documents/Visma3/tia/src/app/app.html"*/'<ion-nav [root]="rootPage"></ion-nav>\n'/*ion-inline-end:"/Users/bjarteespedokken/Documents/Visma3/tia/src/app/app.html"*/
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/stvale/Programmering/tia/src/app/app.html"*/'<ion-nav [root]="rootPage"></ion-nav>\n'/*ion-inline-end:"/Users/stvale/Programmering/tia/src/app/app.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* Platform */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */], __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */]])
     ], MyApp);
@@ -1278,364 +1627,14 @@ var MyApp = /** @class */ (function () {
 
 /***/ }),
 
-/***/ 90:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FirebaseServiceProvider; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_map__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_firebase_firestore__ = __webpack_require__(70);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_firebase_firestore___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_firebase_firestore__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__ = __webpack_require__(191);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__ = __webpack_require__(128);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ionic_angular__ = __webpack_require__(44);
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-
-
-
-
-var FirebaseServiceProvider = /** @class */ (function () {
-    function FirebaseServiceProvider(afd, notifications, toastCtrl) {
-        var _this = this;
-        this.afd = afd;
-        this.notifications = notifications;
-        this.toastCtrl = toastCtrl;
-        this.testList = [];
-        this.allRecords = [];
-        this.upcoming = [];
-        this.upcoming2 = []; //One list for each week number 
-        this.previous = [];
-        this.counter = 0;
-        this.weeknumbers = [];
-        this.uniqueWeeknumbers = [];
-        this.checkedIn = false;
-        this.doneInitial = false;
-        this.settingsData = [];
-        /* Retrieving data from Firestore */
-        this.afd.collection('arbeidsokter', function (ref) { return ref.orderBy('Start'); })
-            .valueChanges()
-            .subscribe(function (data) { return _this.inTheFuture(data); });
-        this.setSettings();
-    }
-    FirebaseServiceProvider.prototype.inTheFuture = function (data) {
-        //console.log(data);
-        this.resetArrays();
-        this.allRecords = data;
-        /* Iterating through all records within the plan, in order to separate them between previous and upcoming*/
-        for (var x = 0; x < this.allRecords.length; x++) {
-            var currentDate = new Date();
-            var dateStart = new Date(this.allRecords[x]["Start"]);
-            var dateEnd = new Date(this.allRecords[x]["Slutt"]);
-            /* A record has a start date in the future, or it is still not finished*/
-            if (dateStart.getTime() - currentDate.getTime() > 0 || dateEnd.getTime() - currentDate.getTime() > 0) {
-                /* Adding the future records to the array of upcoming plans, and making sure that the next record is not added to the upcoming array */
-                this.upcoming.push(this.allRecords[x]);
-                //console.log(this.allRecords[x]);
-                /* Adding information about the week number to the week number array. */
-                if (this.getWeekNumber(dateStart) == this.getWeekNumber(currentDate)) {
-                    this.weeknumbers.push("Denne uken");
-                }
-                else if (this.getWeekNumber(dateStart) - this.getWeekNumber(currentDate) == 1) {
-                    this.weeknumbers.push("Neste uke");
-                }
-                else {
-                    this.weeknumbers.push("Uke " + this.getWeekNumber(dateStart));
-                }
-            }
-            else {
-                this.previous.push(this.allRecords[x]);
-            }
-        }
-        this.timeFromArrivalToCheckInCalculated = this.calculateDelay() / (60 * 1000);
-        console.log(this.timeFromArrivalToCheckInCalculated);
-        /* Reverst the array of previous records, such that the newest comes first */
-        this.previous.reverse();
-        /* Adding the first week number to an array of unique Weeknumbers. Used to group the future records on the home page */
-        this.uniqueWeeknumbers.push(this.weeknumbers[0]);
-        console.log("Ukenummer");
-        console.log(this.uniqueWeeknumbers);
-        /* Create a new 3D matrix called upcoming2, where we all future records within one week are place in the same array. Used to group the future records on the home page */
-        var temp = [];
-        //console.log(this.upcoming);
-        for (var i = 1; i < this.weeknumbers.length; i++) {
-            if (this.weeknumbers[i] == this.weeknumbers[i + 1]) {
-                temp.push(this.upcoming[i]);
-            }
-            else {
-                temp.push(this.upcoming[i]);
-                this.upcoming2.push(temp);
-                temp = [];
-            }
-        }
-        /* Adding all unique week numbers to the array */
-        for (var y = 1; y < this.weeknumbers.length; y++) {
-            if (this.weeknumbers[y] != this.weeknumbers[y - 1]) {
-                this.uniqueWeeknumbers.push(this.weeknumbers[y]);
-            }
-        }
-        this.doneInitial = true;
-    };
-    /* Calculating the week number of a date object given as a parameter */
-    FirebaseServiceProvider.prototype.getWeekNumber = function (date) {
-        date.setHours(0, 0, 0, 0);
-        // Thursday in current week decides the year.
-        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-        // January 4 is always in week 1.
-        var week1 = new Date(date.getFullYear(), 0, 4);
-        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-        return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
-            - 3 + (week1.getDay() + 6) % 7) / 7);
-    };
-    /* Sending a check in or check out time to the Firestore */
-    FirebaseServiceProvider.prototype.addCheckInOutTime = function (timestamp) {
-        var oldTimestamps = [];
-        var newTimestamps = [];
-        newTimestamps = this.upcoming[0]["Stempletider"];
-        //Skal gå gjennom hvert Date-element og sjekke om tiden allerede er registrert 
-        var i;
-        for (i = 0; i < newTimestamps.length; i++) {
-            var time = new Date(newTimestamps[i]);
-            console.log('time: ', time);
-            if (timestamp.getDate() == time.getDate() && timestamp.getDay() == time.getDay() && timestamp.getFullYear() == time.getFullYear() && timestamp.getMonth() == time.getMonth()) {
-                console.log('slår til her');
-                return;
-            }
-        }
-        newTimestamps.push(timestamp);
-        this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
-            "Stempletider": newTimestamps
-        })
-            .then(function () {
-            console.log("CheckInOut successfully written");
-        })
-            .catch(function (error) {
-            console.error("Error when writing CheckInOut: ", error);
-        });
-        this.counter = this.counter + 1;
-    };
-    FirebaseServiceProvider.prototype.addOfflineDocument = function (timestamp) {
-        var id = this.afd.createId();
-        if (!this.offlineCheckIn) {
-            this.afd.collection('offlineArbeidsokt').doc(id).set({
-                checkIn: timestamp,
-                ID: id
-            });
-        }
-    };
-    FirebaseServiceProvider.prototype.writeCheckedIn = function (checkedIn) {
-        this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID']).update({
-            'checkedIn': checkedIn
-        })
-            .then(function () {
-            console.log("checkedIn-variable successfully written");
-        })
-            .catch(function (error) {
-            console.error("Error when writing checkedIn-variable: ", error);
-        });
-    };
-    FirebaseServiceProvider.prototype.byttOkt = function (array1Index, array2Index) {
-        console.log("BYTT OKT");
-        //console.log(array1Index);
-        //console.log(array2Index);
-        var bytte;
-        if (this.upcoming2[array1Index][array2Index]['byttes'] == undefined) {
-            console.log("FØRSTE IF");
-            bytte = true;
-            this.upcoming2[array1Index][array2Index]['byttes'] = true;
-        }
-        else {
-            if (this.upcoming2[array1Index][array2Index]['byttes'] == false) {
-                console.log("ANDRE IF");
-                bytte = true;
-                this.upcoming2[array1Index][array2Index]['byttes'] = true;
-            }
-            else {
-                console.log("ELSE");
-                bytte = false;
-                this.upcoming2[array1Index][array2Index]['byttes'] = false;
-            }
-        }
-        //console.log(this.upcoming2);
-        this.afd.collection('arbeidsokter').doc(this.upcoming2[array1Index][array2Index]['ID']).update({
-            'byttes': bytte,
-            'Start': this.upcoming2[array1Index][array2Index]['Start'],
-            'Slutt': this.upcoming2[array1Index][array2Index]['Slutt'],
-            'Added': this.upcoming2[array1Index][array2Index]['Added'],
-            'EndretMelding': this.upcoming2[array1Index][array2Index]['EndretMelding']
-        })
-            .then(function () {
-            console.log("bytte successfully written");
-        })
-            .catch(function (error) {
-            console.error("Error when writing bytte: ", error);
-        });
-    };
-    FirebaseServiceProvider.prototype.getCheckedIn = function () {
-        var _this = this;
-        //console.log(this.upcoming);
-        this.afd.collection('arbeidsokter').doc(this.upcoming[0]['ID'])
-            .valueChanges()
-            .subscribe(function (data) {
-            _this.checkedIn = data['checkedIn'];
-        });
-    };
-    FirebaseServiceProvider.prototype.getArrivedAtWork = function () {
-        return this.upcoming[0]["Stempletider"].length > 0;
-    };
-    FirebaseServiceProvider.prototype.writeArrivalTime = function (timestamp) {
-        this.afd.collection("arbeidsokter").doc(this.upcoming[0]["ID"]).update({
-            "arrivedAtWork": timestamp
-        })
-            .then(function () {
-            console.log("arrivedAtWork successfully written");
-        })
-            .catch(function (error) {
-            console.error("Error when writing arrivedAtWork: ", error);
-        });
-    };
-    /* Reseting all arrays */
-    FirebaseServiceProvider.prototype.resetArrays = function () {
-        this.upcoming = [];
-        this.upcoming2 = [];
-        this.previous = [];
-        this.weeknumbers = [];
-        this.uniqueWeeknumbers = [];
-    };
-    FirebaseServiceProvider.prototype.isWorking = function (timestamp) {
-        //Will take in a timestamp and check if this matches a block that is scheduled for work. 
-        var nextStartTime = new Date(this.upcoming[0]['Start']);
-        var now = new Date(timestamp);
-        //Checks if it's the same date and if we are still in before the end of the workday. 
-        if (nextStartTime.getMonth() == now.getMonth() && nextStartTime.getDate() == now.getDate() && (now.getTime() - new Date(this.upcoming[0]['Slutt']).getTime()) < 0) {
-            return true;
-        }
-        return false;
-    };
-    FirebaseServiceProvider.prototype.decideCheckInTime = function (arrivedAtWork) {
-        //600000 ms er 10 minutter
-        var buffer = 300000;
-        arrivedAtWork = new Date(arrivedAtWork);
-        var workStart = new Date(this.upcoming[0]['Start']);
-        //Kommer på jobb før 10 min før oppstart. Skal da sjekke deg inn ved oppstart. 
-        if (workStart.getTime() - arrivedAtWork.getTime() > buffer) {
-            this.addCheckInOutTime(workStart);
-            if (this.enableNotifications) {
-                this.notifications.sendNotification('arrive_early', workStart);
-            }
-            return workStart;
-        }
-        else if (workStart.getTime() - arrivedAtWork.getTime() < buffer) {
-            var checkInTime = arrivedAtWork.getTime() + buffer;
-            checkInTime = new Date(checkInTime);
-            console.log('skal skrive inn stempletid');
-            this.addCheckInOutTime(checkInTime);
-            if (this.enableNotifications) {
-                this.notifications.sendNotification('arrive_late', checkInTime);
-            }
-            return checkInTime;
-        }
-    };
-    /* SETTINGS */
-    FirebaseServiceProvider.prototype.updateSettingsHandler = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc) {
-        if (this.updateSettings(earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc)) {
-            this.toast('Innstillinger lagret', 2000, "toast-success");
-        }
-    };
-    FirebaseServiceProvider.prototype.updateSettings = function (earlyCheckInMinutes, automaticCheckIn, timeFromArrivalToCheckIn, address, number, enableNotifications, enableAutoDelayCalc) {
-        this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
-            "earlyCheckInMinutes": earlyCheckInMinutes,
-            "automaticCheckIn": automaticCheckIn,
-            "timeFromArrivalToCheckIn": timeFromArrivalToCheckIn,
-            "polygon": this.polygon,
-            "address": address,
-            "postalCode": number,
-            "enableNotifications": enableNotifications,
-            "enableAutoDelayCalc": enableAutoDelayCalc
-        })
-            .then(function () {
-            console.log("earlyCheckMinutes successfully written");
-            return true;
-        })
-            .catch(function (error) {
-            console.error("Error when writing earlyCheckMinutes: ", error);
-            return false;
-        });
-    };
-    FirebaseServiceProvider.prototype.updateAutomaticSetting = function (value) {
-        this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").update({
-            'automaticCheckIn': value
-        });
-    };
-    FirebaseServiceProvider.prototype.toast = function (text, duration, css) {
-        var toast = this.toastCtrl.create({
-            message: text,
-            duration: duration,
-            position: 'top',
-            cssClass: css
-        });
-        toast.present();
-    };
-    FirebaseServiceProvider.prototype.setSettings = function () {
-        var _this = this;
-        var settings = [];
-        this.afd.collection("settings").doc("6uSk7azHsXowUL2BSy8i").valueChanges()
-            .subscribe(function (data) { return _this.setSettings2(data); });
-    };
-    FirebaseServiceProvider.prototype.setSettings2 = function (data) {
-        this.settingsData = data;
-        this.earlyCheckInMinutes = this.settingsData["earlyCheckInMinutes"];
-        this.enableNotifications = this.settingsData['enableNotifications'];
-        this.autoCheckIn = this.settingsData["automaticCheckIn"];
-        this.timeFromArrivalToCheckIn = this.settingsData["timeFromArrivalToCheckIn"];
-        this.polygon = this.settingsData["polygon"];
-        this.number = this.settingsData["postalCode"];
-        this.address = this.settingsData["address"];
-        this.enableAutoDelayCalc = this.settingsData["enableAutoDelayCalc"];
-        this.offlineCheckIn = this.settingsData["offlineCheckIn"];
-    };
-    FirebaseServiceProvider.prototype.calculateDelay = function () {
-        var delaySeconds = 0;
-        var counter = 0;
-        for (var x = 0; x < this.previous.length; x++) {
-            if (this.previous[x]["arrivedAtWork"] != undefined && this.previous[x]["Stempletider"][0] != undefined) {
-                delaySeconds += +new Date(this.previous[x]["Stempletider"][0]).getTime() - +(new Date(this.previous[x]["arrivedAtWork"]).getTime());
-                counter += 1;
-            }
-        }
-        return delaySeconds / counter;
-    };
-    FirebaseServiceProvider = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3_angularfire2_firestore__["a" /* AngularFirestore */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__notifications_notifications__["a" /* NotificationsProvider */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5_ionic_angular__["i" /* ToastController */]) === "function" && _c || Object])
-    ], FirebaseServiceProvider);
-    return FirebaseServiceProvider;
-    var _a, _b, _c;
-}());
-
-//# sourceMappingURL=firebase-service.js.map
-
-/***/ }),
-
-/***/ 937:
+/***/ 965:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return JsonProvider; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_common_http__ = __webpack_require__(75);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_common_http__ = __webpack_require__(87);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -1757,5 +1756,5 @@ var JsonProvider = /** @class */ (function () {
 
 /***/ })
 
-},[503]);
+},[461]);
 //# sourceMappingURL=main.js.map
