@@ -45,7 +45,7 @@ Web:
 ionic serve
 ```
 
-iOS
+iOS:
 ```
 ionic cordova build ios
 ```
